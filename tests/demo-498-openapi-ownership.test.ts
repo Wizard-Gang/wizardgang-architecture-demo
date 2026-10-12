@@ -9,7 +9,7 @@ const repo = process.cwd();
 const generated = 'contracts/openapi/openapi.json';
 const files = [
   generated,
-  'docs/route-manifest.json',
+  'src/generated/route-manifest.json',
   'contracts/graphql/schema.graphql',
   'contracts/mcp/tools.json',
   'contracts/webhooks/events.json',

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { Window } from 'happy-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import assetManifest from '../docs/asset-manifest.json';
+import assetManifest from '../src/generated/asset-manifest.json';
 import { restDemoOpenApiDocument } from '../src/api/rest-demo-openapi';
 import { bindLocalization, resolveLocalization } from '../src/i18n/runtime';
 import { demonstrations } from '../src/demos/demos-page';

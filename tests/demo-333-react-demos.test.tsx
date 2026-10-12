@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Window } from 'happy-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import assetManifest from '../docs/asset-manifest.json';
+import assetManifest from '../src/generated/asset-manifest.json';
 import { mountDemoPresentation } from '../src/browser/demo-presentation';
 import { routeRequest } from '../src/router';
 import type { Env } from '../src/types';

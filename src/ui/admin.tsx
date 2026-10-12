@@ -50,7 +50,6 @@ export function AdminPage({
           { label: 'Crawler control', href: sourceUrl(env, 'src/lib/crawler-control.ts') },
           { label: 'Offline gate', href: sourceUrl(env, 'src/router.ts') },
           { label: 'Shared storage helpers', href: sourceUrl(env, 'src/lib/storage.ts') },
-          { label: 'Operations design', href: sourceUrl(env, 'docs/OPERATIONS.md') },
         ]} />
       </div>
     </section>

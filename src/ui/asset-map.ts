@@ -1,4 +1,4 @@
-import manifest from '../../docs/asset-manifest.json';
+import manifest from '../generated/asset-manifest.json';
 
 export type BrowserAssetKey = keyof typeof manifest.assets;
 

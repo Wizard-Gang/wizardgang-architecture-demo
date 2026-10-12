@@ -55,7 +55,7 @@ describe('architecture demo registry', () => {
   });
 
   it('keeps derived page metadata synchronized with the machine route manifest', () => {
-    const manifest = JSON.parse(readFileSync('docs/route-manifest.json', 'utf8')) as Array<{
+    const manifest = JSON.parse(readFileSync('src/generated/route-manifest.json', 'utf8')) as Array<{
       id: string;
       route: string;
       source: { module: string };

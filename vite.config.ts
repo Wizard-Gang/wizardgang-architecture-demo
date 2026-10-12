@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 
 const ROOT = import.meta.dirname;
-const ASSET_MANIFEST_PATH = resolve(ROOT, 'docs/asset-manifest.json');
+const ASSET_MANIFEST_PATH = resolve(ROOT, 'src/generated/asset-manifest.json');
 
 const vendorAssets = [
   ['assets/graphiql.js', 'node_modules/@graphql-yoga/graphiql/dist/yoga-graphiql.umd.js'],
@@ -96,9 +96,9 @@ function browserAssets(): Plugin {
       try {
         committed = readFileSync(ASSET_MANIFEST_PATH, 'utf8');
       } catch {
-        this.error('Missing docs/asset-manifest.json; run npm run generate:assets.');
+        this.error('Missing src/generated/asset-manifest.json; run npm run generate:assets.');
       }
-      if (committed !== serialized) this.error('docs/asset-manifest.json is stale; run npm run generate:assets.');
+      if (committed !== serialized) this.error('src/generated/asset-manifest.json is stale; run npm run generate:assets.');
     },
   };
 }

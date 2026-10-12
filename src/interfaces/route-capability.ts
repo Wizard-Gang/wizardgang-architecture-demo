@@ -35,7 +35,6 @@ interface InterfaceIdentityRouteInput {
   sourceModule: string;
   sourceExport?: string;
   tests?: readonly string[];
-  docs?: readonly string[];
   authentication?: InterfaceIdentityRouteDeclaration['authentication'];
   authorization?: InterfaceIdentityRouteDeclaration['authorization'];
   visibility?: InterfaceIdentityRouteDeclaration['visibility'];
@@ -70,7 +69,6 @@ export function interfaceIdentityRoute(input: InterfaceIdentityRouteInput): Inte
     documentation: {
       title: input.title,
       description: input.description,
-      docs: input.docs ?? ['docs/ROUTE-REGISTRY.md'],
     },
     source: {
       module: input.sourceModule,

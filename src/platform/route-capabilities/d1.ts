@@ -14,7 +14,6 @@ const tests = [
   'tests/router.test.ts',
 ] as const;
 
-const docs = ['docs/ROUTE-REGISTRY.md'] as const;
 
 export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
   id: 'platform.d1',
@@ -38,7 +37,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'D1 users laboratory API',
         description: 'Lists and creates visitor-scoped relational users in D1.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -69,7 +67,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'D1 user item laboratory API',
         description: 'Updates or deletes one visitor-scoped relational user in D1.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -100,7 +97,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'D1 tasks laboratory API',
         description: 'Lists and creates visitor-scoped relational tasks in D1.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -131,7 +127,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'D1 task item laboratory API',
         description: 'Updates or deletes one visitor-scoped relational task in D1.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -162,7 +157,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'D1 users and tasks reset laboratory API',
         description: 'Resets the visitor-scoped D1 users and tasks sandbox to deterministic seed rows.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -190,7 +184,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Authorized REST records machine API',
         description: 'General machine contract: lists readable D1 records or creates one through demo:read and demo:write authorization policy.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -223,7 +216,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Authorized REST record item machine API',
         description: 'General machine contract: reads, replaces, or deletes one D1 record through demo:read and demo:write authorization policy.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -256,7 +248,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Authorized REST record sandbox reset machine API',
         description: 'General machine contract: deletes the identity-derived visitor namespace after demo:write authorization.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -284,7 +275,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Anonymous REST browser tutorial collection API',
         description: 'Focused browser tutorial: lists or creates records isolated by a signed visitor-session cookie without bearer authentication.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',
@@ -317,7 +307,6 @@ export const d1LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Anonymous REST browser tutorial item API',
         description: 'Focused browser tutorial: reads, replaces, partially updates, or deletes one cookie-isolated visitor record without bearer authentication.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/d1.ts',

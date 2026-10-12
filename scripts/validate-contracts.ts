@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const failures: string[] = [];
 const HTTP_METHODS = new Set(['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace']);
 const openapi = JSON.parse(fs.readFileSync('contracts/openapi/openapi.json', 'utf8'));
-const routeManifest = JSON.parse(fs.readFileSync('docs/route-manifest.json', 'utf8')) as Array<{
+const routeManifest = JSON.parse(fs.readFileSync('src/generated/route-manifest.json', 'utf8')) as Array<{
   id: string;
   route: string;
   methods: string[];

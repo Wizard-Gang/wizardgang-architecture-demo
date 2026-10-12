@@ -66,9 +66,9 @@ export function validateReactPresentation(root: string = ROOT): string[] {
   const http = readFileSync(path.join(root, 'src/lib/http.ts'), 'utf8');
   const sharedPolicy = http.match(/'content-security-policy':\s*`([^`]+)`/)?.[1];
   if (!sharedPolicy || sharedPolicy.includes("'unsafe-inline'")) report('src/lib/http.ts', 'shared CSP missing or permits unsafe-inline');
-  const manifest = JSON.parse(readFileSync(path.join(root, 'docs/asset-manifest.json'), 'utf8'));
+  const manifest = JSON.parse(readFileSync(path.join(root, 'src/generated/asset-manifest.json'), 'utf8'));
   for (const [key, asset] of Object.entries<string>(manifest.assets)) {
-    if (!/^\/assets\/[a-z0-9][a-z0-9.-]*-[a-zA-Z0-9_-]{8,}\.(?:js|css|png)$/.test(asset)) report('docs/asset-manifest.json', `unhashed browser asset ${key}: ${asset}`);
+    if (!/^\/assets\/[a-z0-9][a-z0-9.-]*-[a-zA-Z0-9_-]{8,}\.(?:js|css|png)$/.test(asset)) report('src/generated/asset-manifest.json', `unhashed browser asset ${key}: ${asset}`);
     const built = path.join(root, 'dist/client', asset.slice(1));
     if (existsSync(path.join(root, 'dist/client')) && !existsSync(built)) report('dist/client', `manifest asset missing from Static Assets: ${asset}`);
     if ((key.startsWith('vendor.') && key !== 'vendor.graphiql.styles' || key === 'social.card') && existsSync(built)) {
@@ -101,7 +101,7 @@ export function validateWorkerBundle(root: string = ROOT): string[] {
   const bundlePath = bundles[0];
   const bundleLabel = path.relative(root, bundlePath).replaceAll(path.sep, '/');
   const bundle = readFileSync(bundlePath);
-  const manifest = JSON.parse(readFileSync(path.join(root, 'docs/asset-manifest.json'), 'utf8'));
+  const manifest = JSON.parse(readFileSync(path.join(root, 'src/generated/asset-manifest.json'), 'utf8'));
   for (const [key, asset] of Object.entries<string>(manifest.assets)) {
     if (!key.startsWith('vendor.') && key !== 'social.card') continue;
     const browserAsset = path.join(root, 'dist/client', asset.slice(1));

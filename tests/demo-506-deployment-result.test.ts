@@ -183,11 +183,4 @@ describe('DEMO-506 automatic verified deployment record', () => {
     expect(redeployed.asset('deployment-4242-1.json')).toBe(`${line(result)}\n`);
     expect(redeployed.asset('deployment-4242-2.json')).toBe(`${line({ ...result, run_attempt: 2 })}\n`);
   });
-
-  it('retires the hand-maintained deployment ledger and its follow-up record change', () => {
-    expect(existsSync(['docs', 'history', 'DEPLOYMENTS.md'].join('/'))).toBe(false);
-    const releaseManagement = readFileSync('docs/RELEASE-MANAGEMENT.md', 'utf8');
-    expect(releaseManagement).toContain('## Deployment result');
-    expect(releaseManagement).not.toMatch(/controlled `OPS` change|\*\*Previous:\*\*|\*\*Rollback:\*\*/);
-  });
 });

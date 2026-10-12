@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import auditConfig from '../config/site-audit-states.json';
-import routeManifest from '../docs/route-manifest.json';
+import routeManifest from '../src/generated/route-manifest.json';
 import { AVAILABILITY_RETENTION_DAYS } from '../src/api/operations';
 import { demonstrations } from '../src/demos/demos-page';
 import { runScheduledOperations } from '../src/index';

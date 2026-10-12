@@ -23,7 +23,7 @@ type Finding = { classification: string; category: string; label: string; detail
 
 const require = createRequire(import.meta.url);
 const axeSource = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
-const manifest: Route[] = JSON.parse(fs.readFileSync('docs/route-manifest.json', 'utf8'));
+const manifest: Route[] = JSON.parse(fs.readFileSync('src/generated/route-manifest.json', 'utf8'));
 const auditConfig: { states: AuditState[] } = JSON.parse(fs.readFileSync('config/site-audit-states.json', 'utf8'));
 const serverPort = Number(process.env.SITE_AUDIT_PORT || 8787);
 const debugPort = Number(process.env.SITE_AUDIT_DEBUG_PORT || 9222);

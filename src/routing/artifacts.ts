@@ -15,7 +15,6 @@ export interface RouteManifestEntry {
   crawler: ApplicationRouteDeclaration['crawler'];
   title: string;
   description: string;
-  docs: readonly string[];
   source: ApplicationRouteDeclaration['source'];
   navigation?: {
     parent?: string;
@@ -58,7 +57,6 @@ export function buildRouteManifest(
       crawler: route.crawler,
       title: route.documentation.title,
       description: route.documentation.description,
-      docs: [...route.documentation.docs],
       source: route.source,
       ...(route.page && route.page.navigation !== 'none' ? {
         navigation: {

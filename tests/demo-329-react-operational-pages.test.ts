@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { Window } from 'happy-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import assetManifest from '../docs/asset-manifest.json';
+import assetManifest from '../src/generated/asset-manifest.json';
 import { routeRequest } from '../src/router';
 import type { Env } from '../src/types';
 import { demoDatabase } from './helpers/wg-storage';

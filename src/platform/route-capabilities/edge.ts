@@ -29,7 +29,6 @@ export const edgeLaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Edge inspection laboratory API',
         description: 'Returns the allowlisted Cloudflare request context without client identifiers.',
-        docs: ['docs/ROUTE-REGISTRY.md'],
       },
       source: {
         module: 'src/platform/route-capabilities/edge.ts',

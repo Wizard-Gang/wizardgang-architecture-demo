@@ -131,7 +131,7 @@ export function validateRepositoryBaseline(root: string = DEFAULT_ROOT): string[
     failures.push(...validateReferenceStackBaseline(root, declaration));
     // The product scaffold shares this owner on the canonical current checkout;
     // minimal external profile fixtures still exercise just the universal contract.
-    if (existsSync(path.join(root, 'src/router.ts')) && existsSync(path.join(root, 'docs/route-manifest.json'))) {
+    if (existsSync(path.join(root, 'src/router.ts')) && existsSync(path.join(root, 'src/generated/route-manifest.json'))) {
       failures.push(...validateScaffold(root).failures);
     }
   }

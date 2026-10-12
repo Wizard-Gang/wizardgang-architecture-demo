@@ -29,13 +29,13 @@ const definitions = [
     id: 'assets',
     command: ['npm', ['run', 'generate:assets']],
     inputs: ['package-lock.json', 'vite.config.ts', ...listFiles('src/styles'), 'src/assets/og.png'],
-    outputs: ['docs/asset-manifest.json'],
+    outputs: ['src/generated/asset-manifest.json'],
   },
   {
     id: 'routes',
     command: ['node', ['scripts/generate-route-manifest.ts']],
     inputs: listFiles('src/routing'),
-    outputs: ['docs/route-manifest.json'],
+    outputs: ['src/generated/route-manifest.json'],
   },
   {
     id: 'openapi',
@@ -66,16 +66,16 @@ export function inspectAcceptedClientOutput(cwd = root) {
     expected.add(file);
   };
 
-  const assetManifest = readJson('docs/asset-manifest.json');
+  const assetManifest = readJson('src/generated/asset-manifest.json');
   if (assetManifest?.version !== 1 || !assetManifest.assets || Array.isArray(assetManifest.assets)
     || typeof assetManifest.assets !== 'object' || Object.keys(assetManifest.assets).length === 0) {
-    issues.push('docs/asset-manifest.json: missing version 1 asset mapping');
+    issues.push('src/generated/asset-manifest.json: missing version 1 asset mapping');
   } else {
     for (const [name, file] of Object.entries(assetManifest.assets)) {
       if (typeof file !== 'string' || !file.startsWith('/assets/')) {
-        issues.push('docs/asset-manifest.json: invalid asset ' + name);
+        issues.push('src/generated/asset-manifest.json: invalid asset ' + name);
       } else {
-        includeFile(file.slice(1), 'docs/asset-manifest.json ' + name);
+        includeFile(file.slice(1), 'src/generated/asset-manifest.json ' + name);
       }
     }
   }

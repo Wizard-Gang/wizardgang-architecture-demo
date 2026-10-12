@@ -47,7 +47,7 @@ async function get(path: string): Promise<Response> {
 
 describe('public link and route contract', () => {
   it('keeps every registered HTML route implemented, sourced, and canonical', async () => {
-    const manifest = JSON.parse(readFileSync('docs/route-manifest.json', 'utf8')) as Array<{
+    const manifest = JSON.parse(readFileSync('src/generated/route-manifest.json', 'utf8')) as Array<{
       route: string;
       source: { module: string };
     }>;

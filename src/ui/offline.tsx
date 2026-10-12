@@ -1,5 +1,5 @@
 import type { DemoControl } from '../lib/demo-control';
-import { repoUrl, sourceUrl } from '../lib/github';
+import { repoUrl } from '../lib/github';
 import { routeUrl } from '../routing/application-routes';
 import type { Env } from '../types';
 import { useRequestLocalization } from './document';
@@ -32,7 +32,7 @@ export function OfflinePage({ env, control, requestedPath }: Readonly<{ env: Env
         <a href={healthRoute}>View system health</a>
         <a href={repoUrl(env)}>Public source</a>
       </div>
-      <details className="operations-inspection"><summary>Developer recovery links</summary><div className="meta"><a href={healthRoute}>Health JSON</a><a href={versionRoute}>Version JSON</a><a href={sourceUrl(env, 'docs/OPERATIONS.md')}>Operations docs ↗</a></div></details>
+      <details className="operations-inspection"><summary>Developer recovery links</summary><div className="meta"><a href={healthRoute}>Health JSON</a><a href={versionRoute}>Version JSON</a></div></details>
     </section>
   </>;
 }
