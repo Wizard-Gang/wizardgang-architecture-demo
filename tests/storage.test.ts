@@ -30,10 +30,10 @@ describe('demo storage on the shared wizardgang tables', () => {
     const environment = env();
     const now = Date.now();
     // 2,500 events, three per millisecond, so the 1,000-row pages end inside a shared millisecond.
-    for (let index = 0; index < 2500; index += 1) insertEvent(environment.WG_DB, KINDS.log, now - 30 * 60_000 + Math.floor(index / 3), { index });
-    const latest = await latestEvents<{ index: number }>(environment, KINDS.log, 10, TTL_SECONDS.log, () => true, now);
+    for (let index = 0; index < 2500; index += 1) insertEvent(environment.WG_DB, KINDS.audit, now - 30 * 60_000 + Math.floor(index / 3), { index });
+    const latest = await latestEvents<{ index: number }>(environment, KINDS.audit, 10, TTL_SECONDS.auditEvent, () => true, now);
     expect(latest.map((event) => event.body.index)).toEqual([2499, 2498, 2497, 2496, 2495, 2494, 2493, 2492, 2491, 2490]);
-    const every500th = await latestEvents<{ index: number }>(environment, KINDS.log, 50, TTL_SECONDS.log, (body) => body.index % 500 === 0, now);
+    const every500th = await latestEvents<{ index: number }>(environment, KINDS.audit, 50, TTL_SECONDS.auditEvent, (body) => body.index % 500 === 0, now);
     expect(every500th.map((event) => event.body.index)).toEqual([2000, 1500, 1000, 500, 0]);
   });
 

@@ -16,7 +16,6 @@ const environment: Env = {
   WG_DB: new SqliteD1(),
   GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
   GITHUB_BRANCH: 'main',
-  BILLING_DEMO_MONTHLY_BUDGET_USD: '10',
 };
 
 const removedRouteReferences = [...new Set([

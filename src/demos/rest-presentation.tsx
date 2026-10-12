@@ -190,15 +190,13 @@ function Schema({ name, schema, localization }: Readonly<{ name: string; schema:
 export function RestPresentation({ localization }: Readonly<{ localization: LocalizationContext }>): ReactNode {
   const exact = (english: string) => localization.exact(english);
   const operations = operationsFromDocument();
-  const documentPath = routeUrl('interfaces.rest.openapi.json');
   return <div className="rest-openapi" data-rest-operation-browser="">
     <header className="rest-info">
       <p className="eyebrow">OpenAPI {spec.openapi}</p>
       <DemoHeading level={1}>{exact(spec.info.title)} <span className="rest-version">{spec.info.version}</span></DemoHeading>
       <p>{exact(spec.info.description)}</p>
       <nav className="rest-artifacts" aria-label={exact('OpenAPI documents')}>
-        <a href={documentPath} data-rest-full-openapi="">{exact('Raw REST OpenAPI JSON')}</a>
-        <a href={routeUrl('interfaces.openapi.json')}>{exact('Machine API OpenAPI JSON')}</a>
+        <a href={routeUrl('interfaces.openapi.json')} data-rest-full-openapi="">{exact('Raw REST OpenAPI JSON')}</a>
       </nav>
     </header>
     <section className="rest-server-security">

@@ -811,7 +811,7 @@
       "indexing": "deny"
     },
     "title": "OpenAPI JSON contract",
-    "description": "General OpenAPI 3.1 machine contract, including bearer-capable authorized record operations.",
+    "description": "The single OpenAPI 3.1 contract: REST demo records, identity, GraphQL, MCP, webhooks and operations.",
     "source": {
       "module": "src/api/openapi.ts",
       "exportName": "openApiResponse",
@@ -819,47 +819,6 @@
         "tests/interface-identity-routing.test.ts",
         "tests/contracts.test.ts",
         "tests/api-records.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "interfaces.rest.openapi.json",
-    "route": "/api/labs/rest-demo-openapi.json",
-    "methods": [
-      "GET"
-    ],
-    "kind": "api",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "none"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "gated"
-    },
-    "cache": {
-      "mode": "public",
-      "maxAgeSeconds": 300
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "REST demo OpenAPI JSON",
-    "description": "Focused OpenAPI 3.0.3 browser-tutorial contract for anonymous, signed-cookie visitor records.",
-    "source": {
-      "module": "src/api/rest-demo-openapi.ts",
-      "exportName": "restDemoOpenApiResponse",
-      "tests": [
-        "tests/interface-identity-routing.test.ts",
-        "tests/router.test.ts"
       ]
     },
     "status": "working"
@@ -1035,86 +994,6 @@
     "source": {
       "module": "src/api/git-demo.ts",
       "exportName": "gitDemoReleaseResponse",
-      "tests": [
-        "tests/operational-route-registry.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "operations.api-budget",
-    "route": "/api/operations/budget",
-    "methods": [
-      "POST"
-    ],
-    "kind": "api",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "none"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "available"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Operations budget API",
-    "description": "Synthetic budget scenario control used by the operations demo.",
-    "source": {
-      "module": "src/api/billing.ts",
-      "exportName": "billingScenarioResponse",
-      "tests": [
-        "tests/operational-route-registry.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "operations.api-logs",
-    "route": "/api/operations/logs",
-    "methods": [
-      "GET"
-    ],
-    "kind": "api",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "none"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "available"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Operations logs API",
-    "description": "Sanitized application log query endpoint.",
-    "source": {
-      "module": "src/api/operations.ts",
-      "exportName": "logsResponse",
       "tests": [
         "tests/operational-route-registry.test.ts",
         "tests/router.test.ts"
@@ -1445,138 +1324,6 @@
       "tests": [
         "tests/platform-laboratory-routing.test.ts",
         "tests/interface.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "platform.d1.record",
-    "route": "/api/labs/rest-records/{id}",
-    "methods": [
-      "GET",
-      "PUT",
-      "DELETE"
-    ],
-    "kind": "api",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "policy",
-      "policy": "demo:read GET; demo:write PUT/DELETE"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "gated"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Authorized REST record item machine API",
-    "description": "General machine contract: reads, replaces, or deletes one D1 record through demo:read and demo:write authorization policy.",
-    "source": {
-      "module": "src/platform/route-capabilities/d1.ts",
-      "exportName": "d1LaboratoryCapability",
-      "tests": [
-        "tests/platform-laboratory-routing.test.ts",
-        "tests/d1-lab.test.ts",
-        "tests/api-records.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "platform.d1.records",
-    "route": "/api/labs/rest-records",
-    "methods": [
-      "GET",
-      "POST"
-    ],
-    "kind": "api",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "policy",
-      "policy": "demo:read GET; demo:write POST"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "gated"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Authorized REST records machine API",
-    "description": "General machine contract: lists readable D1 records or creates one through demo:read and demo:write authorization policy.",
-    "source": {
-      "module": "src/platform/route-capabilities/d1.ts",
-      "exportName": "d1LaboratoryCapability",
-      "tests": [
-        "tests/platform-laboratory-routing.test.ts",
-        "tests/d1-lab.test.ts",
-        "tests/api-records.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "platform.d1.records-reset",
-    "route": "/api/labs/rest-records-reset",
-    "methods": [
-      "POST"
-    ],
-    "kind": "api",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "policy",
-      "policy": "demo:write visitor sandbox"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "gated"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Authorized REST record sandbox reset machine API",
-    "description": "General machine contract: deletes the identity-derived visitor namespace after demo:write authorization.",
-    "source": {
-      "module": "src/platform/route-capabilities/d1.ts",
-      "exportName": "d1LaboratoryCapability",
-      "tests": [
-        "tests/platform-laboratory-routing.test.ts",
-        "tests/d1-lab.test.ts",
-        "tests/api-records.test.ts",
         "tests/router.test.ts"
       ]
     },

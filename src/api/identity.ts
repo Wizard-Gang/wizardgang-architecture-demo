@@ -30,7 +30,6 @@ import {
   type NormalizedIdentity,
 } from '../lib/identity-session';
 import { principalFromIdentitySession } from '../lib/authorization';
-import { recordApplicationLog } from '../lib/logs';
 import { COLLECTIONS, demoRecords, secondsUntil } from '../lib/storage';
 
 const encoder = new TextEncoder();
@@ -257,25 +256,13 @@ function oidcSession(provider: 'microsoft' | 'google', payload: JWTPayload): Ide
   };
 }
 
-function providerName(provider: IdentityProvider | 'saml'): string {
-  return provider === 'microsoft' || provider === 'saml' ? 'Microsoft Entra ID' : provider === 'google' ? 'Google' : 'GitHub';
-}
-
 function providerProtocol(provider: IdentityProvider | 'saml'): string {
   return provider === 'saml' ? 'saml2' : provider === 'github' ? 'oauth2' : 'oidc';
 }
 
 async function auditIdentity(env: Env, eventType: string, provider: IdentityProvider | 'saml', detail: Record<string, unknown> = {}): Promise<void> {
   const normalizedProvider = provider === 'saml' ? 'microsoft' : provider;
-  const event = await recordDemoEvent(env, 'identity', `identity.${eventType}`, { provider: normalizedProvider, protocol: providerProtocol(provider), ...detail });
-  const logDetail = Object.fromEntries(
-    Object.entries(detail).filter(([key]) => key !== 'subjectAuditId' && key !== 'namespace'),
-  );
-  await recordApplicationLog(env, {
-    source: 'identity', eventKey: `identity.${eventType}`, message: `${eventType.replaceAll('_', ' ')} for ${providerName(provider)}.`,
-    route: provider === 'saml' ? '/auth/saml' : `/auth/${provider}`,
-    detail: { provider: normalizedProvider, protocol: providerProtocol(provider), eventId: event.id, ...logDetail },
-  });
+  await recordDemoEvent(env, 'identity', `identity.${eventType}`, { provider: normalizedProvider, protocol: providerProtocol(provider), ...detail });
 }
 
 async function auditFailure(env: Env, provider: IdentityProvider | 'saml', reason: string): Promise<void> {
@@ -298,7 +285,6 @@ export async function authorizationDecisionResponse(request: Request, env: Env):
     const allowed = principal.permissions.includes(action);
     const eventType = allowed ? 'authorization_allowed' : 'authorization_denied';
     const event = await recordDemoEvent(env, 'identity', `identity.${eventType}`, { subjectAuditId: await identitySubjectAuditId(env, identity.provider, identity.subject), provider: identity.provider, assurance: identity.assurance, role: identity.role, action });
-    await recordApplicationLog(env, { source: 'identity', eventKey: `identity.${eventType}`, message: `Application policy ${allowed ? 'allowed' : 'denied'} ${action}.`, route: '/auth/authorize', detail: { provider: identity.provider, assurance: identity.assurance, role: identity.role, action, allowed, eventId: event.id } });
     return json({ identity: { provider: identity.provider, displayName: identity.displayName, assurance: identity.assurance, role: identity.role }, principal, authorization: { requestedAction: action, decision: allowed ? 'allow' : 'deny', policy: 'Authenticated identities receive demo:read and visitor-sandbox demo:write. Application writes remain scoped to the server-derived visitor sandbox.' }, separation: 'Authentication established the identity. Application policy independently decided the permitted action and data scope.', auditEventId: event.id }, { status: allowed ? 200 : 403, headers: { 'cache-control': 'no-store' } });
   } catch (error) { return errorResponse(error); }
 }
@@ -313,12 +299,8 @@ export async function demoAccessTokenResponse(request: Request, env: Env): Promi
     if (!session) throw new HttpError(401, 'authentication_required');
     const { token, claims } = await createDemoAccessToken(env, session);
     const subjectAuditId = await identitySubjectAuditId(env, session.identity.provider, session.identity.subject);
-    const event = await recordDemoEvent(env, 'identity', 'identity.demo_access_token_issued', {
+    await recordDemoEvent(env, 'identity', 'identity.demo_access_token_issued', {
       subjectAuditId, provider: claims.provider, permissions: claims.permissions, namespace: claims.namespace, expiresAt: claims.expiresAt,
-    });
-    await recordApplicationLog(env, {
-      source: 'identity', eventKey: 'identity.demo_access_token_issued', message: 'Issued a short-lived visitor API token.', route: '/auth/token',
-      detail: { provider: claims.provider, permissions: claims.permissions, expiresAt: claims.expiresAt, eventId: event.id },
     });
     return json({ tokenType: 'Bearer', accessToken: token, ...claims, sandboxLabel: 'Your API sandbox' }, { headers: { 'cache-control': 'no-store' } });
   } catch (error) { return errorResponse(error); }
@@ -347,10 +329,6 @@ export async function identityLogoutResponse(request: Request, env: Env): Promis
 
   await revokeIdentitySession(request, env);
   await recordDemoEvent(env, 'identity', 'identity.session_reset', {});
-  await recordApplicationLog(env, {
-    source: 'identity', eventKey: 'identity.session_reset', message: 'Identity session reset.',
-    route: '/auth/logout', detail: {},
-  });
   return json({ authenticated: false }, { headers });
 }
 

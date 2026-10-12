@@ -59,7 +59,7 @@ describe('DEMO-387 identity session reset', () => {
     expect(sessions().every((row) => row.revoked)).toBe(true);
     const after = await identitySessionResponse(new Request('https://demo.example/auth/session', { headers: { cookie } }), env);
     expect(await after.json()).toMatchObject({ authenticated: false });
-    expect(audit().map((item) => item.type)).toEqual(['identity.session_reset', 'identity.session_reset']);
+    expect(audit().map((item) => item.type)).toEqual(['identity.session_reset']);
     expect(JSON.stringify(audit())).not.toMatch(/private-subject|__Host-|token|subject|session_id|google-client/);
   });
 
@@ -71,7 +71,7 @@ describe('DEMO-387 identity session reset', () => {
       expect(response.status).toBe(200);
       expiredCookies(response);
     }
-    expect(audit().filter((item) => item.type === 'identity.session_reset')).toHaveLength(4);
+    expect(audit().filter((item) => item.type === 'identity.session_reset')).toHaveLength(2);
     expect(JSON.stringify(audit())).not.toContain('stale-state');
   });
 

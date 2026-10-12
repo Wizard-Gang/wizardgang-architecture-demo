@@ -2,9 +2,9 @@ import type { Env } from '../types';
 import { HttpError } from './http';
 import { COLLECTIONS, TTL_SECONDS, demoRecords } from './storage';
 
-// REST, the session REST lab and the MCP tool share one record shape. Each namespace (a visitor session, an identity
-// sandbox, or `public`) owns its rows in the shared records table; the record id is `<namespace>/<key>`, so a list by
-// owner comes back in key order. Neither part may contain `/`, so ids never collide.
+// The REST demo and the MCP tool share one record shape. Each namespace (a visitor session or `public`) owns its rows
+// in the shared records table; the record id is `<namespace>/<key>`, so a list by owner comes back in key order.
+// Neither part may contain `/`, so ids never collide.
 
 export interface DemoRecord {
   namespace: string;
@@ -27,7 +27,7 @@ function publicRecord(key: string, value: Record<string, string>): DemoRecord {
 const PUBLIC_RECORDS: readonly DemoRecord[] = Object.freeze([
   publicRecord('integration-graphql', { layer: 'Integration', route: '/api', binding: '/graphql', summary: 'Schema-driven reads resolving against the same records and the same policy as REST.' }),
   publicRecord('integration-mcp', { layer: 'AI Integration', route: '/mcp', binding: 'list_demo_records', summary: 'JSON-RPC tool operating inside ordinary application permissions and data limits.' }),
-  publicRecord('integration-rest', { layer: 'Integration', route: '/api', binding: '/api/labs/rest-records', summary: 'Versioned REST/JSON resource endpoints over the shared authorization boundary.' }),
+  publicRecord('integration-rest', { layer: 'Integration', route: '/api', binding: '/api/labs/rest-demo-records', summary: 'Versioned REST/JSON resource endpoints isolated by a signed visitor-session cookie.' }),
   publicRecord('runtime-d1', { layer: 'Runtime', route: '/d1', binding: 'WG_DB -> wizardgang', summary: 'Shared records and events tables for application state and audit metadata, with per-row TTLs.' }),
   publicRecord('runtime-durable-objects', { layer: 'Runtime', route: '/durable-objects', binding: 'DEMO_COORDINATOR', summary: 'Coordinated stateful compute for requests that must agree on shared state.' }),
   publicRecord('runtime-edge', { layer: 'Runtime', route: '/edge', binding: 'Cloudflare global network', summary: 'Public edge boundary for DNS, TLS, CDN, routing, and security policy.' }),
@@ -37,10 +37,6 @@ const PUBLIC_RECORDS: readonly DemoRecord[] = Object.freeze([
 
 function recordId(namespace: string, key: string): string {
   return `${namespace}/${key}`;
-}
-
-function ttlFor(namespace: string): number {
-  return namespace.startsWith('sandbox-') ? TTL_SECONDS.identitySandbox : TTL_SECONDS.sandbox;
 }
 
 export async function listDemoRecords(env: Env, namespace: string): Promise<DemoRecord[]> {
@@ -59,23 +55,11 @@ export async function saveDemoRecord(env: Env, record: DemoRecord): Promise<void
   if (record.namespace === PUBLIC_NAMESPACE) throw new HttpError(403, 'public_records_read_only');
   await demoRecords(env).put(COLLECTIONS.demoRecords, recordId(record.namespace, record.key), record, {
     owner: record.namespace,
-    ttlSeconds: ttlFor(record.namespace),
+    ttlSeconds: TTL_SECONDS.sandbox,
   });
 }
 
 export async function deleteDemoRecord(env: Env, namespace: string, key: string): Promise<boolean> {
   if (namespace === PUBLIC_NAMESPACE) throw new HttpError(403, 'public_records_read_only');
   return demoRecords(env).delete(COLLECTIONS.demoRecords, recordId(namespace, key));
-}
-
-/** Deletes every record in one sandbox namespace and returns how many went. */
-export async function clearDemoRecords(env: Env, namespace: string): Promise<number> {
-  if (namespace === PUBLIC_NAMESPACE) throw new HttpError(403, 'public_records_read_only');
-  const store = demoRecords(env);
-  let deleted = 0;
-  for (;;) {
-    const rows = await store.list(COLLECTIONS.demoRecords, { owner: namespace, limit: LIST_LIMIT });
-    for (const row of rows) if (await store.delete(COLLECTIONS.demoRecords, row.id)) deleted += 1;
-    if (rows.length < LIST_LIMIT) return deleted;
-  }
 }

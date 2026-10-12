@@ -63,10 +63,9 @@ describe('DEMO-268 REST evidence containment', () => {
     expect(html).not.toContain('<div class="rest-schema-list">');
   });
 
-  it('links both public OpenAPI documents in the info header', () => {
+  it('links the single OpenAPI document in the info header', () => {
     const html = restPresentation();
-    expect(html).toContain('data-rest-full-openapi="">Raw REST OpenAPI JSON</a>');
-    expect(html).toContain('href="/api/openapi.json">Machine API OpenAPI JSON</a>');
+    expect(html).toContain('href="/api/openapi.json" data-rest-full-openapi="">Raw REST OpenAPI JSON</a>');
     expect(html).toContain('wg_demo_session');
     expect(html).not.toContain(JSON.stringify(restDemoOpenApiDocument));
   });
@@ -91,7 +90,7 @@ describe('DEMO-268 REST evidence containment', () => {
     expect(mainAuditSource).toContain('for (const width of [320, 375, 768, 1440])');
   });
 
-  it('does not change REST machine routes, route inventory, or canonical OpenAPI source', () => {
+  it('keeps the REST demo routes and publishes them through the canonical OpenAPI source', () => {
     const routes = applicationRouteRegistry.declarations.map((route) => ({
       route: route.pattern,
       methods: route.methods,
@@ -99,18 +98,15 @@ describe('DEMO-268 REST evidence containment', () => {
     }));
 
     for (const expected of [
-      '/api/labs/rest-demo-openapi.json',
       '/api/labs/rest-demo-records',
       '/api/labs/rest-demo-records/:id',
       '/api/openapi.json',
-      '/api/labs/rest-records',
-      '/api/labs/rest-records/:id',
     ]) {
       expect(routes.some((route) => route.route === expected && route.kind === 'api')).toBe(true);
     }
     expect(routes.some((route) => route.kind === 'page' && route.route.includes('rest'))).toBe(false);
     expect(readFileSync('src/api/rest-demo-openapi.ts', 'utf8')).toContain("openapi: '3.0.3'");
-    expect(readFileSync('contracts/openapi/openapi.json', 'utf8')).toContain('"/api/labs/rest-records"');
+    expect(readFileSync('contracts/openapi/openapi.json', 'utf8')).toContain('"/api/labs/rest-demo-records"');
   });
 
   it('preserves the DEMO-267 persistent pane/inspector contract and removes the old REST disclosure dump', () => {

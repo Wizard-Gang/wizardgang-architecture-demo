@@ -15,7 +15,6 @@
     "GITHUB_REPO_URL": "https://github.com/Wizard-Gang/wizardgang-architecture-demo",
     "GITHUB_BRANCH": "main",
     "DEPLOYMENT_ENVIRONMENT": "production",
-    "BILLING_DEMO_MONTHLY_BUDGET_USD": "10",
     "CLOUDFLARE_WORKER_NAME": "demo",
     "CLOUDFLARE_R2_BUCKET": "wizardgang",
     "CLOUDFLARE_D1_DATABASE_ID": "95524076-8432-4d4a-b3ab-1a11ede73d4f",

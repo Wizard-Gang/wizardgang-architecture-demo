@@ -1,7 +1,6 @@
 import type { Env } from '../types';
 import { recordDemoEvent } from './audit';
 import { json, withSecurityHeaders } from './http';
-import { recordApplicationLog } from './logs';
 import { COLLECTIONS, demoRecords } from './storage';
 
 export type CrawlerAccessState = 'enabled' | 'disabled';
@@ -45,14 +44,6 @@ export async function setCrawlerControl(
     updatedAt,
   });
 
-  await recordApplicationLog(env, {
-    level: state === 'disabled' ? 'warn' : 'info',
-    source: 'admin',
-    eventKey: 'chatgpt_crawl_access_changed',
-    message: `ChatGPT crawl access changed to ${state}.`,
-    route: '/admin',
-    detail: { state, actor: 'authenticated-admin', updatedAt },
-  });
 
   return control;
 }

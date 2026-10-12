@@ -58,8 +58,6 @@ const expectedPolicies = [
     offline: { mode: 'gated' }, cache: { mode: 'public', maxAgeSeconds: 3600 }, crawler: { crawling: 'controlled', indexing: 'deny' },
   },
   ...[
-    ['operations.api-logs', '/api/operations/logs', ['GET']],
-    ['operations.api-budget', '/api/operations/budget', ['POST']],
   ].map(([id, pattern, methods]) => ({
     id, pattern, methods, kind: 'api', visibility: 'public',
     authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },

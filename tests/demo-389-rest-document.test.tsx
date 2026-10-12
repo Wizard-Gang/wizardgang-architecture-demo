@@ -1,6 +1,6 @@
 import { Window } from 'happy-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { restDemoOpenApiResponse, type RestDemoOperation } from '../src/api/rest-demo-openapi';
+import { restDemoOpenApiDocument, type RestDemoOperation } from '../src/api/rest-demo-openapi';
 import { buildRestRequest, curlForRequest, mount } from '../src/browser/rest';
 import { restSection } from '../src/demos/rest-presentation';
 import type { Env } from '../src/types';
@@ -20,9 +20,8 @@ function documentWindow(): Window {
 describe('DEMO-389 REST OpenAPI document', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('renders metadata, security, every tagged operation, response, and schema from the served JSON', async () => {
-    const response = restDemoOpenApiResponse(new Request(`${origin}/api/labs/rest-demo-openapi.json`));
-    const spec = await response.json() as {
+  it('renders metadata, security, every tagged operation, response, and schema from the REST demo spec', async () => {
+    const spec = JSON.parse(JSON.stringify(restDemoOpenApiDocument)) as {
       openapi: string;
       info: { title: string; version: string; description: string };
       servers: { url: string }[];
@@ -68,7 +67,6 @@ describe('DEMO-389 REST OpenAPI document', () => {
         const element = root.querySelector(`#rest-schema-${name}`)!;
         expect(element.querySelectorAll('.rest-schema-properties>div')).toHaveLength(Object.keys(schema.properties || {}).length);
       }
-      expect(root.querySelector('[href="/api/labs/rest-demo-openapi.json"]')).not.toBeNull();
       expect(root.querySelector('[href="/api/openapi.json"]')).not.toBeNull();
     } finally { await window.happyDOM.close(); }
   });

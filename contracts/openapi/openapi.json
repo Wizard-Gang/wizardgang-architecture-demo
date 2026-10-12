@@ -3,8 +3,8 @@
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "info": {
     "title": "WizardGang Architecture Demo REST API",
-    "version": "1.4.0",
-    "description": "Executable OpenAPI 3.1 contract for the current canonical bearer-capable machine API. Its /api/labs/rest-records resource demonstrates authorization policy; the separate /api/labs/rest-demo-openapi.json contract drives the anonymous, cookie-isolated browser tutorial."
+    "version": "2.0.0",
+    "description": "Executable OpenAPI 3.1 contract for the WizardGang Architecture Demo: cookie-isolated REST demo records, identity, GraphQL, MCP, webhooks and operations. It is the only published OpenAPI document; the REST demo renders its records operations."
   },
   "servers": [
     {
@@ -15,59 +15,41 @@
   "tags": [
     {
       "name": "Records",
-      "description": "General D1-backed machine resource with public reads and bearer-authorized, identity-derived visitor writes. This is intentionally separate from the anonymous REST browser tutorial."
+      "description": "Cookie-isolated visitor records"
     }
   ],
   "paths": {
-    "/api/labs/rest-records": {
+    "/api/labs/rest-demo-records": {
       "get": {
         "tags": [
           "Records"
         ],
+        "operationId": "listRecords",
         "summary": "List records",
-        "description": "List at most 100 records. Anonymous requests read the public namespace; an identity-derived token reads its visitor sandbox.",
-        "operationId": "listDemoRecords",
-        "x-route-id": "platform.d1.records",
-        "x-request-limits": {
-          "maxIdentifierCharacters": 64,
-          "maxResults": 100
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "description": "Anonymous reads are fixed to public. Operators may select a namespace; this value is ignored for identity-derived visitor tokens.",
-            "schema": {
-              "type": "string",
-              "default": "public",
-              "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-            },
-            "example": "public"
-          }
-        ],
+        "description": "Return up to 100 records in the current visitor session.",
         "responses": {
           "200": {
-            "description": "Record collection",
+            "description": "Records returned.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "required": [
                     "results",
-                    "authorization"
+                    "count"
                   ],
                   "properties": {
                     "results": {
                       "type": "array",
-                      "maxItems": 100,
+                      "description": "Records ordered by key.",
                       "items": {
-                        "$ref": "#/components/schemas/DemoRecord"
+                        "$ref": "#/components/schemas/Record"
                       }
                     },
-                    "authorization": {
-                      "$ref": "#/components/schemas/AuthorizationSummary"
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of returned records.",
+                      "example": 1
                     }
                   }
                 },
@@ -75,62 +57,46 @@
                   "results": [
                     {
                       "id": 1,
-                      "namespace": "public",
-                      "key": "architecture",
+                      "key": "hello",
                       "value": {
-                        "edge": true
+                        "message": "Hello from a Worker"
                       },
-                      "createdAt": "2026-09-02T12:00:00.000Z",
-                      "updatedAt": "2026-09-02T12:00:00.000Z"
+                      "createdAt": "2026-09-08T12:00:00.000Z",
+                      "updatedAt": "2026-09-08T12:00:00.000Z"
                     }
                   ],
-                  "authorization": {
-                    "subject": "public-visitor",
-                    "authentication": "anonymous",
-                    "permissions": [
-                      "demo:read"
-                    ],
-                    "scope": "public"
-                  }
+                  "count": 1
                 }
               }
             }
-          },
-          "503": {
-            "$ref": "#/components/responses/Unavailable"
           }
-        }
+        },
+        "x-route-id": "platform.d1.rest-demo-records",
+        "security": [
+          {
+            "visitorSession": []
+          }
+        ]
       },
       "post": {
         "tags": [
           "Records"
         ],
+        "operationId": "createRecord",
         "summary": "Create a record",
-        "description": "Create a new key in the authorized namespace. Returns 409 when that key already exists; use PUT to replace it.",
-        "operationId": "createDemoRecord",
-        "x-route-id": "platform.d1.records",
-        "x-authorization": "demo:write",
-        "x-request-limits": {
-          "maxBodyBytes": 16384,
-          "maxValueBytes": 4096,
-          "maxIdentifierCharacters": 64
-        },
-        "security": [
-          {
-            "BearerToken": []
-          }
-        ],
+        "description": "Create a record under a unique key in the current visitor session.",
         "requestBody": {
           "required": true,
+          "description": "The key and value for the new record.",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RecordInput"
               },
               "example": {
-                "key": "visitor-note",
+                "key": "hello",
                 "value": {
-                  "message": "hello"
+                  "message": "Hello from a Worker"
                 }
               }
             }
@@ -138,145 +104,133 @@
         },
         "responses": {
           "201": {
-            "description": "Record created",
-            "headers": {
-              "Location": {
-                "description": "Canonical record URL within the authorized namespace.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "X-Request-Id": {
-                "$ref": "#/components/headers/RequestId"
-              }
-            },
+            "description": "Record created.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DemoRecord"
+                  "$ref": "#/components/schemas/Record"
+                },
+                "example": {
+                  "id": 1,
+                  "key": "hello",
+                  "value": {
+                    "message": "Hello from a Worker"
+                  },
+                  "createdAt": "2026-09-08T12:00:00.000Z",
+                  "updatedAt": "2026-09-08T12:00:00.000Z"
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/InvalidRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/AuthenticationRequired"
-          },
-          "403": {
-            "$ref": "#/components/responses/PermissionDenied"
+            "description": "Request body or key is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "invalid_key",
+                  "detail": "key must be 1–64 letters, numbers, dots, underscores, or hyphens."
+                }
+              }
+            }
           },
           "409": {
-            "$ref": "#/components/responses/Conflict"
-          },
-          "413": {
-            "$ref": "#/components/responses/PayloadTooLarge"
-          },
-          "503": {
-            "$ref": "#/components/responses/Unavailable"
+            "description": "The key already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "record_already_exists",
+                  "detail": "POST creates a new resource. Use PUT to replace an existing key."
+                }
+              }
+            }
           }
-        }
+        },
+        "x-route-id": "platform.d1.rest-demo-records",
+        "security": [
+          {
+            "visitorSession": []
+          }
+        ]
       }
     },
-    "/api/labs/rest-records/{id}": {
+    "/api/labs/rest-demo-records/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "The record key.",
+          "schema": {
+            "type": "string"
+          },
+          "example": "hello"
+        }
+      ],
       "get": {
         "tags": [
           "Records"
         ],
-        "summary": "Read one record",
-        "operationId": "getDemoRecord",
-        "x-route-id": "platform.d1.record",
-        "x-request-limits": {
-          "maxIdentifierCharacters": 64
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-            },
-            "example": "visitor-note"
-          },
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "description": "Anonymous reads are fixed to public. Operators may select a namespace; this value is ignored for identity-derived visitor tokens.",
-            "schema": {
-              "type": "string",
-              "default": "public",
-              "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-            },
-            "example": "public"
-          }
-        ],
+        "operationId": "getRecord",
+        "summary": "Read a record",
+        "description": "Return one record by its key.",
         "responses": {
           "200": {
-            "description": "Record",
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/RequestId"
-              }
-            },
+            "description": "Record returned.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DemoRecord"
+                  "$ref": "#/components/schemas/Record"
+                },
+                "example": {
+                  "id": 1,
+                  "key": "hello",
+                  "value": {
+                    "message": "Hello from a Worker"
+                  },
+                  "createdAt": "2026-09-08T12:00:00.000Z",
+                  "updatedAt": "2026-09-08T12:00:00.000Z"
                 }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/InvalidRequest"
-          },
           "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "503": {
-            "$ref": "#/components/responses/Unavailable"
+            "description": "Record does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "record_not_found",
+                  "detail": "No record exists for this key."
+                }
+              }
+            }
           }
-        }
+        },
+        "x-route-id": "platform.d1.rest-demo-record",
+        "security": [
+          {
+            "visitorSession": []
+          }
+        ]
       },
       "put": {
         "tags": [
           "Records"
         ],
-        "summary": "Create or replace one record",
-        "description": "Create the requested key or replace its complete value in the authorized namespace.",
-        "operationId": "putDemoRecord",
-        "x-route-id": "platform.d1.record",
-        "x-authorization": "demo:write",
-        "x-request-limits": {
-          "maxBodyBytes": 16384,
-          "maxValueBytes": 4096,
-          "maxIdentifierCharacters": 64
-        },
-        "security": [
-          {
-            "BearerToken": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-            },
-            "example": "visitor-note"
-          }
-        ],
+        "operationId": "replaceRecord",
+        "summary": "Replace a record",
+        "description": "Replace the complete representation at a key, creating the record when it does not exist.",
         "requestBody": {
           "required": true,
+          "description": "The complete replacement representation.",
           "content": {
             "application/json": {
               "schema": {
@@ -284,7 +238,7 @@
               },
               "example": {
                 "value": {
-                  "message": "updated"
+                  "message": "Replaced by a Worker"
                 }
               }
             }
@@ -292,100 +246,169 @@
         },
         "responses": {
           "200": {
-            "description": "Existing record replaced",
+            "description": "Existing record replaced.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DemoRecord"
+                  "$ref": "#/components/schemas/Record"
+                },
+                "example": {
+                  "id": 1,
+                  "key": "hello",
+                  "value": {
+                    "message": "Replaced by a Worker"
+                  },
+                  "createdAt": "2026-09-08T12:00:00.000Z",
+                  "updatedAt": "2026-09-08T12:00:00.000Z"
                 }
               }
             }
           },
           "201": {
-            "description": "Record created at the requested key",
+            "description": "Record created.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DemoRecord"
+                  "$ref": "#/components/schemas/Record"
+                },
+                "example": {
+                  "id": 1,
+                  "key": "hello",
+                  "value": {
+                    "message": "Replaced by a Worker"
+                  },
+                  "createdAt": "2026-09-08T12:00:00.000Z",
+                  "updatedAt": "2026-09-08T12:00:00.000Z"
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/InvalidRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/AuthenticationRequired"
-          },
-          "403": {
-            "$ref": "#/components/responses/PermissionDenied"
-          },
-          "413": {
-            "$ref": "#/components/responses/PayloadTooLarge"
-          },
-          "503": {
-            "$ref": "#/components/responses/Unavailable"
+            "description": "Request body or key is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "invalid_json"
+                }
+              }
+            }
           }
-        }
+        },
+        "x-route-id": "platform.d1.rest-demo-record",
+        "security": [
+          {
+            "visitorSession": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Records"
+        ],
+        "operationId": "updateRecord",
+        "summary": "Update a record",
+        "description": "Apply the supplied fields without requiring a complete replacement representation.",
+        "requestBody": {
+          "required": true,
+          "description": "Only the fields that should change.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordPatch"
+              },
+              "example": {
+                "value": {
+                  "message": "Patched by a Worker",
+                  "priority": "high"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Existing record updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Record"
+                },
+                "example": {
+                  "id": 1,
+                  "key": "hello",
+                  "value": {
+                    "message": "Patched by a Worker",
+                    "priority": "high"
+                  },
+                  "createdAt": "2026-09-08T12:00:00.000Z",
+                  "updatedAt": "2026-09-08T12:00:00.000Z"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Record created because the supplied key did not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Record"
+                },
+                "example": {
+                  "id": 1,
+                  "key": "hello",
+                  "value": {
+                    "message": "Patched by a Worker",
+                    "priority": "high"
+                  },
+                  "createdAt": "2026-09-08T12:00:00.000Z",
+                  "updatedAt": "2026-09-08T12:00:00.000Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record does not exist and no value was supplied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "record_not_found",
+                  "detail": "No record exists for this key."
+                }
+              }
+            }
+          }
+        },
+        "x-route-id": "platform.d1.rest-demo-record",
+        "security": [
+          {
+            "visitorSession": []
+          }
+        ]
       },
       "delete": {
         "tags": [
           "Records"
         ],
-        "summary": "Delete one record",
-        "operationId": "deleteDemoRecord",
-        "x-route-id": "platform.d1.record",
-        "x-authorization": "demo:write",
-        "x-request-limits": {
-          "maxIdentifierCharacters": 64
-        },
-        "security": [
-          {
-            "BearerToken": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-            },
-            "example": "visitor-note"
-          },
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "public",
-              "maxLength": 64,
-              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-            },
-            "example": "public"
-          }
-        ],
+        "operationId": "deleteRecord",
+        "summary": "Delete a record",
+        "description": "Delete one record by its key. Repeating the request is safe.",
         "responses": {
           "204": {
-            "description": "Record absent after deletion"
-          },
-          "400": {
-            "$ref": "#/components/responses/InvalidRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/AuthenticationRequired"
-          },
-          "403": {
-            "$ref": "#/components/responses/PermissionDenied"
-          },
-          "503": {
-            "$ref": "#/components/responses/Unavailable"
+            "description": "Record deleted. The response has no body."
           }
-        }
+        },
+        "x-route-id": "platform.d1.rest-demo-record",
+        "security": [
+          {
+            "visitorSession": []
+          }
+        ]
       }
     },
     "/auth/microsoft": {
@@ -656,102 +679,6 @@
         }
       }
     },
-    "/api/operations/logs": {
-      "get": {
-        "summary": "Read sanitized application logs",
-        "x-route-id": "operations.api-logs",
-        "responses": {
-          "200": {
-            "description": "Sanitized operational log telemetry.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/operations/budget": {
-      "post": {
-        "summary": "Calculate the synthetic operations budget demonstration",
-        "x-route-id": "operations.api-budget",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Synthetic budget calculation.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid budget input.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/openapi.json": {
       "get": {
         "summary": "Read the canonical OpenAPI 3.1 document",
@@ -777,132 +704,20 @@
         "type": "http",
         "scheme": "bearer",
         "description": "A ten-minute demo token issued after provider sign-in. Its demo:write permission is restricted to the caller's server-derived visitor sandbox. No broad operator bearer credential is accepted by the application."
-      }
-    },
-    "headers": {
-      "RequestId": {
-        "description": "Public-safe request correlation identifier.",
-        "schema": {
-          "type": "string",
-          "pattern": "^req_[a-f0-9]+$"
-        }
-      }
-    },
-    "responses": {
-      "InvalidRequest": {
-        "description": "Invalid record, identifier, or JSON request.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
       },
-      "AuthenticationRequired": {
-        "description": "A valid bearer credential is required.",
-        "headers": {
-          "WWW-Authenticate": {
-            "schema": {
-              "type": "string"
-            },
-            "example": "Bearer realm=\"WizardGang architecture demo\""
-          }
-        },
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "authentication_required"
-            }
-          }
-        }
-      },
-      "PermissionDenied": {
-        "description": "The authenticated principal lacks the required permission.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "permission_denied"
-            }
-          }
-        }
-      },
-      "Conflict": {
-        "description": "The requested key already exists.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "record_already_exists",
-              "message": "POST creates a new resource. Use PUT to replace an existing key."
-            }
-          }
-        }
-      },
-      "PayloadTooLarge": {
-        "description": "The JSON request exceeds 16 KiB or the serialized record value exceeds 4096 bytes.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
-      },
-      "NotFound": {
-        "description": "The requested canonical record was not found.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
-      },
-      "Unavailable": {
-        "description": "The demo is intentionally offline or a required registered source is unavailable.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/Error"
-                },
-                {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "const": "offline"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              ]
-            }
-          }
-        }
+      "visitorSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "wg_demo_session",
+        "description": "A signed, HttpOnly visitor-session cookie is issued on the first request and sent on later requests. Keep a cookie jar when using curl so create, read, update, and delete use the same isolated session."
       }
     },
     "schemas": {
-      "DemoRecord": {
+      "Record": {
         "type": "object",
+        "description": "A stored visitor-scoped record.",
         "required": [
-          "namespace",
+          "id",
           "key",
           "value",
           "createdAt",
@@ -910,146 +725,110 @@
         ],
         "properties": {
           "id": {
-            "type": "integer"
-          },
-          "namespace": {
-            "type": "string",
-            "maxLength": 64
+            "type": "integer",
+            "description": "Database identifier.",
+            "example": 1
           },
           "key": {
             "type": "string",
-            "maxLength": 64
+            "description": "Stable resource key.",
+            "example": "hello"
           },
-          "value": {},
+          "value": {
+            "type": "object",
+            "description": "Arbitrary JSON-compatible record value.",
+            "additionalProperties": true,
+            "example": {
+              "message": "Hello from a Worker"
+            }
+          },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "UTC creation timestamp.",
+            "example": "2026-09-08T12:00:00.000Z"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
-          },
-          "authorization": {
-            "$ref": "#/components/schemas/AuthorizationSummary"
-          },
-          "auditEventId": {
-            "type": "integer"
-          }
-        }
-      },
-      "AuthorizationSummary": {
-        "type": "object",
-        "required": [
-          "subject",
-          "authentication",
-          "permissions",
-          "scope"
-        ],
-        "properties": {
-          "subject": {
-            "type": "string"
-          },
-          "authentication": {
-            "type": "string",
-            "enum": [
-              "anonymous",
-              "bearer",
-              "oidc",
-              "oauth2",
-              "saml2"
-            ]
-          },
-          "provider": {
-            "type": "string",
-            "enum": [
-              "operator",
-              "microsoft",
-              "google",
-              "github"
-            ]
-          },
-          "permissions": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "demo:read",
-                "demo:write"
-              ]
-            }
-          },
-          "scope": {
-            "type": "string",
-            "enum": [
-              "public",
-              "visitor-sandbox",
-              "caller-selected"
-            ]
+            "format": "date-time",
+            "description": "UTC timestamp of the latest change.",
+            "example": "2026-09-08T12:02:00.000Z"
           }
         }
       },
       "RecordInput": {
         "type": "object",
+        "description": "Representation used to create a record.",
         "required": [
           "key",
           "value"
         ],
         "properties": {
-          "namespace": {
-            "type": "string",
-            "default": "public",
-            "maxLength": 64,
-            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-          },
           "key": {
             "type": "string",
-            "maxLength": 64,
-            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
+            "description": "Unique key containing 1–64 letters, numbers, dots, underscores, or hyphens.",
+            "example": "hello"
           },
           "value": {
-            "x-max-serialized-bytes": 4096
+            "type": "object",
+            "description": "Arbitrary JSON-compatible record value.",
+            "additionalProperties": true,
+            "example": {
+              "message": "Hello from a Worker"
+            }
           }
-        },
-        "additionalProperties": false
+        }
       },
       "RecordReplacement": {
         "type": "object",
+        "description": "Complete mutable representation used by PUT.",
         "required": [
           "value"
         ],
         "properties": {
-          "namespace": {
-            "type": "string",
-            "default": "public",
-            "maxLength": 64,
-            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$"
-          },
-          "key": {
-            "type": "string",
-            "maxLength": 64,
-            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
-            "description": "When supplied, must equal the key path parameter."
-          },
           "value": {
-            "x-max-serialized-bytes": 4096
+            "type": "object",
+            "description": "The complete replacement value.",
+            "additionalProperties": true,
+            "example": {
+              "message": "Replaced by a Worker"
+            }
           }
-        },
-        "additionalProperties": false
+        }
+      },
+      "RecordPatch": {
+        "type": "object",
+        "description": "Partial mutable representation used by PATCH.",
+        "properties": {
+          "value": {
+            "type": "object",
+            "description": "A replacement value supplied only when it should change.",
+            "additionalProperties": true,
+            "example": {
+              "message": "Patched by a Worker",
+              "priority": "high"
+            }
+          }
+        }
       },
       "Error": {
         "type": "object",
+        "description": "A machine-readable API error.",
         "required": [
           "error"
         ],
         "properties": {
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "Stable error code.",
+            "example": "record_not_found"
           },
-          "message": {
-            "type": "string"
+          "detail": {
+            "type": "string",
+            "description": "Optional human-readable detail.",
+            "example": "No record exists for this key."
           }
-        },
-        "additionalProperties": true
+        }
       }
     }
   }

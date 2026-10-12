@@ -34,7 +34,6 @@ describe('interface and identity declarative routing', () => {
       '/',
       routeUrl('demos.index'),
       '/api/demos/:demo',
-      routeUrl('interfaces.rest.openapi.json'),
       '/api/openapi.json',
       '/graphql',
       '/webhooks/github',

@@ -71,12 +71,6 @@ export class SqliteD1 {
     }));
   }
 
-  /** Log events in the application log row shape, newest first. */
-  applicationLogRows(): Array<{ id: number; level: string; source: string; event_key: string; message: string; route: string | null; request_id: string | null; detail_json: string | null; created_at: string }> {
-    return this.events<{ level: string; source: string; event_key: string; message: string; route: string | null; request_id: string | null; detail_json: string | null; created_at: string }>('log')
-      .reverse().map(({ at, body }) => ({ id: at, ...body }));
-  }
-
   /** Identity sessions keyed by the SHA-256 of their session id. */
   identitySessions(): Map<string, { payload: string; expiresAt: string; revokedAt: string | null }> {
     return new Map([...this.records<{ payload: string; expiresAt: string; revokedAt: string | null }>('identity-sessions')].map(([id, row]) => [id, row.body]));

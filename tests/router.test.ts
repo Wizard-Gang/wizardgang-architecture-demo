@@ -24,7 +24,6 @@ function env(state: 'online' | 'offline' = 'online', crawlerState: 'enabled' | '
     GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
     GITHUB_BRANCH: 'main',
     WG_SESSION_KEY: 's'.repeat(32),
-    BILLING_DEMO_MONTHLY_BUDGET_USD: '10',
   };
 }
 
@@ -58,7 +57,6 @@ describe('public route contract', () => {
     expect(socialCard.status).toBe(200);
     expect(socialCard.headers.get('content-type')).toBe('image/png');
     expect(socialCard.headers.get('cache-control')).toContain('immutable');
-    expect((await routeRequest(new Request('https://demo.wizardgang.ai/api/operations/logs'), environment)).status).toBe(200);
     expect((await routeRequest(new Request('https://demo.wizardgang.ai/robots.txt'), environment)).status).toBe(200);
     const accessibilityFrame = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/accessibility?mode=accessible'), environment);
     expect(accessibilityFrame.status).toBe(200);
@@ -79,7 +77,7 @@ describe('public route contract', () => {
     expect(html).toContain('RecordReplacement');
     expect(html).toContain('RecordPatch');
     expect(html).toContain('class="rest-declared-responses"');
-    expect(html).toContain('href="/api/labs/rest-demo-openapi.json"');
+    expect(html).toContain('href="/api/openapi.json"');
     expect(html).not.toContain('200–204');
     expect(html).not.toContain('OpenAPI document</p>');
     expect(html).not.toContain('REST resources');
@@ -91,16 +89,14 @@ describe('public route contract', () => {
 
   });
 
-  it('serves the REST documentation contract as an inline or downloadable artifact', async () => {
-    const inline = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/rest-demo-openapi.json'), env());
-    const document = await inline.json() as { openapi: string; components: { schemas: Record<string, unknown> } };
-    expect(inline.status).toBe(200);
-    expect(inline.headers.get('content-disposition')).toContain('inline');
-    expect(document.openapi).toBe('3.0.3');
+  it('publishes the REST demo records operations through the single OpenAPI document', async () => {
+    const response = await routeRequest(new Request('https://demo.wizardgang.ai/api/openapi.json'), env());
+    const document = await response.json() as { openapi: string; paths: Record<string, unknown>; components: { schemas: Record<string, unknown> } };
+    expect(response.status).toBe(200);
+    expect(document.openapi).toBe('3.1.0');
+    expect(document.paths).toHaveProperty(['/api/labs/rest-demo-records']);
+    expect(document.paths).toHaveProperty(['/api/labs/rest-demo-records/{id}']);
     expect(Object.keys(document.components.schemas)).toEqual(['Record', 'RecordInput', 'RecordReplacement', 'RecordPatch', 'Error']);
-
-    const download = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/rest-demo-openapi.json?download=1'), env());
-    expect(download.headers.get('content-disposition')).toContain('attachment');
   });
 
   it('renders focused GraphQL and webhook interface routes', async () => {
@@ -297,7 +293,7 @@ describe('offline routing matrix', () => {
     expect(mcp.status).toBe(503);
     expect(await mcp.json()).toMatchObject({ status: 'offline' });
 
-    const api = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/rest-records', { headers: { accept: 'application/json' } }), environment);
+    const api = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/rest-demo-records', { headers: { accept: 'application/json' } }), environment);
     expect(api.status).toBe(503);
     expect(await api.json()).toMatchObject({ status: 'offline' });
 
@@ -308,7 +304,6 @@ describe('offline routing matrix', () => {
     const retiredOperations = await routeRequest(new Request(`https://demo.wizardgang.ai${retiredOperationsHtmlPathname}`, { headers: { accept: 'text/html' } }), environment);
     expect(retiredOperations.status).toBe(404);
     expect(retiredOperations.headers.get('location')).toBeNull();
-    expect((await routeRequest(new Request('https://demo.wizardgang.ai/api/operations/logs'), environment)).status).toBe(200);
     expect((await routeRequest(new Request('https://demo.wizardgang.ai/api/operations/version'), environment)).status).toBe(200);
     expect((await routeRequest(new Request('https://demo.wizardgang.ai/api/operations/health'), environment)).status).toBe(503);
     expect((await routeRequest(new Request(`https://demo.wizardgang.ai/assets/${browserAssetName('social.card')}`), environment)).status).toBe(200);
@@ -325,7 +320,6 @@ describe('offline routing matrix', () => {
     expect(response.status).toBe(303);
     expect(environment.WG_DB.records<{ state: string }>('control').get('demo')?.body.state).toBe('offline');
     expect(environment.WG_DB.events<{ eventType: string }>('audit').map((event) => event.body.eventType)).toContain('demo_state_changed');
-    expect(environment.WG_DB.events('log').length).toBeGreaterThan(0);
   });
 
   it('persists and audits the authenticated ChatGPT access switch', async () => {
@@ -349,6 +343,5 @@ describe('offline routing matrix', () => {
     expect(response.headers.get('location')).toContain('#chatgpt-crawl');
     expect(environment.WG_DB.records<{ state: string }>('control').get('crawler')?.body.state).toBe('enabled');
     expect(environment.WG_DB.events<{ eventType: string }>('audit').map((event) => event.body.eventType)).toContain('chatgpt_crawl_access_changed');
-    expect(environment.WG_DB.events<{ event_key: string }>('log').map((event) => event.body.event_key)).toContain('chatgpt_crawl_access_changed');
   });
 });

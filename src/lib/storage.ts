@@ -26,7 +26,6 @@ export const COLLECTIONS = {
   samlAssertions: 'saml-assertions',
   r2Objects: 'r2-objects',
   webhookDeliveries: 'webhook-deliveries',
-  usage: 'usage',
   health: 'health',
   availability: 'availability',
 } as const;
@@ -34,19 +33,14 @@ export const COLLECTIONS = {
 /** Event kinds. */
 export const KINDS = {
   audit: 'audit',
-  log: 'log',
 } as const;
 
 /** Every TTL in seconds. The scheduled sweeper deletes expired rows; reads treat them as absent before that. */
 export const TTL_SECONDS = {
   /** A visitor sandbox lives as long as its 24-hour demo session cookie. */
   sandbox: DAY,
-  /** Identity-sandbox REST records follow a stable per-subject namespace, so they outlive one session. */
-  identitySandbox: 30 * DAY,
   auditEvent: 30 * DAY,
-  log: 7 * DAY,
   githubDelivery: 30 * DAY,
-  usage: 30 * DAY,
   /** Raw five-minute observations are kept only until their day's availability record is final. */
   healthObservation: 2 * DAY,
   /** One availability record per UTC day; the home page sums the retained days. */

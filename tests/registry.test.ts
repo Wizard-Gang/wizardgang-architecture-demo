@@ -91,8 +91,7 @@ describe('architecture demo registry', () => {
 describe('intentional offline route policies', () => {
   it('keeps registered operational machine and recovery surfaces reachable', () => {
     for (const route of [
-      '/api/operations/health', '/api/operations/version', '/api/operations/logs',
-      '/api/operations/budget', '/offline', '/admin', '/robots.txt', '/.well-known/security.txt', '/assets/:asset',
+      '/api/operations/health', '/api/operations/version', '/offline', '/admin', '/robots.txt', '/.well-known/security.txt', '/assets/:asset',
     ]) {
       const declaration = operationalRouteRegistry.declarations.find((candidate) => candidate.pattern === route);
       expect(declaration, route).toBeDefined();
@@ -114,7 +113,6 @@ describe('intentional offline route policies', () => {
     const browserPolicy = (pattern: string) => applicationRoutes.find((route) => route.pattern === pattern)?.browserHtml;
     for (const pattern of [
       '/api/labs/edge',
-      '/api/operations/logs',
       '/mcp',
     ]) expect(browserPolicy(pattern), pattern).toBe('never');
     expect(browserPolicy('/graphql')).toBe('never');

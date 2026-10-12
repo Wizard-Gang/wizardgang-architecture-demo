@@ -73,13 +73,13 @@ describe('reachable public-history secret scanning', () => {
   });
 
   it('limits the known-safe exception to the exact fixture value and test path', () => {
-    const source = readFileSync(new URL('./logs.test.ts', import.meta.url), 'utf8');
-    const match = /\bpassword\s*:\s*(["'])([^"'\n]{8,})\1/.exec(source);
+    const source = readFileSync(new URL('./identity.test.ts', import.meta.url), 'utf8');
+    const match = /\baccess_token\s*:\s*(["'])([^"'\n]{8,})\1/.exec(source);
     expect(match).not.toBeNull();
-    const sample = 'password' + `: "${match[2]}"`;
-    expect(secretKinds(sample, ['tests/logs.test.ts'])).not.toContain('assigned credential');
+    const sample = 'access_token' + `: "${match[2]}"`;
+    expect(secretKinds(sample, ['tests/identity.test.ts'])).not.toContain('assigned credential');
     expect(secretKinds(sample, ['src/worker/config.ts'])).toContain('assigned credential');
-    expect(secretKinds('password' + ': "new-fixture-value"', ['tests/logs.test.ts'])).toContain('assigned credential');
+    expect(secretKinds('access_token' + ': "new-fixture-value"', ['tests/identity.test.ts'])).toContain('assigned credential');
   });
 
   it('fails closed for a blob beyond the bounded scan size', () => {

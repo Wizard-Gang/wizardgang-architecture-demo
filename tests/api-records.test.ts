@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { recordsResponse } from '../src/api/records';
 import { restDemoResponse } from '../src/api/rest-demo';
 import { authorize } from '../src/lib/authorization';
-import { createDemoAccessToken, type IdentitySession } from '../src/lib/identity-session';
 import type { Env } from '../src/types';
 import { SqliteD1 } from './helpers/wg-storage';
 
@@ -15,95 +13,13 @@ function env(): Env {
   };
 }
 
-async function visitorToken(environment: Env, subject: string): Promise<string> {
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + 30 * 60_000).toISOString();
-  const session: IdentitySession = {
-    identity: { provider: 'google', protocol: 'oidc', subject, displayName: subject, assurance: 'provider-authenticated', role: 'viewer', authenticatedAt: now.toISOString(), expiresAt },
-    providerPayloadLabel: 'Test', providerPayload: {}, validation: [], protocol: { name: 'OIDC', steps: [] }, issuedAt: now.toISOString(), expiresAt,
-  };
-  return (await createDemoAccessToken(environment, session)).token;
-}
-
 describe('shared application authorization', () => {
   it('allows anonymous reads but protects writes', async () => {
     const environment = env();
-    expect(await authorize(new Request('https://demo.example/api/labs/rest-records'), environment, 'demo:read')).toMatchObject({ authentication: 'anonymous' });
-    const denied = await authorize(new Request('https://demo.example/api/labs/rest-records'), environment, 'demo:write');
+    expect(await authorize(new Request('https://demo.example/graphql'), environment, 'demo:read')).toMatchObject({ authentication: 'anonymous' });
+    const denied = await authorize(new Request('https://demo.example/graphql'), environment, 'demo:write');
     expect(denied).toBeInstanceOf(Response);
     expect((denied as Response).status).toBe(401);
-  });
-});
-
-describe('D1 REST records', () => {
-  it('validates, stores, reads, and deletes a bounded record', async () => {
-    const environment = env();
-    const token = await visitorToken(environment, 'write-user');
-    const authorization = { authorization: `Bearer ${token}`, 'content-type': 'application/json' };
-    const created = await recordsResponse(new Request('https://demo.example/api/labs/rest-records', {
-      method: 'POST', headers: authorization, body: JSON.stringify({ namespace: 'public', key: 'example', value: { count: 2 } }),
-    }), environment);
-    expect(created.status).toBe(201);
-    expect(created.headers.get('x-request-id')).toMatch(/^req_[0-9a-f]{32}$/);
-
-    const conflict = await recordsResponse(new Request('https://demo.example/api/labs/rest-records', {
-      method: 'POST', headers: authorization, body: JSON.stringify({ namespace: 'public', key: 'example', value: { count: 3 } }),
-    }), environment);
-    expect(conflict.status).toBe(409);
-
-    const replaced = await recordsResponse(new Request('https://demo.example/api/labs/rest-records/example?namespace=public', {
-      method: 'PUT', headers: authorization, body: JSON.stringify({ value: { count: 4 } }),
-    }), environment, 'example');
-    expect(replaced.status).toBe(200);
-
-    const listed = await recordsResponse(new Request('https://demo.example/api/labs/rest-records', {
-      headers: { authorization: `Bearer ${token}` },
-    }), environment);
-    expect(await listed.json()).toMatchObject({ results: [{ key: 'example', value: { count: 4 } }] });
-
-    const deleted = await recordsResponse(new Request('https://demo.example/api/labs/rest-records/example?namespace=public', {
-      method: 'DELETE', headers: { authorization: `Bearer ${token}` },
-    }), environment, 'example');
-    expect(deleted.status).toBe(204);
-  });
-
-  it('derives visitor write scope server-side and isolates identities', async () => {
-    const environment = env();
-    const first = await visitorToken(environment, 'first-user');
-    const second = await visitorToken(environment, 'second-user');
-    const created = await recordsResponse(new Request('https://demo.example/api/labs/rest-records', {
-      method: 'POST', headers: { authorization: `Bearer ${first}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ namespace: 'public', key: 'private-note', value: true }),
-    }), environment);
-    const body = await created.json() as { namespace: string };
-    expect(body.namespace).toMatch(/^sandbox-[0-9a-f]{24}$/);
-    expect(body.namespace).not.toBe('public');
-
-    const other = await recordsResponse(new Request('https://demo.example/api/labs/rest-records?namespace=' + body.namespace, {
-      headers: { authorization: `Bearer ${second}` },
-    }), environment);
-    expect(await other.json()).toMatchObject({ results: [] });
-
-    const anonymous = await recordsResponse(new Request('https://demo.example/api/labs/rest-records?namespace=' + body.namespace), environment);
-    const anonymousBody = await anonymous.json() as { results: Array<{ namespace: string; key: string }>; authorization: { scope: string } };
-    expect(anonymousBody.authorization.scope).toBe('public');
-    // Anonymous readers get only the fixed public catalogue, never a sandbox's rows.
-    expect(anonymousBody.results.length).toBeGreaterThan(0);
-    expect(anonymousBody.results.every((record) => record.namespace === 'public' && record.key !== 'example')).toBe(true);
-  });
-
-  it('rejects invalid identifiers and unauthenticated writes', async () => {
-    const environment = env();
-    const denied = await recordsResponse(new Request('https://demo.example/api/labs/rest-records', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: 'ok', value: true }),
-    }), environment);
-    expect(denied.status).toBe(401);
-
-    const token = await visitorToken(environment, 'invalid-input-user');
-    const invalid = await recordsResponse(new Request('https://demo.example/api/labs/rest-records', {
-      method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ key: '../escape', value: true }),
-    }), environment);
-    expect(invalid.status).toBe(400);
   });
 });
 

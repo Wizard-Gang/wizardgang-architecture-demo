@@ -1,6 +1,5 @@
 import type { Env } from '../types';
 import { recordDemoEvent } from './audit';
-import { recordApplicationLog } from './logs';
 import { COLLECTIONS, demoRecords } from './storage';
 
 export interface DemoControl {
@@ -55,14 +54,6 @@ export async function setDemoControl(
     updatedAt
   });
 
-  await recordApplicationLog(env, {
-    level: state === 'offline' ? 'warn' : 'info',
-    source: 'admin',
-    eventKey: 'demo_state_changed',
-    message: `Demo state changed to ${state}.`,
-    route: '/admin',
-    detail: { state, publicMessage, updatedBy, updatedAt }
-  });
 
   return control;
 }

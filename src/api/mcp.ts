@@ -4,24 +4,15 @@ import {
   McpServer,
   PROTOCOL_VERSION_META_KEY,
   createMcpHandler,
-  type ServerContext,
 } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
 import type { Env } from '../types';
-import type { Principal } from '../lib/authorization';
 import { authorize } from '../lib/authorization';
 import { json } from '../lib/http';
-import { recordApplicationLog } from '../lib/logs';
 import { listDemoRecords } from '../lib/demo-records';
 
 export const MCP_SERVER_PATH = '/mcp';
 export const MCP_PROTOCOL_VERSION = '2026-07-28';
-
-interface ClientEvidence {
-  clientName: string;
-  clientVersion: string;
-  protocolVersion: string;
-}
 
 const READ_ONLY_ANNOTATIONS = {
   readOnlyHint: true,
@@ -45,83 +36,7 @@ const DemoRecord = z.object({
 
 const ListDemoRecordsOutput = z.object({ results: z.array(DemoRecord) });
 
-function safeIdentity(value: unknown, fallback: string, max = 80): string {
-  if (typeof value !== 'string') return fallback;
-  const normalized = value.replace(/[^a-zA-Z0-9._ /()-]/g, '').trim().slice(0, max);
-  return normalized || fallback;
-}
-
-function knownUserAgent(value: string | null): string {
-  if (!value) return 'unknown-mcp-client';
-  if (/claude[- /]?code/i.test(value)) return 'claude-code';
-  if (/codex/i.test(value)) return 'codex';
-  if (/modelcontextprotocol|mcp[- /]?inspector/i.test(value)) return 'mcp-inspector';
-  if (/curl/i.test(value)) return 'curl';
-  return 'unknown-mcp-client';
-}
-
-function objectValue(value: unknown): Record<string, unknown> | undefined {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : undefined;
-}
-
-async function readClientEvidence(request: Request): Promise<ClientEvidence> {
-  let body: Record<string, unknown> | undefined;
-  if (request.method === 'POST') {
-    try {
-      body = objectValue(await request.clone().json());
-    } catch {
-      // The SDK owns malformed JSON reporting; evidence extraction stays best-effort.
-    }
-  }
-
-  const params = objectValue(body?.params);
-  const meta = objectValue(params?._meta);
-  const clientInfo = objectValue(meta?.[CLIENT_INFO_META_KEY]);
-  const headerVersion = request.headers.get('mcp-protocol-version');
-  const claimedVersion = meta?.[PROTOCOL_VERSION_META_KEY];
-
-  return {
-    clientName: safeIdentity(clientInfo?.name, knownUserAgent(request.headers.get('user-agent'))),
-    clientVersion: safeIdentity(clientInfo?.version, 'unreported', 40),
-    protocolVersion: safeIdentity(headerVersion ?? claimedVersion, 'unreported', 40),
-  };
-}
-
-function principalAuthMode(principal: Principal): 'public' | 'bearer' {
-  return principal.authentication === 'anonymous' ? 'public' : 'bearer';
-}
-
-async function recordToolCall(
-  env: Env,
-  principal: Principal,
-  evidence: ClientEvidence,
-  ctx: ServerContext,
-  tool: string,
-  startedAt: number,
-  detail: Record<string, unknown> = {},
-): Promise<void> {
-  await recordApplicationLog(env, {
-    source: 'mcp',
-    eventKey: 'tool_called',
-    message: `MCP tool ${tool} completed successfully.`,
-    route: MCP_SERVER_PATH,
-    detail: {
-      clientName: evidence.clientName,
-      clientVersion: evidence.clientVersion,
-      protocolVersion: evidence.protocolVersion,
-      method: ctx.mcpReq.method,
-      tool,
-      durationMs: Math.max(0, Date.now() - startedAt),
-      result: 'success',
-      authMode: principalAuthMode(principal),
-      ...detail,
-    },
-  });
-}
-
-function createWizardGangMcpServer(env: Env, principal: Principal, evidence: ClientEvidence): McpServer {
+function createWizardGangMcpServer(env: Env): McpServer {
   const server = new McpServer(
     { name: 'wizardgang-architecture-demo', version: '2.0.0' },
     {
@@ -143,15 +58,13 @@ function createWizardGangMcpServer(env: Env, principal: Principal, evidence: Cli
       outputSchema: PingOutput,
       annotations: READ_ONLY_ANNOTATIONS,
     },
-    async (_args, ctx) => {
-      const startedAt = Date.now();
+    async () => {
       const output = {
         ok: true as const,
         server: 'wizardgang-architecture-demo' as const,
         transport: 'streamable-http' as const,
         timestamp: new Date().toISOString(),
       };
-      await recordToolCall(env, principal, evidence, ctx, 'ping', startedAt);
       return {
         content: [{ type: 'text', text: JSON.stringify(output) }],
         structuredContent: output,
@@ -170,8 +83,7 @@ function createWizardGangMcpServer(env: Env, principal: Principal, evidence: Cli
       outputSchema: ListDemoRecordsOutput,
       annotations: READ_ONLY_ANNOTATIONS,
     },
-    async ({ namespace }, ctx) => {
-      const startedAt = Date.now();
+    async ({ namespace }) => {
       const rows = await listDemoRecords(env, namespace);
       const output = {
         results: rows.map((row) => ({
@@ -180,10 +92,6 @@ function createWizardGangMcpServer(env: Env, principal: Principal, evidence: Cli
           valueJson: JSON.stringify(row.value ?? null),
         })),
       };
-      await recordToolCall(env, principal, evidence, ctx, 'list_demo_records', startedAt, {
-        namespace,
-        resultCount: output.results.length,
-      });
       return {
         content: [{ type: 'text', text: JSON.stringify(output) }],
         structuredContent: output,
@@ -206,9 +114,8 @@ export async function mcpResponse(request: Request, env: Env): Promise<Response>
 
   const principal = await authorize(request, env, 'demo:read');
   if (principal instanceof Response) return principal;
-  const evidence = await readClientEvidence(request);
   const handler = createMcpHandler(
-    () => createWizardGangMcpServer(env, principal, evidence),
+    () => createWizardGangMcpServer(env),
     { legacy: 'reject', responseMode: 'auto' },
   );
   return handler.fetch(request);

@@ -4,7 +4,6 @@ import { requireSameOrigin } from '../lib/admin-auth';
 import { collectGitDemoStatus, dispatchGitDemo, gitDemoPreflight, type VersionBump } from '../lib/git-demo';
 import { githubAppConfigured } from '../lib/github-app';
 import { json, methodNotAllowed } from '../lib/http';
-import { recordApplicationLog } from '../lib/logs';
 
 const MAX_BODY_BYTES = 2_048;
 const REQUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -30,24 +29,13 @@ function dispatchFailure(result: { status?: number; error?: string }): Response 
   });
 }
 
-async function recordDispatchAudit(env: Env, input: {
-  eventKey: string;
-  message: string;
-  requestId: string;
-  detail: Record<string, unknown>;
-}): Promise<boolean> {
-  const results = await Promise.allSettled([
-    recordDemoEvent(env, 'git', input.eventKey, input.detail),
-    recordApplicationLog(env, {
-      source: 'git',
-      eventKey: input.eventKey,
-      message: input.message,
-      route: '/api/labs/git-delivery',
-      requestId: input.requestId,
-      detail: input.detail,
-    }),
-  ]);
-  return results.every((result) => result.status === 'fulfilled');
+async function recordDispatchAudit(env: Env, input: { eventKey: string; detail: Record<string, unknown> }): Promise<boolean> {
+  try {
+    await recordDemoEvent(env, 'git', input.eventKey, input.detail);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function gitDemoPreflightResponse(request: Request, env: Env): Promise<Response> {
@@ -125,8 +113,6 @@ export async function gitDemoStartResponse(request: Request, env: Env): Promise<
   if (!dispatched.ok) return dispatchFailure(dispatched);
   const auditRecorded = await recordDispatchAudit(env, {
     eventKey: 'live_demo_requested',
-    message: `Authenticated operator requested a live ${bump} release demonstration.`,
-    requestId,
     detail: { operation: 'start', bump, currentVersion: preflight.currentVersion, targetVersion: preflight.targetVersion, authorizedRole: 'demo-admin' },
   });
   return json({
@@ -178,8 +164,6 @@ export async function gitDemoReleaseResponse(request: Request, env: Env): Promis
   if (!dispatched.ok) return dispatchFailure(dispatched);
   const auditRecorded = await recordDispatchAudit(env, {
     eventKey: 'live_demo_release_requested',
-    message: `Authenticated operator requested merge and release for live demo PR #${pullRequest}.`,
-    requestId,
     detail: { operation: 'release', pullRequest, targetVersion: status.targetVersion, authorizedRole: 'demo-admin' },
   });
   return json({ accepted: true, requestId, pullRequest, targetVersion: status.targetVersion, auditRecorded }, {

@@ -48,9 +48,6 @@ describe('platform laboratory declarative routing', () => {
       '/api/labs/r2-reset',
       '/api/labs/rest-demo-records',
       '/api/labs/rest-demo-records/:id',
-      '/api/labs/rest-records',
-      '/api/labs/rest-records/:id',
-      '/api/labs/rest-records-reset',
       '/api/labs/webhook-demo',
       '/api/labs/webhook-events',
       '/api/labs/webhook-reset',
@@ -77,14 +74,13 @@ describe('platform laboratory declarative routing', () => {
 
     expect(routes.find((route) => route.id === 'platform.workers.compute')?.storage.kind).toBe('stateless-compute');
     expect(routes.find((route) => route.id === 'platform.durable-objects.counter')?.storage.kind).toBe('durable-object');
-    expect(routes.find((route) => route.id === 'platform.d1.records')?.storage.kind).toBe('d1');
+    expect(routes.find((route) => route.id === 'platform.d1.rest-demo-records')?.storage.kind).toBe('d1');
     expect(routes.find((route) => route.id === 'platform.r2.files')?.storage).toMatchObject({
       kind: 'r2',
       binding: 'WG_R2',
       metadataBinding: 'WG_DB',
     });
     expect(routes.find((route) => route.id === 'platform.d1.rest-demo-records')?.documentation.description).toContain('browser tutorial');
-    expect(routes.find((route) => route.id === 'platform.d1.records')?.documentation.description).toContain('machine contract');
   });
 
   it('rejects a laboratory API that is noncanonical or lacks a method schema', () => {
@@ -172,12 +168,7 @@ it('returns the ordinary 404 for every retired platform ?view= URL', async () =>
     expect(response.status).toBe(400);
   });
 
-  it('preserves authorization and same-origin controls on canonical lab requests', async () => {
-    const unauthorized = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/rest-records-reset', {
-      method: 'POST',
-    }), onlineEnv);
-    expect(unauthorized.status).toBe(401);
-
+  it('preserves same-origin controls on canonical lab requests', async () => {
     const crossOrigin = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/d1-reset', {
       method: 'POST',
       headers: { origin: 'https://example.test' },

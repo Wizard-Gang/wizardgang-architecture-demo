@@ -4,7 +4,7 @@
 
 Goal: a clean restart. Delete the assurance, evidence and documentation system, APIs that overlap or have no caller, and the operational machinery around them. Compliance will be rebuilt later from zero.
 
-- DEMO-514 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
+- DEMO-515 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
 - Delete, don't consolidate. Add no tombstone tests, "removed route" fixtures, aliases, redirects, compatibility shims, replacement docs or new validators. A removed route returns the ordinary 404 and needs no test proving it.
 - Delete a test when its subject is deleted. Edit a shared test only to drop cases for removed things.
 - Regenerate the route manifest, asset manifest and OpenAPI document with their generators; never hand-edit them.
@@ -12,24 +12,6 @@ Goal: a clean restart. Delete the assurance, evidence and documentation system, 
 - A task is done when `git grep` for the names it removed finds nothing outside `platform/` and `package-lock.json`, and exact-head CI is green on `validate` and `browser`.
 
 ## Open tasks
-
-### DEMO-514 — [API] Remove redundant and uncalled APIs
-
-- Dependency: DEMO-513
-- Why: Several API surfaces overlap or have no caller, and each one carries its own route declaration, OpenAPI entry, tests and logging.
-- Scope: `POST /api/operations/budget`; `GET /api/operations/logs`; `/api/labs/rest-records`, `/api/labs/rest-records/{id}` and `/api/labs/rest-records-reset`; `GET /api/labs/rest-demo-openapi.json`.
-- Non-goals: Do not remove or redesign the D1, R2, REST, GraphQL, webhook (including the live Git delivery feed), identity, MCP, edge, Workers or Durable Objects demos. Do not change baseline's shared D1 schema.
-- Acceptance: The removed routes return 404. The REST demo is described by the single `/api/openapi.json`. MCP `list_demo_records` reads records a demo actually writes. The D1 and REST demos still pass the browser audit.
-- Validation: Focused API-records, D1-lab, MCP-client, contracts and router tests; regenerated OpenAPI and route manifest; final exact-head CI.
-- Authorities: src/platform/route-capabilities/d1.ts; src/routing/operational-routes.ts; src/api/mcp.ts; src/api/openapi.ts; src/api/rest-demo-openapi.ts; contracts/openapi/openapi.json; contracts/mcp/tools.json.
-
-#### Work
-
-- [ ] Delete `/api/operations/budget`, `src/api/billing.ts`, `src/lib/billing.ts` and the `BILLING_DEMO_MONTHLY_BUDGET_USD` variable. No UI or client calls it.
-- [ ] Delete `/api/operations/logs` and its handler; no UI or client reads it. Then remove the `recordApplicationLog` writes, log TTL handling and `src/lib/logs.ts` unless `/admin` still reads them (`/admin` goes in DEMO-515).
-- [ ] Delete the third D1 record API: `/api/labs/rest-records`, `/api/labs/rest-records/{id}`, `/api/labs/rest-records-reset`, `src/api/records.ts` and `src/lib/demo-records.ts`. The D1 demo uses `d1-users`/`d1-tasks` and the REST demo uses `rest-demo-records`. Point MCP `list_demo_records` at the REST demo records.
-- [ ] Delete the second OpenAPI document, `/api/labs/rest-demo-openapi.json`. Fold the REST demo operations into `/api/openapi.json` and render the REST demo from it.
-- [ ] Delete the matching tests and OpenAPI/MCP contract entries, and regenerate the artifacts.
 
 ### DEMO-515 — [OPS] Remove offline mode, admin controls and availability history
 

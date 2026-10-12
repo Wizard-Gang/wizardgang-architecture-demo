@@ -87,7 +87,6 @@ describe('complete declarative application routing', () => {
 
   it('resolves internal URLs by stable route ID, including encoded parameters', () => {
     expect(routeUrl('interfaces.openapi.json')).toBe('/api/openapi.json');
-    expect(routeUrl('interfaces.rest.openapi.json')).toBe('/api/labs/rest-demo-openapi.json');
     const parameterized = applicationRouteRegistry.declarations.find((route) => route.pattern.includes(':'));
     expect(parameterized).toBeTruthy();
     const names = [...parameterized!.pattern.matchAll(/:([A-Za-z_][A-Za-z0-9_]*)/g)].map((match) => match[1]);

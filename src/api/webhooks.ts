@@ -3,7 +3,6 @@ import { recordDemoEvent } from '../lib/audit';
 import { requireSameOrigin } from '../lib/admin-auth';
 import { ensureDemoSession, withDemoSession, type DemoSession } from '../lib/demo-session';
 import { HttpError, errorResponse, json, methodNotAllowed } from '../lib/http';
-import { recordApplicationLog } from '../lib/logs';
 import { COLLECTIONS, TTL_SECONDS, demoRecords } from '../lib/storage';
 
 const encoder = new TextEncoder();
@@ -135,7 +134,6 @@ async function acceptGitHubShape(request: Request, env: Env, options: { provider
     ? { owner: GITHUB_OWNER, ttlSeconds: TTL_SECONDS.githubDelivery }
     : { owner: options.sessionId ?? GITHUB_OWNER, ttlSeconds: TTL_SECONDS.sandbox });
   const event = await recordDemoEvent(env, 'webhooks', `${options.provider}_webhook_received`, { provider: options.provider, eventType, deliveryId, repository, payloadSha256: digest });
-  await recordApplicationLog(env, { source: 'webhooks', eventKey: `${options.provider}_webhook_received`, message: `Verified ${options.provider} webhook ${deliveryId} was accepted.`, route: options.provider === 'github' ? '/webhooks/github' : '/api/labs/webhook-demo', detail: { eventType, deliveryId, repository, eventId: event.id } });
   return json({ accepted: true, provider: options.provider, deliveryId, eventType, action, repository, actor, summary, receivedAt, payloadSha256: digest, auditEventId: event.id }, { status: 202, headers: { 'cache-control': 'no-store' } });
 }
 
