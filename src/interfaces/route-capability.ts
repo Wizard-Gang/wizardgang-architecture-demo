@@ -59,10 +59,9 @@ export function interfaceIdentityRoute(input: InterfaceIdentityRouteInput): Inte
     authorization: input.authorization ?? { mode: 'none' },
     visibility: input.visibility ?? 'public',
     sameOrigin: input.sameOrigin ?? { mode: 'not-required' },
-    offline: { mode: 'gated' },
     cache: input.cache ?? { mode: 'no-store' },
     crawler: {
-      crawling: input.crawling ?? 'controlled',
+      crawling: input.crawling ?? 'allow',
       indexing: input.indexing ?? (input.kind === 'page' ? 'allow' : 'deny'),
     },
     browserHtml: input.browserHtml ?? (input.kind === 'page' ? 'page' : 'never'),

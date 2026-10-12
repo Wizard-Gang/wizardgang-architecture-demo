@@ -18,7 +18,7 @@ function insertEvent(db: SqliteD1, kind: string, at: number, body: unknown): voi
 describe('demo storage on the shared wizardgang tables', () => {
   it('scopes every row to app demo and every object to demo/', async () => {
     const environment = env();
-    await demoRecords(environment).put(COLLECTIONS.control, 'demo', { state: 'online' });
+    await demoRecords(environment).put(COLLECTIONS.demoRecords, 'session/key', { key: 'key' });
     await demoEvents(environment).append(KINDS.audit, { demoId: 'test' }, { ttlSeconds: TTL_SECONDS.auditEvent });
     await demoBucket(environment)!.put('uploads/session/file.txt', 'bytes');
     const apps = environment.WG_DB.db.prepare('SELECT DISTINCT app FROM records UNION SELECT DISTINCT app FROM events').all() as Array<{ app: string }>;

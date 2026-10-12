@@ -8,10 +8,6 @@
     {
       "name": "openapi-console",
       "path": "/demos#rest"
-    },
-    {
-      "name": "homepage-availability-proof",
-      "path": "/"
     }
   ],
   "narrowViewportPaths": [

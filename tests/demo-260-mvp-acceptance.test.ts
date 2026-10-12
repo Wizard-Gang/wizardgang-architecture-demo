@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import auditConfig from '../config/site-audit-states.json';
 import routeManifest from '../src/generated/route-manifest.json';
-import { AVAILABILITY_RETENTION_DAYS } from '../src/api/operations';
 import { demonstrations } from '../src/demos/demos-page';
-import { runScheduledOperations } from '../src/index';
 import { routeRequest } from '../src/router';
 import { browserAssetName } from '../src/ui/asset-map';
 import {
@@ -16,7 +14,7 @@ import {
   sitemapPaths,
 } from '../src/routing/navigation';
 import type { Env } from '../src/types';
-import { demoDatabase, type SqliteD1 } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 import {
   removedHtml404Pathnames,
   retiredOperationsHtmlPathname,
@@ -24,14 +22,9 @@ import {
 
 const repositoryUrl = 'https://github.com/Wizard-Gang/wizardgang-architecture-demo';
 
-function environment(offline = false): Env {
+function environment(): Env {
   return {
-    WG_DB: demoDatabase({
-      demo: offline ? 'offline' : 'online',
-      message: offline ? 'Acceptance maintenance window' : 'Available.',
-      crawler: 'enabled',
-      availability: { verified: 101, operational: 99, intentional: 1 },
-    }),
+    WG_DB: new SqliteD1(),
     ASSETS: {
       async fetch(request) {
         const contentType = new URL(request.url).pathname.endsWith('.png') ? 'image/png' : 'application/octet-stream';
@@ -57,7 +50,7 @@ async function request(
   return routeRequest(new Request(new URL(path, 'https://demo.example'), {
     ...init,
     headers,
-  }), env, { adminAuthorized: headers.get('authorization') === `Basic ${Buffer.from('operator:test-admin-password').toString('base64')}` });
+  }), env);
 }
 
 async function page(routeId: string, env = environment()): Promise<{ response: Response; html: string }> {
@@ -104,15 +97,8 @@ describe('DEMO-260 MVP acceptance contract', () => {
     expect(pages.map((route) => route.id).sort()).toEqual([
       'demos.index',
       'interfaces.frontend.index',
-      'operations.admin',
-      'operations.offline',
     ]);
-    expect(pages.filter((route) => route.visibility === 'public').map((route) => route.id).sort()).toEqual([
-      'demos.index',
-      'interfaces.frontend.index',
-      'operations.offline',
-    ]);
-    expect(pages.find((route) => route.id === 'operations.admin')?.visibility).toBe('private');
+    expect(pages.every((route) => route.visibility === 'public')).toBe(true);
     expect(applicationRouteRegistry.declarations.some((route) => route.id === 'operations.index')).toBe(false);
     expect(applicationRouteRegistry.declarations.some((route) => route.pattern === retiredOperationsHtmlPathname)).toBe(false);
 
@@ -150,8 +136,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
       'Explore demos',
       'aria-label="Live proof"',
       'Current service state',
-      '99.000%',
-      '100 measured intervals · planned offline excluded',
       'v0.21.0-test',
       'Commit abcdef0',
     ]) expect(main).toContain(required);
@@ -254,12 +238,11 @@ describe('DEMO-260 MVP acceptance contract', () => {
     expect(policy).toContain(`Policy: ${repositoryUrl}/security/policy`);
   });
 
-  it('preserves operational machine contracts, collection, and retention', async () => {
+  it('preserves operational machine contracts', async () => {
     const routeIds = new Set(applicationRouteRegistry.declarations.map((route) => route.id));
     for (const id of [
       'operations.health',
       'operations.version',
-      'operations.robots',
       'operations.sitemap',
       'operations.security-txt',
       'operations.assets',
@@ -284,64 +267,12 @@ describe('DEMO-260 MVP acceptance contract', () => {
       branch: 'main',
     });
 
-    const robots = await request(routeUrl('operations.robots'));
-    expect(robots.status).toBe(200);
-    expect(await robots.text()).toContain('User-agent:');
-
     const sitemap = await request(routeUrl('operations.sitemap'));
     expect(sitemap.status).toBe(200);
     expect(await sitemap.text()).not.toContain(retiredOperationsHtmlPathname);
 
     const asset = await request(routeUrl('operations.assets', { asset: browserAssetName('social.card') }));
     expect(asset.status).toBe(200);
-
-    const scheduledEnv = environment();
-    const database = scheduledEnv.WG_DB as SqliteD1;
-    const scheduledTime = Date.parse('2026-09-15T00:00:00.000Z');
-    await runScheduledOperations(scheduledEnv, scheduledTime);
-    expect(AVAILABILITY_RETENTION_DAYS).toBe(365);
-    expect([...database.records('health').keys()]).toEqual(['2026-09-15T00:00:00.000Z']);
-    expect(database.records('availability').get('2026-09-15')?.body).toEqual({ verified: 1, operational: 1, intentional: 0 });
-  });
-
-  it('preserves hidden offline/admin boundaries and declared offline behavior', async () => {
-    const offlineEnv = environment(true);
-
-    const retired = await request(retiredOperationsHtmlPathname, offlineEnv);
-    expect(retired.status).toBe(404);
-    expect(retired.headers.get('location')).toBeNull();
-
-    const offline = await request(routeUrl('operations.offline'), offlineEnv);
-    expect(offline.status).toBe(503);
-    expect(await offline.text()).toContain('Acceptance maintenance window');
-
-    const unauthenticatedAdmin = await request(routeUrl('operations.admin'), offlineEnv);
-    expect(unauthenticatedAdmin.status).toBe(401);
-
-    const authenticatedAdmin = await request(routeUrl('operations.admin'), offlineEnv, {
-      headers: {
-        accept: 'text/html',
-        authorization: `Basic ${Buffer.from('operator:test-admin-password').toString('base64')}`,
-      },
-    });
-    expect(authenticatedAdmin.status).toBe(200);
-    expect(authenticatedAdmin.headers.get('content-type')).toContain('text/html');
-
-    const health = await request(routeUrl('operations.health'), offlineEnv, {
-      headers: { accept: 'application/json' },
-    });
-    expect(health.status).toBe(503);
-    expect(health.headers.get('location')).toBeNull();
-    expect(await health.json()).toMatchObject({ status: 'offline', demo: { state: 'offline' } });
-
-    const gatedSitemap = await request(routeUrl('operations.sitemap'), offlineEnv, {
-      headers: { accept: 'application/json' },
-    });
-    expect(gatedSitemap.status).toBe(503);
-    expect(await gatedSitemap.json()).toMatchObject({ status: 'offline' });
-
-    const availableSecurityTxt = await request(routeUrl('operations.security-txt'), offlineEnv);
-    expect(availableSecurityTxt.status).toBe(200);
   });
 
   it('keeps accessibility/localization audit inventory synced to remaining public HTML', () => {
@@ -361,7 +292,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
     expect(publicPageIds).toEqual([
       'demos.index',
       'interfaces.frontend.index',
-      'operations.offline',
     ]);
     expect(manifestPublicPageIds).toEqual(publicPageIds);
 

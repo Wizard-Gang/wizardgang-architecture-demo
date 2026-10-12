@@ -140,18 +140,3 @@ export class MemoryR2 {
 export function wgStorage(): { WG_DB: SqliteD1; WG_R2: MemoryR2 } {
   return { WG_DB: new SqliteD1(), WG_R2: new MemoryR2() };
 }
-
-/** A shared database already holding the demo's control records and, optionally, availability counts. */
-export function demoDatabase(options: {
-  demo?: 'online' | 'offline';
-  message?: string;
-  crawler?: 'enabled' | 'disabled';
-  availability?: { verified: number; operational: number; intentional: number };
-} = {}): SqliteD1 {
-  const db = new SqliteD1();
-  const demo = options.demo ?? 'online';
-  db.putRecord('control', 'demo', { state: demo, publicMessage: options.message ?? (demo === 'online' ? 'Available.' : 'Planned maintenance.'), updatedAt: '2026-09-01T00:00:00.000Z', updatedBy: 'test' });
-  db.putRecord('control', 'crawler', { state: options.crawler ?? 'disabled', updatedAt: '2026-09-01T00:00:00.000Z', updatedBy: 'test' });
-  if (options.availability) db.putRecord('availability', '2026-09-01', options.availability);
-  return db;
-}

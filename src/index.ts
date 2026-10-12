@@ -6,7 +6,6 @@ import {
 } from '#wg-edge';
 import type { Env } from './types';
 import { routeRequest } from './router';
-import { collectHealth } from './api/operations';
 import { sweepDemoStorage } from './lib/storage';
 export { DemoCoordinator } from './durable/demo-coordinator';
 
@@ -30,8 +29,7 @@ export const DEMO_ROBOTS = [
 ].join('\n');
 
 export async function runScheduledOperations(env: Env, scheduledTime = Date.now()): Promise<void> {
-  await collectHealth(env, true, scheduledTime);
-  // Expired demo records and events (sessions, sandboxes, raw health observations) leave the shared tables here.
+  // Expired demo records and events (sessions, sandboxes, audit events) leave the shared tables here.
   await sweepDemoStorage(env, scheduledTime);
 }
 

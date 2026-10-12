@@ -23,9 +23,8 @@ export const durableObjectsLaboratoryCapability = definePlatformLaboratoryCapabi
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'not-required' },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Durable Object counter laboratory API',
         description: 'Reads or increments the public counter coordinated and persisted by a Durable Object.',

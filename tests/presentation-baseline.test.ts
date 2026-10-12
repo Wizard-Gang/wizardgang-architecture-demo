@@ -15,7 +15,7 @@ import {
   type ApplicationRouteDeclaration,
 } from '../src/routing/application-routes';
 import type { Env } from '../src/types';
-import { demoDatabase } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
 const ORIGIN = 'https://demo.wizardgang.ai';
 const TEST_SHA = '0123456789abcdef0123456789abcdef01234567';
@@ -39,9 +39,6 @@ const EXPECTED_ENGLISH_SURFACE_IDS = [
   'page:demos.index',
   'audit:accessibility-lab',
   'audit:openapi-console',
-  'audit:homepage-availability-proof',
-  'page:operations.admin',
-  'page:operations.offline',
   'page:ordinary-404',
   'demo:d1',
   'demo:r2',
@@ -64,9 +61,6 @@ const ENGLISH_DOCUMENT_CONTRACT = {
   'page:demos.index': ['demos.index', 'Architecture Demos · WizardGang Architecture Demo', 'Architecture Demos', 'https://demo.wizardgang.ai/demos'],
   'audit:accessibility-lab': ['demos.index', 'Architecture Demos · WizardGang Architecture Demo', 'Architecture Demos', 'https://demo.wizardgang.ai/demos'],
   'audit:openapi-console': ['demos.index', 'Architecture Demos · WizardGang Architecture Demo', 'Architecture Demos', 'https://demo.wizardgang.ai/demos'],
-  'audit:homepage-availability-proof': ['interfaces.frontend.index', 'Architecture · WizardGang Architecture Demo', 'Architecture you can inspect.', 'https://demo.wizardgang.ai/'],
-  'page:operations.admin': ['operations.admin', 'Demo Admin · WizardGang Architecture Demo', 'Demo Admin', 'https://demo.wizardgang.ai/admin'],
-  'page:operations.offline': ['operations.offline', 'Demo online · WizardGang Architecture Demo', 'The demo is running.', 'https://demo.wizardgang.ai/offline'],
   'page:ordinary-404': [null, 'Not found · WizardGang Architecture Demo', 'That route does not exist.', 'https://demo.wizardgang.ai/'],
 } as const;
 
@@ -92,9 +86,6 @@ const EXPECTED_ARABIC_SURFACE_IDS = [
   "page:demos.index",
   "audit:accessibility-lab",
   "audit:openapi-console",
-  "audit:homepage-availability-proof",
-  "page:operations.admin",
-  "page:operations.offline",
   "page:ordinary-404",
   "demo:d1",
   "demo:r2",
@@ -117,9 +108,6 @@ const ARABIC_DOCUMENT_CONTRACT = {
   "page:demos.index": ["demos.index", "العروض التوضيحية للهندسة المعمارية · عرض بنية WizardGang", "العروض التوضيحية للهندسة المعمارية", "https://demo.wizardgang.ai/demos"],
   "audit:accessibility-lab": ["demos.index", "العروض التوضيحية للهندسة المعمارية · عرض بنية WizardGang", "العروض التوضيحية للهندسة المعمارية", "https://demo.wizardgang.ai/demos"],
   "audit:openapi-console": ["demos.index", "العروض التوضيحية للهندسة المعمارية · عرض بنية WizardGang", "العروض التوضيحية للهندسة المعمارية", "https://demo.wizardgang.ai/demos"],
-  "audit:homepage-availability-proof": ["interfaces.frontend.index", "البنية · عرض بنية WizardGang", "البنية يمكنك فحصها.", "https://demo.wizardgang.ai/"],
-  "page:operations.admin": ["operations.admin", "Demo Admin · عرض بنية WizardGang", "Demo Admin", "https://demo.wizardgang.ai/admin"],
-  "page:operations.offline": ["operations.offline", "Demo online · عرض بنية WizardGang", "العرض يعمل.", "https://demo.wizardgang.ai/offline"],
   "page:ordinary-404": [null, "غير موجود · عرض بنية WizardGang", "هذا المسار غير موجود.", "https://demo.wizardgang.ai/"],
 } as const;
 
@@ -158,9 +146,6 @@ const COMPACT_TEXT_CONTRACT = {
       "page:demos.index": "Demostraciones de arquitectura",
       "audit:accessibility-lab": "Demostraciones de arquitectura",
       "audit:openapi-console": "Demostraciones de arquitectura",
-      "audit:homepage-availability-proof": "Arquitectura que puedes inspeccionar.",
-      "page:operations.admin": "Demo Admin",
-      "page:operations.offline": "La demostración está en funcionamiento.",
       "page:ordinary-404": "Esa ruta no existe.",
       "demo:d1": "Base de datos Cloudflare D1",
       "demo:r2": "Almacenamiento Cloudflare R2",
@@ -194,9 +179,6 @@ const COMPACT_TEXT_CONTRACT = {
       "page:demos.index": "Démonstrations d'architecture",
       "audit:accessibility-lab": "Démonstrations d'architecture",
       "audit:openapi-console": "Démonstrations d'architecture",
-      "audit:homepage-availability-proof": "Architecture que vous pouvez inspecter.",
-      "page:operations.admin": "Demo Admin",
-      "page:operations.offline": "La démonstration fonctionne.",
       "page:ordinary-404": "Cette route n’existe pas.",
       "demo:d1": "Base de données Cloudflare D1",
       "demo:r2": "Stockage Cloudflare R2",
@@ -230,9 +212,6 @@ const COMPACT_TEXT_CONTRACT = {
       "page:demos.index": "Architekturdemos",
       "audit:accessibility-lab": "Architekturdemos",
       "audit:openapi-console": "Architekturdemos",
-      "audit:homepage-availability-proof": "Architektur zum Nachvollziehen.",
-      "page:operations.admin": "Demo Admin",
-      "page:operations.offline": "Die Demo läuft.",
       "page:ordinary-404": "Diese Route existiert nicht.",
       "demo:d1": "Cloudflare-D1-Datenbank",
       "demo:r2": "Cloudflare-R2-Speicher",
@@ -266,9 +245,6 @@ const COMPACT_TEXT_CONTRACT = {
       "page:demos.index": "アーキテクチャのデモ",
       "audit:accessibility-lab": "アーキテクチャのデモ",
       "audit:openapi-console": "アーキテクチャのデモ",
-      "audit:homepage-availability-proof": "アーキテクチャ を検証できます。",
-      "page:operations.admin": "Demo Admin",
-      "page:operations.offline": "デモは稼働中です。",
       "page:ordinary-404": "そのルートは存在しません。",
       "demo:d1": "Cloudflare D1 データベース",
       "demo:r2": "Cloudflare R2 ストレージ",
@@ -291,22 +267,6 @@ const COMPACT_TEXT_CONTRACT = {
 const COMPACT_TEXT_FALLBACK_MARKERS = {
   "page:interfaces.frontend.index": [
     "Explore demos"
-  ],
-  "page:operations.admin": [
-    "Demo Admin",
-    "Public demo state",
-    "ChatGPT web access",
-    "OpenAI crawler documentation",
-    "Enable ChatGPT access",
-    "Disable ChatGPT access"
-  ],
-  "page:operations.offline": [
-    "Still available",
-    "Continue to /",
-    "View system health",
-    "Public source",
-    "Health JSON",
-    "Version JSON"
   ],
   "page:ordinary-404": [
     "Home",
@@ -332,35 +292,27 @@ const COMPACT_TEXT_FALLBACK_MARKERS = {
 } as const;
 
 const NOINDEX_ARABIC_SURFACES = new Set([
-  'page:operations.admin',
-  'page:operations.offline',
   'page:ordinary-404',
   ...Object.keys(ARABIC_FRAGMENT_CONTRACT),
 ]);
 
 const NO_REFERRER_ARABIC_SURFACES = new Set([
-  'page:operations.admin',
-  'page:operations.offline',
   'page:ordinary-404',
 ]);
 
 const NOINDEX_ENGLISH_SURFACES = new Set([
-  'page:operations.admin',
-  'page:operations.offline',
   'page:ordinary-404',
   ...Object.keys(ENGLISH_FRAGMENT_CONTRACT),
 ]);
 
 const NO_REFERRER_ENGLISH_SURFACES = new Set([
-  'page:operations.admin',
-  'page:operations.offline',
   'page:ordinary-404',
 ]);
 
 
 function environment(): Env {
   return {
-    WG_DB: demoDatabase({ crawler: 'enabled', availability: { verified: 101, operational: 99, intentional: 1 } }),
+    WG_DB: new SqliteD1(),
     WG_SESSION_KEY: 'presentation-session-secret-with-32-characters',
     GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
     GITHUB_BRANCH: 'main',
@@ -375,15 +327,13 @@ interface Surface {
   id: string;
   path: string;
   expectedStatus: number;
-  authorization?: string;
 }
 
 function publicPageSurfaces(): Surface[] {
   return (applicationRouteRegistry.declarations as readonly ApplicationRouteDeclaration[])
     .filter((route) => route.kind === 'page'
       && route.visibility === 'public'
-      && route.methods.includes('GET')
-      && route.id !== 'operations.offline')
+      && route.methods.includes('GET'))
     .map((route) => ({
       id: `page:${route.id}`,
       path: routeUrl(route.id),
@@ -400,17 +350,6 @@ function surfaces(): Surface[] {
       path: state.path,
       expectedStatus: 200,
     })),
-    {
-      id: 'page:operations.admin',
-      path: routeUrl('operations.admin'),
-      expectedStatus: 200,
-      authorization: `Basic ${btoa('operator:test-admin-password')}`,
-    },
-    {
-      id: 'page:operations.offline',
-      path: routeUrl('operations.offline'),
-      expectedStatus: 200,
-    },
     {
       id: 'page:ordinary-404',
       path: '/presentation-baseline-missing',
@@ -670,8 +609,7 @@ function textInventory(document: Document) {
 async function renderSurface(surface: Surface, locale: string) {
   const path = localizedPath(surface.path, locale);
   const headers = new Headers({ accept: 'text/html' });
-  if (surface.authorization) headers.set('authorization', surface.authorization);
-  const response = await routeRequest(new Request(new URL(path, ORIGIN), { headers }), environment(), { adminAuthorized: Boolean(surface.authorization) });
+  const response = await routeRequest(new Request(new URL(path, ORIGIN), { headers }), environment());
   expect(response.status, `${surface.id} ${locale}`).toBe(surface.expectedStatus);
   const html = await response.text();
   const parsed = parseDocument(html, new URL(path, ORIGIN).toString());
@@ -945,8 +883,7 @@ describe('DEMO-338 inline-code boundary', () => {
       for (const surface of surfaces()) {
         const path = localizedPath(surface.path, locale);
         const headers = new Headers({ accept: 'text/html' });
-        if (surface.authorization) headers.set('authorization', surface.authorization);
-        requests.push({ label: `${surface.id} ${locale}`, response: await routeRequest(new Request(new URL(path, ORIGIN), { headers }), environment(), { adminAuthorized: Boolean(surface.authorization) }) });
+        requests.push({ label: `${surface.id} ${locale}`, response: await routeRequest(new Request(new URL(path, ORIGIN), { headers }), environment()) });
       }
     }
     for (const mode of ['accessible', 'broken']) {

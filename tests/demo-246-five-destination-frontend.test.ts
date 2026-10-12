@@ -60,7 +60,6 @@ describe('public frontend shell', () => {
     expect(main).not.toContain(`href="${retiredOperationsHtmlPathname}"`);
     expect(main).toContain('aria-label="Live proof"');
     expect(main).toContain('Current service state');
-    expect(main).toContain('Scheduled observations');
     expect(main).toContain('v0.test');
     expect(main).toContain('Commit 1234567');
     expect(main).not.toContain('live destinations');
@@ -95,13 +94,6 @@ describe('public frontend shell', () => {
     expect(publicIndexableBrowserPaths).toEqual(expected);
     expect([...sitemapPaths()].sort()).toEqual(expected);
     expect(publicIndexableBrowserPaths).not.toContain(retiredOperationsHtmlPathname);
-
-    expect(declarations.find((route) => route.pattern === '/admin')).toMatchObject({
-      kind: 'page', visibility: 'private', crawler: { indexing: 'deny' },
-    });
-    expect(declarations.find((route) => route.pattern === '/offline')).toMatchObject({
-      kind: 'page', visibility: 'public', crawler: { indexing: 'deny' },
-    });
   });
 
   it('preserves representative machine, API, protocol, identity, and crawler declarations', () => {
@@ -115,7 +107,6 @@ describe('public frontend shell', () => {
       ['operations.health', '/api/operations/health', ['GET'], 'api'],
       ['operations.version', '/api/operations/version', ['GET'], 'api'],
       ['operations.security-txt', '/.well-known/security.txt', ['GET', 'HEAD'], 'protocol'],
-      ['operations.robots', '/robots.txt', ['GET', 'HEAD'], 'protocol'],
       ['operations.sitemap', '/sitemap.xml', ['GET'], 'protocol'],
     ] as const;
 

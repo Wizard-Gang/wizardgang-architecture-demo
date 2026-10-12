@@ -4,7 +4,7 @@
 
 Goal: a clean restart. Delete the assurance, evidence and documentation system, APIs that overlap or have no caller, and the operational machinery around them. Compliance will be rebuilt later from zero.
 
-- DEMO-515 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
+- DEMO-516 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
 - Delete, don't consolidate. Add no tombstone tests, "removed route" fixtures, aliases, redirects, compatibility shims, replacement docs or new validators. A removed route returns the ordinary 404 and needs no test proving it.
 - Delete a test when its subject is deleted. Edit a shared test only to drop cases for removed things.
 - Regenerate the route manifest, asset manifest and OpenAPI document with their generators; never hand-edit them.
@@ -12,24 +12,6 @@ Goal: a clean restart. Delete the assurance, evidence and documentation system, 
 - A task is done when `git grep` for the names it removed finds nothing outside `platform/` and `package-lock.json`, and exact-head CI is green on `validate` and `browser`.
 
 ## Open tasks
-
-### DEMO-515 — [OPS] Remove offline mode, admin controls and availability history
-
-- Dependency: DEMO-514
-- Why: Per-route offline declarations, the `/offline` recovery page, admin availability and crawler toggles, and 365-day scheduled availability history are operational ceremony for a demo site.
-- Scope: `/offline`; the `offline` field on every route declaration and capability; `src/lib/demo-control.ts`; `src/lib/crawler-control.ts`; the `/admin` page (`src/ui/admin.tsx`, `src/browser/admin.ts`) and its availability and crawler controls; scheduled `collectHealth`, availability retention and the homepage's measured-availability panel.
-- Non-goals: Keep the live webhook demo working: the `wg-ops` Basic-auth provider, `src/lib/admin-auth.ts`, `/admin/api/labs/git-delivery`, `/admin/api/labs/git-release`, `/api/labs/git-delivery`, `.github/workflows/git-demo.yml` and its GitHub App all stay. Keep the cron trigger for `sweepDemoStorage`, which removes expired shared-D1 rows. Keep `/api/operations/health` and `/api/operations/version` as live reads. Do not change the protected deployment environment.
-- Acceptance: `/offline` and the `/admin` page return 404 while the live webhook demo still starts and releases through the `wg-ops`-authenticated lab APIs; `robots.txt` is static; route declarations have no offline field; the cron only sweeps expired rows; the homepage shows live health and version only.
-- Validation: Focused operations, router, route-registry, worker-shell, storage and git-demo tests; browser audit; final exact-head CI.
-- Authorities: src/index.ts; src/router.ts; src/routing/registry.ts; src/routing/operational-routes.ts; src/api/operations.ts; src/ui/home.tsx; wrangler.jsonc.
-
-#### Work
-
-- [ ] Remove offline gating from the router and the `offline` field from route declarations, capabilities and the manifest serializer; delete `/offline` and `src/ui/offline.tsx`.
-- [ ] Replace dynamic crawler control with a static `robots.txt`; delete `src/lib/crawler-control.ts` and `src/lib/demo-control.ts`.
-- [ ] Delete the `/admin` page and its browser module; keep `wg-ops` authentication for the live Git delivery lab APIs.
-- [ ] Remove scheduled health collection and availability history; render live health and version on the homepage.
-- [ ] Delete `availability-history`, `operations-acceptance`, `demo-329` and the offline and admin-page cases in shared tests.
 
 ### DEMO-516 — [BUILD] Reduce Release to tag, deploy and publish
 

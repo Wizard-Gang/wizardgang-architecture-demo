@@ -18,13 +18,13 @@ import {
   type ApplicationRouteDeclaration,
 } from '../src/routing/application-routes';
 import type { Env } from '../src/types';
-import { demoDatabase } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
 const shellStyles = readFileSync('src/styles/shell.css', 'utf8');
 
 function environment(): Env {
   return {
-    WG_DB: demoDatabase({ crawler: 'enabled' }),
+    WG_DB: new SqliteD1(),
     GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
     GITHUB_BRANCH: 'main',
   };

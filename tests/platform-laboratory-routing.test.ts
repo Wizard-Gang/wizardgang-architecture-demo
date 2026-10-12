@@ -15,18 +15,17 @@ import {
   noncanonicalSyntheticLabPathname,
   removedPlatformLaboratoryPathnames,
 } from './fixtures/removed-api-pathnames';
-import { demoDatabase } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
-function environment(state: 'online' | 'offline'): Env {
+function environment(): Env {
   return {
-    WG_DB: demoDatabase({ demo: state, message: state === 'online' ? 'Demo online.' : 'Demo maintenance.' }),
+    WG_DB: new SqliteD1(),
     GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
     GITHUB_BRANCH: 'main',
   } as unknown as Env;
 }
 
-const onlineEnv = environment('online');
-const offlineEnv = environment('offline');
+const onlineEnv = environment();
 const routes = platformLaboratoryCapabilities.flatMap((capability) => capability.routes);
 const removedPagePaths = ['/edge', '/workers', '/durable-objects', '/d1', '/r2'] as const;
 const platformDemoIds = ['edge', 'workers', 'durable-objects', 'd1', 'r2'] as const;
@@ -59,7 +58,6 @@ describe('platform laboratory declarative routing', () => {
       expect(route.requestLimits, route.id).toBeDefined();
       expect(route.requestLimits.notes.length, route.id).toBeGreaterThan(0);
       expect(route.authorization, route.id).toBeDefined();
-      expect(route.offline, route.id).toEqual({ mode: 'gated' });
       expect(route.cache, route.id).toBeDefined();
       expect(route.source.module, route.id).toMatch(/^src\/platform\/route-capabilities\//);
       expect(route.labId, route.id).toMatch(/^[a-z0-9][a-z0-9-]*$/);
@@ -93,9 +91,8 @@ describe('platform laboratory declarative routing', () => {
       authorization: { mode: 'none' as const },
       visibility: 'public' as const,
       sameOrigin: { mode: 'not-required' as const },
-      offline: { mode: 'gated' as const },
       cache: { mode: 'no-store' as const },
-      crawler: { crawling: 'controlled' as const, indexing: 'deny' as const },
+      crawler: { crawling: 'allow' as const, indexing: 'deny' as const },
       documentation: { title: 'Synthetic', description: 'Synthetic route.' },
       source: { module: 'tests/platform-laboratory-routing.test.ts', exportName: 'synthetic', tests: ['tests/platform-laboratory-routing.test.ts'] },
       requestLimits: noRequestBody(),
@@ -176,11 +173,6 @@ it('returns the ordinary 404 for every retired platform ?view= URL', async () =>
     expect(crossOrigin.status).toBe(403);
   });
 
-  it('preserves offline gating for canonical lab APIs', async () => {
-    const response = await routeRequest(new Request('https://demo.wizardgang.ai/api/labs/edge'), offlineEnv);
-    expect(response.status).toBe(503);
-  });
-
   it('uses the ordinary 404 for an unknown platform view, unknown lab, and every removed page/API path', async () => {
     const unknownView = await routeRequest(new Request('https://demo.wizardgang.ai/demos?view=not-a-view', {
       headers: { accept: 'text/html' },
@@ -218,9 +210,8 @@ it('returns the ordinary 404 for every retired platform ?view= URL', async () =>
         authorization: { mode: 'none' },
         visibility: 'public',
         sameOrigin: { mode: 'not-required' },
-        offline: { mode: 'gated' },
         cache: { mode: 'no-store' },
-        crawler: { crawling: 'controlled', indexing: 'deny' },
+        crawler: { crawling: 'allow', indexing: 'deny' },
         documentation: {
           title: 'Synthetic laboratory',
           description: 'Test-only compatible platform laboratory.',

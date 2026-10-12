@@ -88,22 +88,17 @@ describe('architecture demo registry', () => {
   });
 });
 
-describe('intentional offline route policies', () => {
-  it('keeps registered operational machine and recovery surfaces reachable', () => {
+describe('operational route registry', () => {
+  it('keeps the operational machine surfaces registered', () => {
     for (const route of [
-      '/api/operations/health', '/api/operations/version', '/offline', '/admin', '/robots.txt', '/.well-known/security.txt', '/assets/:asset',
+      '/api/operations/health', '/api/operations/version', '/.well-known/security.txt', '/assets/:asset', '/sitemap.xml',
     ]) {
-      const declaration = operationalRouteRegistry.declarations.find((candidate) => candidate.pattern === route);
-      expect(declaration, route).toBeDefined();
-      expect(declaration?.offline.mode, route).toBe('available');
+      expect(operationalRouteRegistry.declarations.find((candidate) => candidate.pattern === route), route).toBeDefined();
     }
     expect(operationalRouteRegistry.declarations.some((route) => route.pattern === retiredOperationsHtmlPathname)).toBe(false);
   });
 
-  it('keeps sitemap gated and ordinary demo routes outside the operational registry', () => {
-    const sitemap = operationalRouteRegistry.declarations.find((candidate) => candidate.pattern === '/sitemap.xml');
-    expect(sitemap?.offline.mode).toBe('gated');
-
+  it('keeps ordinary demo routes outside the operational registry', () => {
     for (const route of ['/edge', '/d1', '/api', '/graphql', '/webhooks', '/identity', '/mcp', '/evidence', '/governance/risks', '/governance/incidents']) {
       expect(matchRoute(operationalRouteRegistry, 'GET', route), route).toEqual({ status: 'not-found', statusCode: 404 });
     }

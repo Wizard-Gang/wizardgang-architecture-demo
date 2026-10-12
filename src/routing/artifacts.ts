@@ -10,7 +10,6 @@ export interface RouteManifestEntry {
   authentication: ApplicationRouteDeclaration['authentication'];
   authorization: ApplicationRouteDeclaration['authorization'];
   same_origin: ApplicationRouteDeclaration['sameOrigin'];
-  offline: ApplicationRouteDeclaration['offline'];
   cache: ApplicationRouteDeclaration['cache'];
   crawler: ApplicationRouteDeclaration['crawler'];
   title: string;
@@ -52,7 +51,6 @@ export function buildRouteManifest(
       authentication: route.authentication,
       authorization: route.authorization,
       same_origin: route.sameOrigin,
-      offline: route.offline,
       cache: route.cache,
       crawler: route.crawler,
       title: route.documentation.title,

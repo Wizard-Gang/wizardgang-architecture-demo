@@ -12,10 +12,6 @@ export type AuthorizationPolicy =
   | { mode: 'none' }
   | { mode: 'policy'; policy: string };
 
-export type OfflinePolicy =
-  | { mode: 'available' }
-  | { mode: 'gated' };
-
 export type SameOriginPolicy =
   | { mode: 'not-required' }
   | { mode: 'required'; methods: readonly RouteMethod[] };
@@ -27,7 +23,7 @@ export type CachePolicy =
   | { mode: 'response' };
 
 export interface CrawlerPolicy {
-  crawling: 'allow' | 'deny' | 'controlled';
+  crawling: 'allow' | 'deny';
   indexing: 'allow' | 'deny';
 }
 
@@ -58,7 +54,6 @@ export interface RouteDeclaration<TContext = unknown> {
   authorization: AuthorizationPolicy;
   visibility: RouteVisibility;
   sameOrigin: SameOriginPolicy;
-  offline: OfflinePolicy;
   cache: CachePolicy;
   crawler: CrawlerPolicy;
   documentation: RouteDocumentationMetadata;

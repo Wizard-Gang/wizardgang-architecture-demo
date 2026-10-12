@@ -1,6 +1,5 @@
 {
   "app.title": "Démo d’architecture WizardGang",
-  "offline.title": "Démo temporairement hors ligne",
   "demo.title": "Internationalisation de l’interface",
   "demo.summary": "Changez instantanément de langue pour examiner les traductions, les formats locaux, les pluriels et la mise en page de droite à gauche.",
   "source": "Voir le code de la page",

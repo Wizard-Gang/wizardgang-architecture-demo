@@ -18,9 +18,8 @@ function pageRoute(
     authorization: { mode: 'none' },
     visibility: 'public',
     sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'gated' },
     cache: { mode: 'no-store' },
-    crawler: { crawling: 'controlled', indexing: 'allow' },
+    crawler: { crawling: 'allow', indexing: 'allow' },
     documentation: {
       title: id,
       description: 'Synthetic route manifest projection for ' + id,
@@ -72,7 +71,7 @@ describe('route manifest serializer', () => {
       methods: ['GET'],
       authentication: { mode: 'anonymous' },
       authorization: { mode: 'none' },
-      crawler: { crawling: 'controlled', indexing: 'allow' },
+      crawler: { crawling: 'allow', indexing: 'allow' },
       source: { module: 'tests/route-artifacts.test.ts' },
     });
     expect(serializeRouteManifest(declarations)).toContain('"status": "working"');

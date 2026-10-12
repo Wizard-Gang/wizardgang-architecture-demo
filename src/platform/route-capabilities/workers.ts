@@ -23,9 +23,8 @@ export const workersLaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'not-required' },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Worker edge-policy laboratory API',
         description: 'Applies a stateless edge cache and routing policy in the Worker and records audit evidence separately.',

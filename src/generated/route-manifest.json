@@ -17,14 +17,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "allow"
     },
     "title": "Architecture Demos",
@@ -68,14 +65,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Lazy demo presentation fragment",
@@ -110,14 +104,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "allow"
     },
     "title": "Architecture demo index",
@@ -165,14 +156,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "GraphQL API",
@@ -212,14 +200,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Identity authorization decision",
@@ -253,14 +238,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "github authorization callback",
@@ -295,14 +277,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "github authorization start",
@@ -336,14 +315,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "google authorization callback",
@@ -378,14 +354,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "google authorization start",
@@ -422,14 +395,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "response"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Identity session reset",
@@ -463,14 +433,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "microsoft authorization callback",
@@ -505,14 +472,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "microsoft authorization start",
@@ -546,14 +510,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "SAML assertion consumer service",
@@ -587,14 +548,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "response"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "SAML service-provider metadata",
@@ -628,14 +586,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "SAML sign-in start",
@@ -669,14 +624,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "response"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Identity session",
@@ -714,14 +666,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Identity demo access token",
@@ -757,14 +706,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "MCP streamable HTTP server",
@@ -799,15 +745,12 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "public",
       "maxAgeSeconds": 300
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "OpenAPI JSON contract",
@@ -842,14 +785,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "GitHub webhook receiver",
@@ -860,52 +800,6 @@
       "tests": [
         "tests/interface-identity-routing.test.ts",
         "tests/webhooks.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "operations.admin",
-    "route": "/admin",
-    "methods": [
-      "GET",
-      "POST"
-    ],
-    "kind": "page",
-    "visibility": "private",
-    "browser_html": "page",
-    "authentication": {
-      "mode": "required",
-      "provider": "wg-ops"
-    },
-    "authorization": {
-      "mode": "policy",
-      "policy": "admin"
-    },
-    "same_origin": {
-      "mode": "required",
-      "methods": [
-        "POST"
-      ]
-    },
-    "offline": {
-      "mode": "available"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "allow",
-      "indexing": "deny"
-    },
-    "title": "Demo administration",
-    "description": "Protected control surface for demo availability and ChatGPT fetch policy.",
-    "source": {
-      "module": "src/ui/admin.tsx",
-      "exportName": "renderAdmin",
-      "tests": [
-        "tests/operational-route-registry.test.ts",
-        "tests/router.test.ts"
       ]
     },
     "status": "working"
@@ -933,9 +827,6 @@
       "methods": [
         "POST"
       ]
-    },
-    "offline": {
-      "mode": "gated"
     },
     "cache": {
       "mode": "no-store"
@@ -979,9 +870,6 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
@@ -1020,16 +908,13 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "available"
-    },
     "cache": {
       "mode": "public",
       "maxAgeSeconds": 31536000,
       "immutable": true
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Static browser asset",
@@ -1062,90 +947,6 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "available"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Operations health",
-    "description": "Machine-readable runtime and dependency health.",
-    "source": {
-      "module": "src/api/operations.ts",
-      "exportName": "healthResponse",
-      "tests": [
-        "tests/operational-route-registry.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "operations.offline",
-    "route": "/offline",
-    "methods": [
-      "GET"
-    ],
-    "kind": "page",
-    "visibility": "public",
-    "browser_html": "page",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "none"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "available"
-    },
-    "cache": {
-      "mode": "no-store"
-    },
-    "crawler": {
-      "crawling": "controlled",
-      "indexing": "deny"
-    },
-    "title": "Offline recovery page",
-    "description": "Public maintenance page shown when ordinary demo routes are intentionally offline.",
-    "source": {
-      "module": "src/ui/offline.tsx",
-      "exportName": "renderOffline",
-      "tests": [
-        "tests/operational-route-registry.test.ts",
-        "tests/router.test.ts"
-      ]
-    },
-    "status": "working"
-  },
-  {
-    "id": "operations.robots",
-    "route": "/robots.txt",
-    "methods": [
-      "GET",
-      "HEAD"
-    ],
-    "kind": "protocol",
-    "visibility": "public",
-    "browser_html": "never",
-    "authentication": {
-      "mode": "anonymous"
-    },
-    "authorization": {
-      "mode": "none"
-    },
-    "same_origin": {
-      "mode": "not-required"
-    },
-    "offline": {
-      "mode": "available"
-    },
     "cache": {
       "mode": "no-store"
     },
@@ -1153,11 +954,11 @@
       "crawling": "allow",
       "indexing": "deny"
     },
-    "title": "Robots policy",
-    "description": "Dynamic crawler policy preserving ChatGPT fetch controls and GPTBot opt-out.",
+    "title": "Operations health",
+    "description": "Machine-readable runtime and dependency health.",
     "source": {
-      "module": "src/lib/crawler-control.ts",
-      "exportName": "robotsResponse",
+      "module": "src/api/operations.ts",
+      "exportName": "healthResponse",
       "tests": [
         "tests/operational-route-registry.test.ts",
         "tests/router.test.ts"
@@ -1183,9 +984,6 @@
     },
     "same_origin": {
       "mode": "not-required"
-    },
-    "offline": {
-      "mode": "available"
     },
     "cache": {
       "mode": "public",
@@ -1225,15 +1023,12 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "public",
       "maxAgeSeconds": 3600
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Sitemap",
@@ -1266,14 +1061,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "available"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Operations version",
@@ -1306,14 +1098,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Accessibility teaching laboratory API",
@@ -1350,14 +1139,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "D1 users and tasks reset laboratory API",
@@ -1395,14 +1181,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Anonymous REST browser tutorial item API",
@@ -1438,14 +1221,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Anonymous REST browser tutorial collection API",
@@ -1485,14 +1265,11 @@
         "DELETE"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "D1 task item laboratory API",
@@ -1531,14 +1308,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "D1 tasks laboratory API",
@@ -1578,14 +1352,11 @@
         "DELETE"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "D1 user item laboratory API",
@@ -1624,14 +1395,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "D1 users laboratory API",
@@ -1667,14 +1435,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Durable Object counter laboratory API",
@@ -1708,14 +1473,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Edge inspection laboratory API",
@@ -1748,14 +1510,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Git delivery laboratory API",
@@ -1793,14 +1552,11 @@
         "DELETE"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "R2 file item laboratory API",
@@ -1838,14 +1594,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "R2 files laboratory API",
@@ -1882,14 +1635,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "R2 files reset laboratory API",
@@ -1924,14 +1674,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Synthetic webhook event laboratory API",
@@ -1969,14 +1716,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Synthetic webhook reset laboratory API",
@@ -2014,14 +1758,11 @@
         "POST"
       ]
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Synthetic webhook laboratory action",
@@ -2055,14 +1796,11 @@
     "same_origin": {
       "mode": "not-required"
     },
-    "offline": {
-      "mode": "gated"
-    },
     "cache": {
       "mode": "no-store"
     },
     "crawler": {
-      "crawling": "controlled",
+      "crawling": "allow",
       "indexing": "deny"
     },
     "title": "Worker edge-policy laboratory API",

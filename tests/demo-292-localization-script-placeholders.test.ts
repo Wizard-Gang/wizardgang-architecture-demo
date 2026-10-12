@@ -5,11 +5,11 @@ import {
 } from '../src/i18n/runtime';
 import { routeRequest } from '../src/router';
 import type { Env } from '../src/types';
-import { demoDatabase } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
 function environment(): Env {
   return {
-    WG_DB: demoDatabase({ crawler: 'enabled' }),
+    WG_DB: new SqliteD1(),
     GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
     GITHUB_BRANCH: 'main',
   };

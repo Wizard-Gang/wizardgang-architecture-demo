@@ -18,9 +18,8 @@ export const gitLaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'not-required' },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Git delivery laboratory API',
         description: 'Public read-only status for the live Git delivery demonstration.',

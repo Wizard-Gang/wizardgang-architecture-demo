@@ -401,8 +401,6 @@
 .button-row { margin-top: 1rem; }
 .operations-kpis .eyebrow, .availability-kpis .eyebrow { margin-bottom: 1.6rem; color: var(--muted); }
 .operations-kpis .stat { margin: 0; }
-.operations-inspection { margin: 1rem 0; padding: 1rem; border: 1px solid var(--line); }
-.operations-inspection > summary { min-height: 44px; align-content: center; font-weight: 800; cursor: pointer; }
 .operations-section-heading .eyebrow { margin-bottom: .45rem; color: var(--muted); }
 
 
