@@ -7,7 +7,6 @@ import { expandedNpmRunSequence } from '../scripts/lib/acceptance-plan.ts';
 const read = (file: string) => fs.readFileSync(file, 'utf8');
 const pkg = JSON.parse(read('package.json'));
 const releaseWorkflow = read('.github/workflows/release.yml');
-const releaseManagement = read('docs/RELEASE-MANAGEMENT.md');
 const canonicalAdvisory = 'security:dependency-advisories';
 const staleAdvisory = ['security', 'dependencies'].join(':');
 
@@ -63,8 +62,6 @@ describe('DEMO-365 exact release reproduction command ownership', () => {
     expect(pkg.scripts['build:worker']).toContain('wrangler deploy --dry-run --outdir dist/worker');
     expect(pkg.scripts['build:worker']).toContain('npm run validate:worker-bundle');
     expect(releaseWorkflow).toContain('expected_sha: ${{ github.sha }}');
-    expect(releaseManagement).toContain('does not invoke a second unbound build');
-    expect(releaseManagement).toContain('production identity-bound build using `WG_VERSION` and `WG_COMMIT`');
   });
 
   it('shares one fresh migrated local D1 store with browser audits and cleans it up after check', () => {
@@ -84,9 +81,6 @@ describe('DEMO-365 exact release reproduction command ownership', () => {
       position = next;
     }
     expect(reproduce).not.toContain('npm run validate:migrations');
-    expect(releaseManagement).toContain('one fresh temporary local D1 persistence directory');
-    expect(releaseManagement).toContain('no second standalone migration runs during reproduction');
-    expect(releaseManagement).toContain("EXIT trap removes that temporary directory on success or failure");
   });
 
   it('starts generated notes at the closest published release when an intervening tag did not publish', () => {
@@ -94,7 +88,6 @@ describe('DEMO-365 exact release reproduction command ownership', () => {
     expect(releaseWorkflow).toContain('repos/$GITHUB_REPOSITORY/releases/tags/$candidate');
     expect(releaseWorkflow).toContain('previous_tag="$candidate"');
     expect(releaseWorkflow).toContain('search_commit="$(git rev-list -n 1 "$candidate")^"');
-    expect(releaseManagement).toContain('skipping tags whose Release did not publish');
   });
 
   it('retains locked installation, exact release identity, publication, and deploy ordering', () => {
@@ -114,9 +107,7 @@ describe('DEMO-365 exact release reproduction command ownership', () => {
   });
 
   it('uses the canonical advisory name in release policy and leaves no stale command name tracked', () => {
-    expect(releaseManagement).toContain(`npm run ${canonicalAdvisory}`);
     expect(releaseWorkflow).not.toContain(staleAdvisory);
-    expect(releaseManagement).not.toContain(staleAdvisory);
 
     const grep = spawnSync('git', ['grep', '-n', '-F', staleAdvisory, '--'], { encoding: 'utf8' });
     expect(grep.status, grep.stdout || grep.stderr).toBe(1);

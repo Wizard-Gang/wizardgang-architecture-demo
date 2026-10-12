@@ -4,7 +4,7 @@
 
 Goal: a clean restart. Delete the assurance, evidence and documentation system, APIs that overlap or have no caller, and the operational machinery around them. Compliance will be rebuilt later from zero.
 
-- DEMO-513 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
+- DEMO-514 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
 - Delete, don't consolidate. Add no tombstone tests, "removed route" fixtures, aliases, redirects, compatibility shims, replacement docs or new validators. A removed route returns the ordinary 404 and needs no test proving it.
 - Delete a test when its subject is deleted. Edit a shared test only to drop cases for removed things.
 - Regenerate the route manifest, asset manifest and OpenAPI document with their generators; never hand-edit them.
@@ -12,27 +12,6 @@ Goal: a clean restart. Delete the assurance, evidence and documentation system, 
 - A task is done when `git grep` for the names it removed finds nothing outside `platform/` and `package-lock.json`, and exact-head CI is green on `validate` and `browser`.
 
 ## Open tasks
-
-### DEMO-513 — [DOCS] Delete docs/ and keep only root Markdown
-
-- Dependency: DEMO-512
-- Why: The `docs/` tree restates what code, scripts and workflows already enforce, and it has to be kept in sync with them by hand.
-- Scope: Everything under `docs/`; the `docs` link on every route declaration; README, SECURITY.md and AGENTS.md references.
-- Non-goals: Add no replacement docs, wiki or docs site. Leave `CONTRIBUTING.md` unchanged, because `scripts/check-portfolio-contract.ts` hash-locks it as the shared portfolio contract.
-- Acceptance: `docs/` does not exist and `git grep "docs/"` finds nothing outside `platform/`. The build, browser audit and contract validation read the relocated manifests. README is a short orientation covering what this is, the public routes, local setup, commands and a delivery pointer.
-- Validation: `npm run generate:assets` and `npm run generate:routes` write the new paths with no drift; run the focused route-artifact, generated-artifact and react-presentation tests; final exact-head CI.
-- Authorities: vite.config.ts; src/ui/asset-map.ts; scripts/generate-route-manifest.ts; scripts/validate-generated-artifacts.ts; README.md; SECURITY.md; AGENTS.md.
-
-#### Work
-
-- [ ] Move the two generated manifests out of `docs/`. `docs/asset-manifest.json` becomes `src/generated/asset-manifest.json` (imported at runtime by `src/ui/asset-map.ts`), and `docs/route-manifest.json` becomes `src/generated/route-manifest.json`. Update `vite.config.ts`, `generate-route-manifest.ts`, `validate-generated-artifacts.ts`, `validate-react-presentation.ts`, `validate-contracts.ts`, `validate-scaffold.ts`, `validate-repository-baseline.ts`, `site-browser-audit.ts` and the tests that read them.
-- [ ] Remove the `docs` field from route declarations, the route-manifest serializer and every route-capability module.
-- [ ] Remove docs source links from demo pages (for example `src/demos/accessibility-presentation.tsx`).
-- [ ] Delete the remaining files under `docs/`: the 12 Markdown files, `governance/`, `history/CHANGE-MAP.csv` (nothing reads it) and `accessibility-manual-verification.json`.
-- [ ] Rewrite `README.md` to under 60 lines and remove the Start-here list.
-- [ ] Trim `SECURITY.md` to private reporting through GitHub and the disclosure steps.
-- [ ] In `AGENTS.md`, point the change-management, release-management and provider-settings authority references at the scripts and workflows that implement them. Keep every sentence `scripts/check-portfolio-contract.ts` requires.
-- [ ] Delete or edit the tests that read `docs/`.
 
 ### DEMO-514 — [API] Remove redundant and uncalled APIs
 

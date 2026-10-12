@@ -22,7 +22,7 @@ export async function generateRouteManifest({ cwd = root } = {}): Promise<void> 
       throw new Error('Unable to load the declared route registry and its canonical serializer.');
     }
     const serialized = artifacts.serializeRouteManifest(registry.applicationRouteRegistry.declarations);
-    writeFileSync(path.join(cwd, 'docs/route-manifest.json'), serialized);
+    writeFileSync(path.join(cwd, 'src/generated/route-manifest.json'), serialized);
   } finally {
     await vite.close();
   }

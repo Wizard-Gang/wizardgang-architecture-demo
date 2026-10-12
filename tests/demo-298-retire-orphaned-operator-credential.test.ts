@@ -28,11 +28,9 @@ describe('DEMO-298 orphaned operator credential retirement', () => {
     const records = fs.readFileSync('src/api/records.ts', 'utf8');
     const identity = fs.readFileSync('src/api/identity.ts', 'utf8');
     const security = fs.readFileSync('SECURITY.md', 'utf8');
-    const access = fs.readFileSync('docs/governance/SECURITY-GOVERNANCE.md', 'utf8');
     expect(records).not.toContain("return identifier(requested, 'namespace'");
     expect(identity).not.toContain('managed operator credential');
     expect(security).not.toContain('managed operator bearer credential');
-    expect(access).not.toContain('managed operator bearer credentials');
   });
 
   it('keeps anonymous reads public and visitor bearer writes inside the server-derived sandbox', async () => {

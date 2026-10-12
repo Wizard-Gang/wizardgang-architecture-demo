@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { Window } from 'happy-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import assetManifest from '../docs/asset-manifest.json';
+import assetManifest from '../src/generated/asset-manifest.json';
 import { mount as mountAccessibility } from '../src/browser/accessibility';
 import { mount as mountDurableObjects } from '../src/browser/durable-objects';
 import { mount as mountEdge } from '../src/browser/edge';

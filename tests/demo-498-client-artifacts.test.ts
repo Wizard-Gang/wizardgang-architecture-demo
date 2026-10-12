@@ -15,10 +15,10 @@ const serializedVite = JSON.stringify(viteManifest) + '\n';
 function fixture() {
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'demo-498-client-assets-'));
   temporaryDirectories.push(cwd);
-  fs.mkdirSync(path.join(cwd, 'docs'), { recursive: true });
+  fs.mkdirSync(path.join(cwd, 'src/generated'), { recursive: true });
   fs.mkdirSync(path.join(cwd, 'dist/client/.vite'), { recursive: true });
   fs.mkdirSync(path.join(cwd, 'dist/client/assets'), { recursive: true });
-  fs.writeFileSync(path.join(cwd, 'docs/asset-manifest.json'), serializedAssets);
+  fs.writeFileSync(path.join(cwd, 'src/generated/asset-manifest.json'), serializedAssets);
   fs.writeFileSync(path.join(cwd, 'dist/client/.vite/manifest.json'), serializedVite);
   fs.writeFileSync(path.join(cwd, 'dist/client', asset), 'first pass');
   return cwd;
@@ -36,7 +36,7 @@ function committedFixture() {
   execFileSync('git', ['init', '-q'], { cwd });
   execFileSync('git', ['config', 'user.name', 'Test'], { cwd });
   execFileSync('git', ['config', 'user.email', 'test@example.invalid'], { cwd });
-  execFileSync('git', ['add', '.gitignore', 'docs/asset-manifest.json'], { cwd });
+  execFileSync('git', ['add', '.gitignore', 'src/generated/asset-manifest.json'], { cwd });
   execFileSync('git', ['commit', '-qm', 'fixture'], { cwd });
   return cwd;
 }
@@ -61,10 +61,10 @@ function runFixtureParity(cwd: string, {
     "fs.writeFileSync(countFile, String(count));",
     "fs.mkdirSync('dist/client/.vite', { recursive: true });",
     "fs.mkdirSync('dist/client/assets', { recursive: true });",
-    "fs.writeFileSync('docs/asset-manifest.json', " + manifestBytes + ");",
+    "fs.writeFileSync('src/generated/asset-manifest.json', " + manifestBytes + ");",
     "fs.writeFileSync('dist/client/.vite/manifest.json', " + JSON.stringify(serializedVite) + ");",
     "fs.writeFileSync('dist/client/" + asset + "', " + clientBytes + ");",
-    ...(unexpectedOutput ? ["fs.writeFileSync('docs/unexpected-generator-output.txt', 'unowned');"] : []),
+    ...(unexpectedOutput ? ["fs.writeFileSync('src/generated/unexpected-generator-output.txt', 'unowned');"] : []),
   ].join('\n');
   return runGeneratedArtifactParity({
     cwd,
@@ -73,7 +73,7 @@ function runFixtureParity(cwd: string, {
       id: 'assets',
       command: [process.execPath, ['-e', generator]],
       inputs: [],
-      outputs: ['docs/asset-manifest.json'],
+      outputs: ['src/generated/asset-manifest.json'],
     }],
   });
 }
@@ -124,7 +124,7 @@ describe('DEMO-498 accepted client generation', () => {
   it('fails when the first generation changes committed output, even if the second pass is stable', () => {
     const result = runFixtureParity(committedFixture(), { trackedOutput: 'stale' });
     expect(result.status).toBe('failure');
-    expect(result.failures[0].firstChanged).toEqual(['docs/asset-manifest.json']);
+    expect(result.failures[0].firstChanged).toEqual(['src/generated/asset-manifest.json']);
     expect(result.failures[0].secondChanged).toEqual([]);
     expect(result.failures[0].clientIssues).toEqual([]);
     expect(result.definitions[0].idempotent).toBe(true);
@@ -135,7 +135,7 @@ describe('DEMO-498 accepted client generation', () => {
     expect(result.status).toBe('failure');
     expect(result.failures[0].firstChanged).toEqual([]);
     expect(result.failures[0].secondChanged).toEqual([]);
-    expect(result.failures[0].unexpectedChangedFiles).toContain('docs/unexpected-generator-output.txt');
+    expect(result.failures[0].unexpectedChangedFiles).toContain('src/generated/unexpected-generator-output.txt');
     expect(result.failures[0].clientIssues).toEqual([]);
   });
 
@@ -143,7 +143,7 @@ describe('DEMO-498 accepted client generation', () => {
     const result = runFixtureParity(committedFixture(), { trackedOutput: 'unstable' });
     expect(result.status).toBe('failure');
     expect(result.failures[0].firstChanged).toEqual([]);
-    expect(result.failures[0].secondChanged).toEqual(['docs/asset-manifest.json']);
+    expect(result.failures[0].secondChanged).toEqual(['src/generated/asset-manifest.json']);
     expect(result.failures[0].clientIssues).toEqual([]);
     expect(result.definitions[0].idempotent).toBe(false);
   });

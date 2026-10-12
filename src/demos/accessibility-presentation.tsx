@@ -50,7 +50,6 @@ function AccessibilityPresentation({ env, localization }: Readonly<{ env: Env; l
           routeSourceReference(env, 'src/demos/accessibility-page.ts'),
           { label: 'Lab source', href: sourceUrl(env, 'src/ui/accessibility-lab.tsx') },
           { label: 'Global shell source', href: sourceUrl(env, 'src/ui/document.tsx') },
-          { label: 'Manual verification matrix', href: sourceUrl(env, 'docs/ACCESSIBILITY.md') },
           { label: 'Interface tests', href: sourceUrl(env, 'tests/interface.test.ts') },
         ]} />
       </div>

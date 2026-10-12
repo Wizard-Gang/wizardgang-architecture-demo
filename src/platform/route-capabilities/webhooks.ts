@@ -10,7 +10,6 @@ import {
 } from '../route-capability';
 
 const tests = ['tests/platform-laboratory-routing.test.ts', 'tests/webhooks.test.ts', 'tests/router.test.ts'] as const;
-const docs = ['docs/ROUTE-REGISTRY.md'] as const;
 
 export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
   id: 'platform.webhooks',
@@ -33,7 +32,6 @@ export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Synthetic webhook laboratory action',
         description: 'Same-origin browser action that signs and exercises the production webhook validation path.',
-        docs,
       },
       source: { module: 'src/platform/route-capabilities/webhooks.ts', exportName: 'webhookLaboratoryCapability', tests },
       requestLimits: noRequestBody('POST generates its bounded synthetic delivery server-side and consumes no request body.'),
@@ -57,7 +55,6 @@ export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Synthetic webhook event laboratory API',
         description: 'Returns sanitized verified delivery evidence scoped to the current visitor session.',
-        docs,
       },
       source: { module: 'src/platform/route-capabilities/webhooks.ts', exportName: 'webhookLaboratoryCapability', tests },
       requestLimits: noRequestBody('GET consumes no request body.'),
@@ -81,7 +78,6 @@ export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'Synthetic webhook reset laboratory API',
         description: 'Same-origin reset of synthetic webhook evidence for the current visitor session.',
-        docs,
       },
       source: { module: 'src/platform/route-capabilities/webhooks.ts', exportName: 'webhookLaboratoryCapability', tests },
       requestLimits: noRequestBody('POST consumes no request body.'),

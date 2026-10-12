@@ -14,7 +14,6 @@ export const demosRouteCapability = defineInterfaceIdentityCapability('demos.sur
     description: 'One task-oriented destination for the interactive architecture demonstrations.',
     sourceModule: 'src/demos/demos-workbench.tsx',
     sourceExport: 'renderDemosWorkbench',
-    docs: ['docs/ROUTE-REGISTRY.md'],
     tests: [
       'tests/demo-333-react-demos.test.tsx',
       'tests/demos-consolidation.test.ts',

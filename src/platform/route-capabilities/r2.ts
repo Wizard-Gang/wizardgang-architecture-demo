@@ -14,7 +14,6 @@ const tests = [
   'tests/router.test.ts',
 ] as const;
 
-const docs = ['docs/ROUTE-REGISTRY.md'] as const;
 
 export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
   id: 'platform.r2',
@@ -37,7 +36,6 @@ export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'R2 files laboratory API',
         description: 'Lists or uploads visitor-scoped files whose bytes live in R2 and metadata lives in D1.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/r2.ts',
@@ -71,7 +69,6 @@ export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'R2 file item laboratory API',
         description: 'Streams a visible R2 object or deletes one owned by the visitor sandbox.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/r2.ts',
@@ -99,7 +96,6 @@ export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
       documentation: {
         title: 'R2 files reset laboratory API',
         description: 'Deletes visitor-owned R2 objects and their D1 metadata rows.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/r2.ts',

@@ -128,7 +128,7 @@ describe('DEMO-504 current workflow configuration', () => {
 
   it('retires the routine version-only PR route and its legacy identity', () => {
     for (const path of ['scripts/lib/live-release-identity.ts', 'scripts/lib/live-controlled-record.ts', 'tests/demo-391-live-release.test.ts']) expect(existsSync(path)).toBe(false);
-    for (const file of ['docs/RELEASE-MANAGEMENT.md', 'docs/CHANGE-MANAGEMENT.md', 'src/lib/git-demo.ts', 'scripts/lib/git-demo-workflow.ts', 'scripts/lib/controlled-record.ts']) {
+    for (const file of ['src/lib/git-demo.ts', 'scripts/lib/git-demo-workflow.ts', 'scripts/lib/controlled-record.ts']) {
       expect(read(file)).not.toMatch(/Live-Release|Demonstrate v|-live-v|version-only/);
     }
     const live = read('.github/workflows/git-demo.yml');

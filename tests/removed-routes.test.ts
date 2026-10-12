@@ -26,13 +26,12 @@ const removedRouteReferences = [...new Set([
 
 const textExtensions = new Set(['.css', '.html', '.js', '.json', '.md', '.mjs', '.ts', '.txt', '.yaml', '.yml']);
 const excludedFiles = new Set([
-  'docs/INTERACTIVE-DEMO-SPEC.md',
   'tests/fixtures/removed-api-pathnames.ts',
   'tests/fixtures/removed-html-pathnames.ts',
   'tests/removed-api-routes.test.ts',
   'tests/removed-routes.test.ts',
 ]);
-const excludedDirectories = ['.git/', '.wrangler/', 'dist/', 'docs/history/', 'node_modules/'];
+const excludedDirectories = ['.git/', '.wrangler/', 'dist/', 'node_modules/'];
 const maxReferenceFailures = 50;
 
 function repositoryTextFiles(directory = '.'): string[] {

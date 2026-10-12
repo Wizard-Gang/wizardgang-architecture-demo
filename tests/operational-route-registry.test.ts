@@ -120,7 +120,6 @@ describe('global operational route policies', () => {
     for (const route of operationalRouteRegistry.declarations) {
       expect(route.documentation.title).not.toBe('');
       expect(route.documentation.description).not.toBe('');
-      expect(route.documentation.docs).toContain('docs/ROUTE-REGISTRY.md');
       expect(route.source.module).toMatch(/^src\//);
       expect(route.source.exportName).toBeTruthy();
       expect(route.source.tests).toContain('tests/operational-route-registry.test.ts');

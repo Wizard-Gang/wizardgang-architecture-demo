@@ -6,7 +6,6 @@ const releaseWorkflow = read('.github/workflows/release.yml');
 const wrangler = read('wrangler.jsonc');
 const worker = read('src/index.ts');
 const generator = read('scripts/generate-worker-entry.ts');
-const releaseManagement = read('docs/RELEASE-MANAGEMENT.md');
 
 describe('DEMO-367 release-to-deployment identity after baseline cut-over', () => {
   it('keeps publication ahead of the shared production deployment', () => {
@@ -36,7 +35,5 @@ describe('DEMO-367 release-to-deployment identity after baseline cut-over', () =
     expect(wrangler).toContain('"database_name": "wizardgang"');
     expect(wrangler).toContain('"bucket_name": "wizardgang"');
     expect(fs.existsSync('scripts/verify-cloudflare-deployment.ts')).toBe(false);
-    expect(releaseManagement).toContain('sole version receiving 100% of production traffic');
-    expect(releaseManagement).toContain('https://demo.wizardgang.ai/version.json');
   });
 });

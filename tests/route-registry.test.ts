@@ -30,7 +30,6 @@ function route(
     documentation: {
       title: id,
       description: `Test route ${id}`,
-      docs: ['docs/ROUTE-REGISTRY.md'],
     },
     source: {
       module: 'tests/route-registry.test.ts',

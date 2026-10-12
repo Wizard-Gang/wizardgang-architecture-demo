@@ -34,7 +34,6 @@ export interface CrawlerPolicy {
 export interface RouteDocumentationMetadata {
   title: string;
   description: string;
-  docs: readonly string[];
 }
 
 export interface RouteSourceMetadata {

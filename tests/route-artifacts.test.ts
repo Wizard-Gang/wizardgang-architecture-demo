@@ -24,7 +24,6 @@ function pageRoute(
     documentation: {
       title: id,
       description: 'Synthetic route manifest projection for ' + id,
-      docs: ['docs/ROUTE-REGISTRY.md'],
     },
     source: { module: 'tests/route-artifacts.test.ts' },
     page: {

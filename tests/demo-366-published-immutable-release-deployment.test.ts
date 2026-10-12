@@ -6,7 +6,6 @@ import { describe, expect, it } from 'vitest';
 const read = (file: string) => fs.readFileSync(file, 'utf8');
 const pkg = JSON.parse(read('package.json'));
 const releaseWorkflow = read('.github/workflows/release.yml');
-const releaseManagement = read('docs/RELEASE-MANAGEMENT.md');
 
 describe('DEMO-366 published immutable release deployment boundary', () => {
   it('fails closed instead of exposing raw npm Wrangler production deployment', () => {
@@ -39,6 +38,5 @@ describe('DEMO-366 published immutable release deployment boundary', () => {
     expect(publish).toBeGreaterThan(reproduce);
     expect(releaseWorkflow.slice(reproduce, publish)).toContain('npm run check');
     expect(releaseWorkflow.slice(reproduce, publish)).toContain('npm run security:dependency-advisories');
-    expect(releaseManagement).toContain("baseline's `deploy-worker.yml`");
   });
 });

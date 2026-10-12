@@ -72,7 +72,6 @@ function operationalRoute(input: OperationalRouteInput): RouteDeclaration<Operat
     documentation: {
       title: input.title,
       description: input.description,
-      docs: ['docs/OPERATIONS.md', 'docs/ROUTE-REGISTRY.md'],
     },
     source: {
       module: input.sourceModule,

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import assetManifest from '../docs/asset-manifest.json';
+import assetManifest from '../src/generated/asset-manifest.json';
 import { routeRequest } from '../src/router';
 import { routeUrl } from '../src/routing/application-routes';
 import { browserAssetName } from '../src/ui/asset-map';

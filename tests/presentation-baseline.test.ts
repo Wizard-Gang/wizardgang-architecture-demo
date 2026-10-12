@@ -306,8 +306,7 @@ const COMPACT_TEXT_FALLBACK_MARKERS = {
     "View system health",
     "Public source",
     "Health JSON",
-    "Version JSON",
-    "Operations docs ↗"
+    "Version JSON"
   ],
   "page:ordinary-404": [
     "Home",

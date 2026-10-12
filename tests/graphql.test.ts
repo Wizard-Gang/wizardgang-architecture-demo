@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import assetManifest from '../docs/asset-manifest.json';
+import assetManifest from '../src/generated/asset-manifest.json';
 import { graphqlResponse } from '../src/api/graphql';
 import { uiAssetResponse } from '../src/ui/assets';
 import { createDemoAccessToken, type IdentitySession } from '../src/lib/identity-session';

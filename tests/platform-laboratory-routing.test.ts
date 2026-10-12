@@ -100,7 +100,7 @@ describe('platform laboratory declarative routing', () => {
       offline: { mode: 'gated' as const },
       cache: { mode: 'no-store' as const },
       crawler: { crawling: 'controlled' as const, indexing: 'deny' as const },
-      documentation: { title: 'Synthetic', description: 'Synthetic route.', docs: ['docs/ROUTE-REGISTRY.md'] },
+      documentation: { title: 'Synthetic', description: 'Synthetic route.' },
       source: { module: 'tests/platform-laboratory-routing.test.ts', exportName: 'synthetic', tests: ['tests/platform-laboratory-routing.test.ts'] },
       requestLimits: noRequestBody(),
       storage: NO_STORAGE,
@@ -233,7 +233,6 @@ it('returns the ordinary 404 for every retired platform ?view= URL', async () =>
         documentation: {
           title: 'Synthetic laboratory',
           description: 'Test-only compatible platform laboratory.',
-          docs: ['docs/ROUTE-REGISTRY.md'],
         },
         source: {
           module: 'tests/platform-laboratory-routing.test.ts',

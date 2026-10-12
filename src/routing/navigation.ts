@@ -7,7 +7,7 @@ export interface RegisteredRouteMetadataView {
   kind: string;
   visibility: 'public' | 'private';
   crawler: { crawling: string; indexing: 'allow' | 'deny' };
-  documentation: { title: string; description: string; docs: readonly string[] };
+  documentation: { title: string; description: string };
   source: { module: string; exportName?: string; tests?: readonly string[] };
   page?: PageMetadata;
 }

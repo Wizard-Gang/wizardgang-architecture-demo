@@ -9,11 +9,8 @@ export function validateScaffold(root = process.cwd()) {
   const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
 
   for (const requiredFile of [
-    'docs/ARCHITECTURE-STANDARD.md',
-    'docs/OPERATIONS.md',
-    'docs/ROUTE-REGISTRY.md',
-    'docs/asset-manifest.json',
-    'docs/route-manifest.json',
+    'src/generated/asset-manifest.json',
+    'src/generated/route-manifest.json',
     'vite.config.ts',
     'src/styles/shell.css',
     'src/styles/demos.css',
@@ -42,7 +39,7 @@ export function validateScaffold(root = process.cwd()) {
 
   let manifest: any = [];
   try {
-    manifest = JSON.parse(read('docs/route-manifest.json'));
+    manifest = JSON.parse(read('src/generated/route-manifest.json'));
   } catch (error) {
     failures.push(`route manifest is not valid JSON: ${String(error)}`);
   }
@@ -62,7 +59,6 @@ export function validateScaffold(root = process.cwd()) {
     ids.add(entry.id);
     patterns.add(entry.route);
     if (!Array.isArray(entry.methods) || entry.methods.length === 0) failures.push(`route manifest missing methods: ${entry.id}`);
-    if (!Array.isArray(entry.docs) || entry.docs.length === 0) failures.push(`route manifest missing documentation links: ${entry.id}`);
     const sourceModule = entry.source?.module;
     if (!sourceModule || !exists(sourceModule)) failures.push(`route manifest source does not exist: ${entry.id} -> ${sourceModule}`);
   }

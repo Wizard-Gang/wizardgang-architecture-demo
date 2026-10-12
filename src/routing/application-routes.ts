@@ -50,9 +50,6 @@ function validateApplicationDeclaration(route: ApplicationRouteDeclaration): voi
   if (!route.documentation.title.trim() || !route.documentation.description.trim()) {
     throw new Error(`Route '${route.id}' is undocumented: title and description are required`);
   }
-  if (route.documentation.docs.length === 0 || route.documentation.docs.some((doc) => !doc.trim())) {
-    throw new Error(`Route '${route.id}' is undocumented: at least one documentation path is required`);
-  }
   if (!route.source.module.trim()) {
     throw new Error(`Route '${route.id}' is undocumented: source.module is required`);
   }

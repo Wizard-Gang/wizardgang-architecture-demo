@@ -42,7 +42,6 @@ function syntheticRoute(
     documentation: {
       title: id,
       description: `Synthetic route ${id}`,
-      docs: ['docs/ROUTE-REGISTRY.md'],
     },
     source: {
       module: 'tests/application-route-registry.test.ts',
@@ -145,7 +144,6 @@ describe('complete declarative application routing', () => {
     for (const route of applicationRouteRegistry.declarations) {
       expect(route.documentation.title.trim(), route.id).not.toBe('');
       expect(route.documentation.description.trim(), route.id).not.toBe('');
-      expect(route.documentation.docs.length, route.id).toBeGreaterThan(0);
       expect(route.source.module.trim(), route.id).not.toBe('');
       if (route.kind === 'page') {
         expect(route.methods, route.id).toContain('GET');
@@ -163,7 +161,7 @@ describe('complete declarative application routing', () => {
     }
 
     const undocumented = syntheticRoute('synthetic.undocumented', '/synthetic-undocumented');
-    undocumented.documentation = { title: '', description: '', docs: [] };
+    undocumented.documentation = { title: '', description: '' };
     expect(() => createApplicationRouteRegistry([
       defineRouteModule('synthetic.undocumented', [undocumented]),
     ])).toThrow('undocumented');

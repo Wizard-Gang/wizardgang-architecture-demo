@@ -6,7 +6,6 @@ import {
 } from '../route-capability';
 
 const tests = ['tests/platform-laboratory-routing.test.ts', 'tests/interface.test.ts', 'tests/router.test.ts'] as const;
-const docs = ['docs/ROUTE-REGISTRY.md'] as const;
 
 export const accessibilityLaboratoryCapability = definePlatformLaboratoryCapability({
   id: 'platform.accessibility',
@@ -30,7 +29,6 @@ export const accessibilityLaboratoryCapability = definePlatformLaboratoryCapabil
       documentation: {
         title: 'Accessibility teaching laboratory API',
         description: 'Renders the bounded accessible or intentionally broken teaching frame used by the accessibility interface view.',
-        docs,
       },
       source: {
         module: 'src/platform/route-capabilities/accessibility.ts',

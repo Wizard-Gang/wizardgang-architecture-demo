@@ -11,13 +11,13 @@ describe('direct route manifest generation', () => {
     expect(scripts['validate:routes']).toBe('vitest run tests/route-artifacts.test.ts');
     const routes = generatedArtifactDefinitions.find((definition) => definition.id === 'routes');
     expect(routes?.command).toEqual(['node', ['scripts/generate-route-manifest.ts']]);
-    expect(routes?.outputs).toEqual(['docs/route-manifest.json']);
+    expect(routes?.outputs).toEqual(['src/generated/route-manifest.json']);
 
     const generator = read('scripts/generate-route-manifest.ts');
     expect(generator).toContain("vite.ssrLoadModule('/src/routing/application-routes.ts')");
     expect(generator).toContain("vite.ssrLoadModule('/src/routing/artifacts.ts')");
     expect(generator).toContain('artifacts.serializeRouteManifest(registry.applicationRouteRegistry.declarations)');
-    expect(generator).toContain("writeFileSync(path.join(cwd, 'docs/route-manifest.json'), serialized)");
+    expect(generator).toContain("writeFileSync(path.join(cwd, 'src/generated/route-manifest.json'), serialized)");
     expect(generator).not.toContain('ROUTE_ARTIFACTS_WRITE');
     expect(generator).not.toContain("process.argv.includes('--check')");
 
@@ -27,6 +27,6 @@ describe('direct route manifest generation', () => {
     expect(tests).toContain('buildRouteManifest(declarations)');
     expect(tests).not.toContain('ROUTE_ARTIFACTS_WRITE');
     expect(tests).not.toContain('writeFileSync');
-    expect(tests).not.toContain('docs/route-manifest.json');
+    expect(tests).not.toContain('src/generated/route-manifest.json');
   });
 });

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import manifest from '../docs/asset-manifest.json';
+import manifest from '../src/generated/asset-manifest.json';
 import { validateReactPresentation, validateWorkerBundle } from '../scripts/validate-react-presentation.ts';
 import { validateRepositoryBaseline } from '../scripts/validate-repository-baseline.ts';
 
@@ -30,7 +30,7 @@ function violation(root: string, relative: string, edit: (value: string) => stri
 
 describe('DEMO-339 deliberate-regression proofs', () => {
   it('rejects each React, browser, stylesheet, CSP, and static-asset boundary regression', () => {
-    const root = fixture(['src', 'docs/asset-manifest.json', 'vite.config.ts', 'wrangler.jsonc']);
+    const root = fixture(['src', 'src/generated/asset-manifest.json', 'vite.config.ts', 'wrangler.jsonc']);
     try {
       const validate = () => validateReactPresentation(root);
       expect(validate()).toEqual([]);
@@ -41,7 +41,7 @@ describe('DEMO-339 deliberate-regression proofs', () => {
       violation(root, 'src/browser/regression.ts', () => "import { createBrowserRouter } from 'react-router-dom';", validate, /client router/);
       violation(root, 'src/ui/regression.css', () => '.regression { color: red; }', validate, /stylesheet outside src\/styles/);
       violation(root, 'src/lib/http.ts', (value) => value.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'"), validate, /shared CSP missing or permits unsafe-inline/);
-      violation(root, 'docs/asset-manifest.json', (value) => value.replace(manifest.assets['vendor.axe'], '/assets/axe.min.js'), validate, /unhashed browser asset/);
+      violation(root, 'src/generated/asset-manifest.json', (value) => value.replace(manifest.assets['vendor.axe'], '/assets/axe.min.js'), validate, /unhashed browser asset/);
       violation(root, 'wrangler.jsonc', (value) => value.replace('"binding": "ASSETS"', '"binding": "OTHER"'), validate, /Workers Static Assets/);
       violation(root, 'src/ui/assets.ts', (value) => value.replace('max-age=31536000, immutable', 'max-age=60'), validate, /immutable caching/);
       violation(root, 'vite.config.ts', (value) => value.replace("resolve(ROOT, 'src/styles/graphiql.css')", "resolve(ROOT, 'node_modules/graphiql.css')"), validate, /stylesheets must build from src\/styles/);
@@ -53,7 +53,7 @@ describe('DEMO-339 deliberate-regression proofs', () => {
           fixtureManifest.assets[key] = initial.replace(/-[a-zA-Z0-9_-]+(\.[^.]+)$/, `-${digest}$1`);
         }
       }
-      writeFileSync(path.join(root, 'docs/asset-manifest.json'), `${JSON.stringify(fixtureManifest)}\n`);
+      writeFileSync(path.join(root, 'src/generated/asset-manifest.json'), `${JSON.stringify(fixtureManifest)}\n`);
       for (const asset of Object.values(fixtureManifest.assets)) {
         const file = path.join(generated, asset.slice(1));
         mkdirSync(path.dirname(file), { recursive: true });
