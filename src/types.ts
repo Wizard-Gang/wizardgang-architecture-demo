@@ -74,7 +74,6 @@ export interface Env {
   DEPLOYED_SHA?: string;
   DEPLOYMENT_ENVIRONMENT?: string;
   DEPLOYMENT_CI_STATUS?: string;
-  BILLING_DEMO_MONTHLY_BUDGET_USD?: string;
   CLOUDFLARE_ACCOUNT_ID?: string;
   CLOUDFLARE_WORKER_NAME?: string;
   CLOUDFLARE_R2_BUCKET?: string;

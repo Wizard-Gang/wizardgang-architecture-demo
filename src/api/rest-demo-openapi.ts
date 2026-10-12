@@ -1,5 +1,3 @@
-import { json, methodNotAllowed } from '../lib/http';
-
 export interface RestDemoSchema {
   $ref?: string;
   type?: string;
@@ -90,7 +88,7 @@ export const restDemoOpenApiDocument: RestDemoOpenApiDocument = {
   info: {
     title: 'WizardGang REST demo',
     version: '1.0.0',
-    description: 'Anonymous CRUD records isolated by a signed visitor-session cookie. The separate /api/openapi.json document describes the bearer-capable machine API.',
+    description: 'Anonymous CRUD records isolated by a signed visitor-session cookie.',
   },
   servers: [{ url: 'https://demo.wizardgang.ai', description: 'Live demo server' }],
   tags: [{ name: 'Records', description: 'Cookie-isolated visitor records' }],
@@ -265,14 +263,3 @@ export const restDemoOpenApiDocument: RestDemoOpenApiDocument = {
     },
   },
 };
-
-export function restDemoOpenApiResponse(request: Request): Response {
-  if (request.method !== 'GET') return methodNotAllowed(['GET']);
-  const download = new URL(request.url).searchParams.get('download') === '1';
-  return json(restDemoOpenApiDocument, {
-    headers: {
-      'cache-control': 'public, max-age=300',
-      'content-disposition': `${download ? 'attachment' : 'inline'}; filename="wizardgang-rest-demo-openapi.json"`,
-    },
-  });
-}

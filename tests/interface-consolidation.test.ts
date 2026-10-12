@@ -58,7 +58,7 @@ describe('canonical interface demonstrations', () => {
     expect(rest).toContain('PATCH');
     expect(rest).toContain('/api/labs/rest-demo-records');
     expect(rest).not.toContain('Focused browser tutorial.');
-    expect(rest).toContain('/api/labs/rest-demo-openapi.json');
+    expect(rest).toContain('href="/api/openapi.json"');
     expect(rest).toContain('data-rest-operation-select="listRecords"');
     expect(rest).toContain('data-rest-full-openapi');
     expect(rest).not.toContain('Two deliberate REST boundaries.');

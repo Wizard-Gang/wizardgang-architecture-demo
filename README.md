@@ -14,8 +14,8 @@ Live, executable architecture demonstrations on Cloudflare Workers, served at `h
 - Shared state uses baseline's `wizardgang` D1 `records`/`events` tables through `WG_DB`, with per-row TTLs and no demo-owned DDL.
 - R2 stores object bytes under `demo/` in the shared `wizardgang` bucket (`WG_R2`); D1 records hold metadata and references.
 - Durable Objects own coordinated state; Workers mediate application state and integrations.
-- Public REST, GraphQL and MCP reads share one explicit authorization boundary.
-- Secrets, credentials, private account metadata and real billing data never belong in Git or public logs.
+- GraphQL and MCP reads share one explicit authorization boundary; the REST demo isolates records per signed visitor-session cookie, and `/api/openapi.json` is the only published OpenAPI document.
+- Secrets, credentials, private account metadata and real billing data never belong in Git or public responses.
 
 ## Local setup
 

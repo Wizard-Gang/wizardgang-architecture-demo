@@ -52,7 +52,7 @@ describe('DEMO-335 React REST and GraphQL demonstrations', () => {
     expect(methodCount).toBe(6);
     expect(html.match(/data-rest-operation-select=/g)).toHaveLength(methodCount);
     expect(html.match(/data-rest-form=/g)).toHaveLength(methodCount);
-    expect(html).toContain('href="/api/labs/rest-demo-openapi.json"');
+    expect(html).toContain('href="/api/openapi.json"');
     expect(html).toContain('/rest-demo-records<wbr/></span><span>/{id}');
     expect(html).not.toContain('Code samples for this operation');
     expect(html).not.toContain('Focused browser tutorial');

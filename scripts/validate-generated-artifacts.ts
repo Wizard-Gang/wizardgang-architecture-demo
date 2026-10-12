@@ -40,7 +40,7 @@ const definitions = [
   {
     id: 'openapi',
     command: ['npm', ['run', 'generate:openapi']],
-    inputs: ['contracts/openapi/openapi.json'],
+    inputs: ['contracts/openapi/openapi.json', 'src/api/rest-demo-openapi.ts'],
     outputs: ['contracts/openapi/openapi.json'],
   },
 ];

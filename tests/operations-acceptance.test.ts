@@ -33,7 +33,7 @@ describe('DEMO-259 operations retirement acceptance', () => {
 
   it('keeps required operations machine endpoints registered and working', async () => {
     const routeIds = new Set(applicationRouteRegistry.declarations.map((route) => route.id));
-    for (const id of ['operations.health', 'operations.version', 'operations.api-logs', 'operations.api-budget']) {
+    for (const id of ['operations.health', 'operations.version']) {
       expect(routeIds.has(id), id).toBe(true);
     }
 

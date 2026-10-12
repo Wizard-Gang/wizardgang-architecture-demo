@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { authorizationDecisionResponse, demoAccessTokenResponse, identitySessionResponse } from '../src/api/identity';
-import { logsResponse } from '../src/api/operations';
 import { recentDemoEvents } from '../src/lib/audit';
 import {
   createIdentitySession,
@@ -17,7 +16,6 @@ function captureDb() {
   return {
     db,
     get events() { return db.demoEventRows(); },
-    get logs() { return db.applicationLogRows(); },
   };
 }
 
@@ -79,19 +77,6 @@ describe('DEMO-291 identity audit value hardening', () => {
     expect(JSON.stringify(payload)).not.toContain('stable-subject');
     expect(payload).not.toHaveProperty('subjectSha256');
 
-    const storedLog = capture.logs.find((row) => row.event_key === 'identity.authorization_allowed');
-    expect(storedLog).toBeTruthy();
-    expect(String(storedLog?.detail_json)).not.toContain(auditId);
-    expect(String(storedLog?.detail_json)).not.toContain('stable-subject');
-    expect(String(storedLog?.detail_json)).not.toContain('subjectSha256');
-
-    const publicLogs = await logsResponse(new Request('https://demo.example/api/operations/logs?source=identity'), env);
-    const publicLogBody = await publicLogs.json() as { results: ApplicationLogRow[] };
-    expect(publicLogBody.results).not.toHaveLength(0);
-    expect(publicLogBody.results.every((row) => row.detail_json === null)).toBe(true);
-    expect(JSON.stringify(publicLogBody)).not.toContain(auditId);
-    expect(JSON.stringify(publicLogBody)).not.toContain('stable-subject');
-
     const publicEvents = await recentDemoEvents(env, 20) as Array<Record<string, unknown>>;
     const identityEvents = publicEvents.filter((row) => row.demo_id === 'identity');
     expect(identityEvents).not.toHaveLength(0);
@@ -99,7 +84,7 @@ describe('DEMO-291 identity audit value hardening', () => {
     expect(JSON.stringify(identityEvents)).not.toContain(auditId);
   });
 
-  it('derives visitor sandboxes from the keyed namespace purpose and stores no derived value in application logs', async () => {
+  it('derives visitor sandboxes from the keyed namespace purpose', async () => {
     const capture = captureDb();
     const env = environment(capture.db);
     const currentSession = session();
@@ -123,10 +108,6 @@ describe('DEMO-291 identity audit value hardening', () => {
     const tokenPayload = JSON.parse(String(tokenEvent?.payload_json)) as Record<string, unknown>;
     expect(tokenPayload.namespace).toBe(body.namespace);
     expect(tokenPayload.subjectAuditId).toBe(await identitySubjectAuditId(env, 'microsoft', 'stable-subject'));
-
-    const tokenLog = capture.logs.find((row) => row.event_key === 'identity.demo_access_token_issued');
-    expect(String(tokenLog?.detail_json)).not.toContain(body.namespace);
-    expect(String(tokenLog?.detail_json)).not.toContain(String(tokenPayload.subjectAuditId));
   });
 
   it('keeps identity sessions valid under the same root and signs them out once WG_SESSION_KEY rotates', async () => {

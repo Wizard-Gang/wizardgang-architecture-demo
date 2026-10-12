@@ -43,8 +43,8 @@ describe('executable interface contracts', () => {
   it('maps every documented OpenAPI operation directly to the application route registry', () => {
     const openapi = readOpenApi();
     expect(openapi.openapi).toBe('3.1.0');
-    expect(openapi.info.description).toContain('bearer-capable machine API');
-    expect(openapi.info.description).toContain('/api/labs/rest-demo-openapi.json');
+    expect(openapi.info.description).toContain('only published OpenAPI document');
+    expect(openapi.paths).toHaveProperty(['/api/labs/rest-demo-records']);
     expect(new URL(openapi.servers[0].url).pathname).toBe('/');
 
     for (const [path, pathItem] of Object.entries(openapi.paths)) {
@@ -65,8 +65,6 @@ describe('executable interface contracts', () => {
     for (const path of [
       '/api/operations/health',
       '/api/operations/version',
-      '/api/operations/logs',
-      '/api/operations/budget',
       '/api/openapi.json',
     ]) expect(openapi.paths[path]).toBeDefined();
 

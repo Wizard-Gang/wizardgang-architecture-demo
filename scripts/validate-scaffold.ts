@@ -27,7 +27,6 @@ export function validateScaffold(root = process.cwd()) {
     'src/interfaces/route-capabilities/index.ts',
     'src/lib/demo-control.ts',
     'src/lib/crawler-control.ts',
-    'src/lib/logs.ts',
     'src/ui/admin.tsx',
     'src/ui/offline.tsx',
     'tests/route-registry.test.ts',
@@ -111,10 +110,6 @@ export function validateScaffold(root = process.cwd()) {
   const crawlerControl = read('src/lib/crawler-control.ts');
   for (const token of ['OAI-SearchBot', 'ChatGPT-User', 'GPTBot', 'chatgpt_crawl_access_changed']) {
     if (!crawlerControl.includes(token)) failures.push(`crawler control invariant missing: ${token}`);
-  }
-  const logsLib = read('src/lib/logs.ts');
-  for (const token of ['KINDS.log', 'SENSITIVE_KEY', '[redacted]', 'recentApplicationLogs']) {
-    if (!logsLib.includes(token)) failures.push(`application log invariant missing: ${token}`);
   }
 
   function walk(directory: string): void {

@@ -368,7 +368,6 @@ function environment(): Env {
     DEPLOYED_SHA: TEST_SHA,
     DEPLOYMENT_ENVIRONMENT: 'presentation-test',
     DEPLOYMENT_CI_STATUS: 'success',
-    BILLING_DEMO_MONTHLY_BUDGET_USD: '10',
   };
 }
 

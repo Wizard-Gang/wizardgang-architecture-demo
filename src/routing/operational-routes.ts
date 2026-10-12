@@ -7,8 +7,7 @@ import {
   setCrawlerControl,
 } from '../lib/crawler-control';
 import { json } from '../lib/http';
-import { healthResponse, versionResponse, logsResponse } from '../api/operations';
-import { billingScenarioResponse } from '../api/billing';
+import { healthResponse, versionResponse } from '../api/operations';
 import { securityTxtResponse } from '../api/security-policy';
 import { sitemapResponse } from '../api/sitemap';
 import { uiAssetResponse } from '../ui/assets';
@@ -209,16 +208,6 @@ const globalOperationalRoutes = [
     handler: (request) => sitemapResponse(request), title: 'Sitemap', description: 'Registry-generated public sitemap.',
     sourceModule: 'src/api/sitemap.ts', sourceExport: 'sitemapResponse', offline: 'gated',
     cache: { mode: 'public', maxAgeSeconds: 3600 },
-  }),
-  operationalRoute({
-    id: 'operations.api-logs', pattern: '/api/operations/logs', methods: ['GET'], kind: 'api', handler: (request, { env }) => logsResponse(request, env),
-    title: 'Operations logs API', description: 'Sanitized application log query endpoint.',
-    sourceModule: 'src/api/operations.ts', sourceExport: 'logsResponse',
-  }),
-  operationalRoute({
-    id: 'operations.api-budget', pattern: '/api/operations/budget', methods: ['POST'], kind: 'api', handler: (request, { env }) => billingScenarioResponse(request, env),
-    title: 'Operations budget API', description: 'Synthetic budget scenario control used by the operations demo.',
-    sourceModule: 'src/api/billing.ts', sourceExport: 'billingScenarioResponse',
   }),
 ] as const;
 

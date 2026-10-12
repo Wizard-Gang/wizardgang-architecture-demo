@@ -31,7 +31,7 @@ export const DEMO_ROBOTS = [
 
 export async function runScheduledOperations(env: Env, scheduledTime = Date.now()): Promise<void> {
   await collectHealth(env, true, scheduledTime);
-  // Expired demo records and events (sessions, sandboxes, logs, raw health observations) leave the shared tables here.
+  // Expired demo records and events (sessions, sandboxes, raw health observations) leave the shared tables here.
   await sweepDemoStorage(env, scheduledTime);
 }
 

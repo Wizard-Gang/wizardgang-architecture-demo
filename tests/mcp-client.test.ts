@@ -94,7 +94,6 @@ async function exerciseClient(client: Client, env: Env & { WG_DB: SqliteD1 }) {
   expect(publicResults.every((record) => record.namespace === 'public')).toBe(true);
 
   await client.close();
-  return env.WG_DB.events<{ detail_json: string }>('log').map((event) => JSON.parse(event.body.detail_json) as Record<string, unknown>);
 }
 
 describe('official MCP client interoperability', () => {
@@ -108,18 +107,7 @@ describe('official MCP client interoperability', () => {
       },
     );
 
-    const logs = await exerciseClient(client, env);
-    expect(logs).toHaveLength(3);
-    expect(logs.slice(1).map((log) => log.tool)).toEqual(['list_demo_records', 'list_demo_records']);
-    expect(logs[0]).toMatchObject({
-      clientName: 'integration-modern-client',
-      clientVersion: '1.0.0',
-      protocolVersion: MCP_PROTOCOL_VERSION,
-      method: 'tools/call',
-      tool: 'ping',
-      authMode: 'public',
-      result: 'success',
-    });
+    await exerciseClient(client, env);
   });
 
   it('accepts the documented modern stateless curl request without a handshake', async () => {

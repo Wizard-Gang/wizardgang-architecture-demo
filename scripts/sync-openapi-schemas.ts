@@ -1,14 +1,33 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { restDemoOpenApiDocument } from '../src/api/rest-demo-openapi.ts';
 
 const root = process.cwd();
 const openApiPath = path.join(root, 'contracts', 'openapi', 'openapi.json');
 
 const openApi = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
 
-const schemas = openApi.components?.schemas;
-if (!schemas || typeof schemas !== 'object') {
-  throw new Error('OpenAPI components.schemas is required before generated paths can be synchronized.');
+if (!openApi.components || typeof openApi.components !== 'object') {
+  throw new Error('OpenAPI components are required before generated paths can be synchronized.');
+}
+
+// The REST demo page renders restDemoOpenApiDocument; its records operations are published only through this document.
+const REST_DEMO_ROUTE_IDS = {
+  '/api/labs/rest-demo-records': 'platform.d1.rest-demo-records',
+  '/api/labs/rest-demo-records/{id}': 'platform.d1.rest-demo-record',
+};
+const HTTP_METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];
+
+function restDemoPaths() {
+  const security = restDemoOpenApiDocument.security;
+  return Object.fromEntries(Object.entries(structuredClone(restDemoOpenApiDocument.paths)).map(([currentPath, pathItem]) => {
+    const routeId = REST_DEMO_ROUTE_IDS[currentPath];
+    if (!routeId) throw new Error(`REST demo path ${currentPath} has no registered route ID.`);
+    for (const method of HTTP_METHODS) {
+      if (pathItem[method]) pathItem[method] = { ...pathItem[method], 'x-route-id': routeId, security };
+    }
+    return [currentPath, pathItem];
+  }));
 }
 
 const jsonObjectResponse = (description, schema = { type: 'object' }) => ({
@@ -17,13 +36,6 @@ const jsonObjectResponse = (description, schema = { type: 'object' }) => ({
     'application/json': { schema },
   },
 });
-
-const errorResponses = {
-  '400': jsonObjectResponse('Invalid request.'),
-  '401': jsonObjectResponse('Authentication required.'),
-  '403': jsonObjectResponse('Insufficient permission.'),
-  '404': jsonObjectResponse('Resource not found.'),
-};
 
 function operationsPaths() {
   return {
@@ -41,31 +53,13 @@ function operationsPaths() {
         responses: { '200': jsonObjectResponse('Current deployed version and source metadata.') },
       },
     },
-    '/api/operations/logs': {
-      get: {
-        summary: 'Read sanitized application logs',
-        'x-route-id': 'operations.api-logs',
-        responses: { '200': jsonObjectResponse('Sanitized operational log telemetry.'), ...errorResponses },
-      },
-    },
-    '/api/operations/budget': {
-      post: {
-        summary: 'Calculate the synthetic operations budget demonstration',
-        'x-route-id': 'operations.api-budget',
-        requestBody: {
-          required: true,
-          content: { 'application/json': { schema: { type: 'object' } } },
-        },
-        responses: { '200': jsonObjectResponse('Synthetic budget calculation.'), '400': jsonObjectResponse('Invalid budget input.') },
-      },
-    },
   };
 }
 
 function canonicalize(document) {
   const retained = {};
   for (const [currentPath, pathItem] of Object.entries(document.paths ?? {})) {
-    if (currentPath.startsWith('/api/operations/') || currentPath === '/api/openapi.json') continue;
+    if (currentPath.startsWith('/api/operations/') || currentPath === '/api/openapi.json' || REST_DEMO_ROUTE_IDS[currentPath]) continue;
     retained[currentPath] = pathItem;
   }
 
@@ -74,6 +68,7 @@ function canonicalize(document) {
     : {};
   document.servers = [{ ...firstServer, url: 'https://demo.wizardgang.ai' }];
   document.paths = {
+    ...restDemoPaths(),
     ...retained,
     ...operationsPaths(),
     '/api/openapi.json': {
@@ -85,6 +80,12 @@ function canonicalize(document) {
         },
       },
     },
+  };
+  document.tags = structuredClone(restDemoOpenApiDocument.tags);
+  document.components.schemas = structuredClone(restDemoOpenApiDocument.components.schemas);
+  document.components.securitySchemes = {
+    ...document.components.securitySchemes,
+    ...structuredClone(restDemoOpenApiDocument.components.securitySchemes),
   };
   return document;
 }

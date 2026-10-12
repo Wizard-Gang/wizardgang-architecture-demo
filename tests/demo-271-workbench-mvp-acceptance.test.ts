@@ -75,7 +75,7 @@ describe('DEMO-271 Demo Workbench MVP acceptance', () => {
     expect(routes.find((route) => route.id === 'demos.presentation')).toMatchObject({ pattern: '/api/demos/:demo', kind: 'api', methods: ['GET'] });
     for (const [id] of released) expect(demonstrations.find((demo) => demo.id === id)?.render).toBeTypeOf('function');
     const requiredRouteIds = [
-      'platform.d1.users', 'platform.r2.files', 'interfaces.rest.openapi.json', 'interfaces.graphql.endpoint',
+      'platform.d1.users', 'platform.r2.files', 'platform.d1.rest-demo-records', 'interfaces.graphql.endpoint',
       'platform.webhooks.synthetic', 'interfaces.identity.session', 'interfaces.mcp.server', 'platform.edge.inspect',
       'platform.workers.compute', 'platform.durable-objects.counter', 'platform.accessibility.lab',
     ];

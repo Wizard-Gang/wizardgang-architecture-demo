@@ -114,8 +114,6 @@ describe('public frontend shell', () => {
       ['interfaces.webhooks.github', '/webhooks/github', ['POST'], 'protocol'],
       ['operations.health', '/api/operations/health', ['GET'], 'api'],
       ['operations.version', '/api/operations/version', ['GET'], 'api'],
-      ['operations.api-logs', '/api/operations/logs', ['GET'], 'api'],
-      ['operations.api-budget', '/api/operations/budget', ['POST'], 'api'],
       ['operations.security-txt', '/.well-known/security.txt', ['GET', 'HEAD'], 'protocol'],
       ['operations.robots', '/robots.txt', ['GET', 'HEAD'], 'protocol'],
       ['operations.sitemap', '/sitemap.xml', ['GET'], 'protocol'],

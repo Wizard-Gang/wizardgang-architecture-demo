@@ -1,7 +1,6 @@
 import type { Env } from '../types';
 import { recordDemoEvent } from '../lib/audit';
 import { json, methodNotAllowed } from '../lib/http';
-import { recordApplicationLog } from '../lib/logs';
 
 export async function durableCounterResponse(request: Request, env: Env): Promise<Response> {
   if (!['GET', 'POST'].includes(request.method)) return methodNotAllowed(['GET', 'POST']);
@@ -14,7 +13,6 @@ export async function durableCounterResponse(request: Request, env: Env): Promis
   const state = await response.json() as { counter: number };
   if (request.method === 'POST') {
     const event = await recordDemoEvent(env, 'durable-objects', 'counter_incremented', { counter: state.counter, objectName: 'public-counter' });
-    await recordApplicationLog(env, { source: 'durable-objects', eventKey: 'counter_incremented', message: `Coordinated counter advanced to ${state.counter}.`, route: '/api/labs/durable-counter', detail: { counter: state.counter, eventId: event.id } });
     return json({ ...state, coordination: 'Durable Object', persistence: 'Durable Object storage', auditEventId: event.id });
   }
   return json({ ...state, coordination: 'Durable Object', persistence: 'Durable Object storage' });

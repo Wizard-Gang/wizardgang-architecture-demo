@@ -1,6 +1,5 @@
 import type { Env } from '../types';
 import { getDemoControl } from '../lib/demo-control';
-import { recordApplicationLog, recentApplicationLogs } from '../lib/logs';
 import { json } from '../lib/http';
 import { identityReadiness } from '../lib/identity-session';
 import { COLLECTIONS, TTL_SECONDS, demoBucket, demoRecords } from '../lib/storage';
@@ -125,16 +124,6 @@ export async function collectHealth(env: Env, persist = false, scheduledTime?: n
       };
       await demoRecords(env).put(COLLECTIONS.health, persistedAt, observation, { owner: day, ttlSeconds: TTL_SECONDS.healthObservation });
       await recordAvailabilityDay(env, day);
-      await recordApplicationLog(env, {
-        level: status === 'operational' ? 'info' : 'warn',
-        source: 'health',
-        eventKey: 'health_check',
-        message: status === 'offline'
-          ? 'Runtime checked; public demo intentionally offline.'
-          : status === 'degraded' ? 'Runtime operational; one or more dependencies unavailable.' : 'Runtime dependency checks passed.',
-        route: '/api/operations/health',
-        detail: { demoState: control.state, services: snapshot.services, responseMs: snapshot.responseMs, scheduledAt: persistedAt },
-      });
     } catch {
       // Health reporting should still respond even if history/log persistence is unavailable.
     }
@@ -158,19 +147,4 @@ export function versionResponse(env: Env): Response {
     environment: env.DEPLOYMENT_ENVIRONMENT || 'local',
     ci: env.DEPLOYMENT_CI_STATUS || null,
   }, { headers: { 'cache-control': 'no-store' } });
-}
-
-export async function logsResponse(request: Request, env: Env): Promise<Response> {
-  const url = new URL(request.url);
-  const limit = Number(url.searchParams.get('limit') ?? '50');
-  const level = url.searchParams.get('level');
-  const source = url.searchParams.get('source');
-  const requestId = url.searchParams.get('requestId');
-  const results = await recentApplicationLogs(env, {
-    limit: Number.isFinite(limit) ? limit : 50,
-    level,
-    source,
-    requestId,
-  });
-  return json({ results }, { headers: { 'cache-control': 'no-store' } });
 }

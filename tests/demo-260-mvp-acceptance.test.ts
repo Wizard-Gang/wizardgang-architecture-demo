@@ -4,7 +4,6 @@ import routeManifest from '../src/generated/route-manifest.json';
 import { AVAILABILITY_RETENTION_DAYS } from '../src/api/operations';
 import { demonstrations } from '../src/demos/demos-page';
 import { runScheduledOperations } from '../src/index';
-import { recordApplicationLog } from '../src/lib/logs';
 import { routeRequest } from '../src/router';
 import { browserAssetName } from '../src/ui/asset-map';
 import {
@@ -45,7 +44,6 @@ function environment(offline = false): Env {
     DEPLOYED_VERSION: 'v0.21.0-test',
     DEPLOYED_SHA: 'abcdef0123456789',
     DEPLOYMENT_ENVIRONMENT: 'acceptance',
-    BILLING_DEMO_MONTHLY_BUDGET_USD: '10',
   } as Env;
 }
 
@@ -194,17 +192,17 @@ describe('DEMO-260 MVP acceptance contract', () => {
     for (const id of [
       'platform.d1.users',
       'platform.r2.files',
-      'interfaces.rest.openapi.json',
+      'interfaces.openapi.json',
       'interfaces.graphql.endpoint',
       'interfaces.identity.session',
       'interfaces.mcp.server',
     ]) expect(routeIds.has(id), id).toBe(true);
 
-    const openapi = await request(routeUrl('interfaces.rest.openapi.json'), environment(), {
+    const openapi = await request(routeUrl('interfaces.openapi.json'), environment(), {
       headers: { accept: 'application/json' },
     });
     expect(openapi.status).toBe(200);
-    expect(await openapi.json()).toMatchObject({ openapi: '3.0.3' });
+    expect(await openapi.json()).toMatchObject({ openapi: '3.1.0' });
 
     const graphql = await request(routeUrl('interfaces.graphql.endpoint'), environment(), {
       method: 'POST',
@@ -256,13 +254,11 @@ describe('DEMO-260 MVP acceptance contract', () => {
     expect(policy).toContain(`Policy: ${repositoryUrl}/security/policy`);
   });
 
-  it('preserves operational machine contracts, collection, retention, and redaction', async () => {
+  it('preserves operational machine contracts, collection, and retention', async () => {
     const routeIds = new Set(applicationRouteRegistry.declarations.map((route) => route.id));
     for (const id of [
       'operations.health',
       'operations.version',
-      'operations.api-logs',
-      'operations.api-budget',
       'operations.robots',
       'operations.sitemap',
       'operations.security-txt',
@@ -288,12 +284,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
       branch: 'main',
     });
 
-    const logs = await request(routeUrl('operations.api-logs'), environment(), {
-      headers: { accept: 'application/json' },
-    });
-    expect(logs.status).toBe(200);
-    expect(await logs.json()).toEqual({ results: [] });
-
     const robots = await request(routeUrl('operations.robots'));
     expect(robots.status).toBe(200);
     expect(await robots.text()).toContain('User-agent:');
@@ -312,20 +302,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
     expect(AVAILABILITY_RETENTION_DAYS).toBe(365);
     expect([...database.records('health').keys()]).toEqual(['2026-09-15T00:00:00.000Z']);
     expect(database.records('availability').get('2026-09-15')?.body).toEqual({ verified: 1, operational: 1, intentional: 0 });
-
-    const logEnv = environment();
-    const logDb = logEnv.WG_DB as SqliteD1;
-    await recordApplicationLog(logEnv, {
-      source: 'acceptance',
-      eventKey: 'redaction',
-      message: 'MVP acceptance log',
-      detail: { token: 'secret-token-value', safe: 'visible' },
-    });
-    const [logInsert] = logDb.applicationLogRows();
-    expect(logInsert).toBeDefined();
-    expect(String(logInsert?.detail_json)).toContain('"token":"[redacted]"');
-    expect(String(logInsert?.detail_json)).toContain('"safe":"visible"');
-    expect(String(logInsert?.detail_json)).not.toContain('secret-token-value');
   });
 
   it('preserves hidden offline/admin boundaries and declared offline behavior', async () => {

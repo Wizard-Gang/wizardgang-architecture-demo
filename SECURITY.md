@@ -15,7 +15,7 @@ Use Cloudflare/GitHub managed secret stores for production and ignored `.dev.var
 
 `npm run validate:security`, included in the canonical `check` gate, inspects tracked checkout files and every reachable Git revision for credential-file paths and secret-like text blobs. The history check reads each unique blob once, fails closed when a blob or the total history exceeds its bounded scan budget, and reports only object identifiers and finding categories. Exact value hashes exempt four synthetic credential values in their original test files; a different value or path is still checked. A real exposure requires private incident handling and credential rotation because deleting a file does not erase public Git history.
 
-The authoritative Worker secret-name inventory is `config/worker-secrets.json`. It follows the baseline registry (`Wizard-Gang/baseline` `config/secrets.json`), which names every WizardGang secret, its one home and its consumers; baseline's secrets runbook mints, sets, rotates and revokes each one. Values are never checked in or exposed by health, version, log or source-link surfaces.
+The authoritative Worker secret-name inventory is `config/worker-secrets.json`. It follows the baseline registry (`Wizard-Gang/baseline` `config/secrets.json`), which names every WizardGang secret, its one home and its consumers; baseline's secrets runbook mints, sets, rotates and revokes each one. Values are never checked in or exposed by health, version or source-link surfaces.
 
 <!-- WORKER_SECRETS_START -->
 - `DEMO_WEBHOOK_SECRET`;
