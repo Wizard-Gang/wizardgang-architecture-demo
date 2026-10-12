@@ -25,7 +25,6 @@ const expandedCiRuns: string[] = ciRuns.flatMap((name) => expandedNpmRunSequence
 const ciWorkflow = fs.readFileSync(path.join(process.cwd(), '.github/workflows/ci.yml'), 'utf8');
 
 const REQUIRED_CHECK_OWNERS = [
-  ['native TypeScript', 'validate:typescript-execution'],
   ['TypeScript boundary', 'validate:typescript-source-boundary'],
   ['platform conformance', 'check:platform'],
   ['shared queue contract', 'test:plan-queue'],
@@ -47,8 +46,6 @@ const REQUIRED_CHECK_OWNERS = [
   ['contracts', 'validate:contracts'],
   ['locales', 'validate:locales'],
   ['security', 'validate:security'],
-  ['governance', 'validate:governance'],
-  ['assurance', 'validate:assurance'],
 ];
 
 describe('DEMO-354 acceptance gate ownership', () => {
@@ -65,41 +62,17 @@ describe('DEMO-354 acceptance gate ownership', () => {
 
     expect(expandedCiRuns.filter((name) => name === 'validate:patch-whitespace')).toHaveLength(1);
     expect(expandedCiRuns.filter((name) => name === 'validate:generated-artifacts')).toHaveLength(1);
-    expect(expandedCiRuns.filter((name) => name === 'validate:assurance')).toHaveLength(1);
     expect(expandedCiRuns.filter((name) => name === 'validate:worker-secrets')).toHaveLength(1);
   });
 
-  it('binds nested scaffold, documentation, and assurance predicates to their single current owners', () => {
-    for (const retired of ['validate:scaffold', 'validate:documentation', 'validate:assurance-documentation']) {
+  it('binds the nested scaffold predicate to its single current owner', () => {
+    for (const retired of ['validate:scaffold', 'validate:documentation']) {
       expect(expandedCheckRuns.filter((run) => run === retired), retired).toHaveLength(0);
       expect(expandedCiRuns.filter((run) => run === retired), retired).toHaveLength(0);
     }
 
     const baseline = fs.readFileSync(path.join(process.cwd(), 'scripts/validate-repository-baseline.ts'), 'utf8');
-    const governance = fs.readFileSync(path.join(process.cwd(), 'scripts/validate-governance-metadata.ts'), 'utf8');
-    const assurance = fs.readFileSync(path.join(process.cwd(), 'scripts/validate-assurance-suite.ts'), 'utf8');
     expect(baseline).toContain('validateScaffold(root).failures');
-    expect(governance).toContain('runDocumentationValidation(root)');
-    expect(packageJson.scripts['validate:assurance']).toBe('node scripts/validate-assurance-suite.ts');
-    const owners = [
-      'runAssuranceRegistryValidation',
-      'runAssuranceRecordValidation',
-      'runAdvisoryValidation',
-      'runAssuranceProjectionValidation',
-      'runAssuranceDocumentationValidation',
-      'runIso27001Validation',
-      'runIso42001Validation',
-      'runWcagValidation',
-      'runAssurancePublicationValidation',
-      'runAssuranceLifecycleValidation',
-      'runAssuranceIntegrityValidation',
-      'runAssuranceOperationsValidation',
-    ];
-    for (const predicate of owners) {
-      expect(assurance.includes(predicate), predicate).toBe(true);
-    }
-    expect((assurance.match(/^  \['/gm) ?? [])).toHaveLength(12);
-    expect(expandedCheckRuns.filter((run) => run === 'validate:assurance')).toHaveLength(1);
   });
 
   it('transfers only browser runtime outputs and retains separate CI boundary gates', () => {

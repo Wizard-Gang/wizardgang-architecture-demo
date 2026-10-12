@@ -29,9 +29,7 @@ The authoritative Worker secret-name inventory is `config/worker-secrets.json`. 
 
 Public provider configuration is a Wrangler var, not a secret: `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, `GITHUB_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_ID`, `MICROSOFT_OAUTH_CLIENT_ID`, `MICROSOFT_TENANT_ID`, and, once the SAML IdP exists, `SAML_IDP_CERT`, `SAML_IDP_ISSUER` and `SAML_SSO_URL`.
 
-The demo holds no signing secret of its own. Visitor demo sessions and reporting cursors (`demo-session`), identity sessions, flows and access tokens (`identity-session`), and identity audit identifiers (`identity-audit`) use 32-byte keys that the vendored wg-edge `deriveKey` derives with HKDF-SHA256 from the shared Secrets Store `WG_SESSION_KEY` binding. Without that binding each feature fails closed. Rotating `WG_SESSION_KEY` signs every demo and identity session out at once.
-
-Cloudflare usage collection uses the dedicated minimum-permission `CLOUDFLARE_BILLING_TOKEN` (`wg-cloudflare-billing`) with Account Analytics Read and Billing Read. Public projections exclude account/resource identifiers, account names, invoice/subscription identifiers, tokens, payment data, and raw upstream error text.
+The demo holds no signing secret of its own. Visitor demo sessions (`demo-session`), identity sessions, flows and access tokens (`identity-session`), and identity audit identifiers (`identity-audit`) use 32-byte keys that the vendored wg-edge `deriveKey` derives with HKDF-SHA256 from the shared Secrets Store `WG_SESSION_KEY` binding. Without that binding each feature fails closed. Rotating `WG_SESSION_KEY` signs every demo and identity session out at once.
 
 ## Demo administration
 
@@ -39,7 +37,7 @@ Cloudflare usage collection uses the dedicated minimum-permission `CLOUDFLARE_BI
 
 The vendored `wg-edge` shell gates `/admin` and `/admin/*` with the shared Secrets Store `WG_OPS_TOKEN`; the application receives only the shell's authenticated-admin decision and never reads an admin password. State-changing form submissions still require exact same-origin requests and failures fail closed.
 
-The controlled Git lifecycle reuses the admin boundary for start and merge/release actions. The browser sends credentials only to the same-origin Worker. The Worker and `git-demo.yml` both act as the `wg-github-app` GitHub App, which is installed on this repository only and holds no Administration, Secrets, Environments or Workflows permission. Each Worker call mints an installation token with only the permissions that call needs through the vendored wg-edge `githubAppToken` (`GITHUB_APP_PRIVATE_KEY`); `git-demo.yml` runs in the `git-demo` environment and mints a job-scoped token from its `APP_ID` and `APP_PRIVATE_KEY`, which GitHub revokes when the job ends. The release job requests Actions read access to verify the canonical exact-head CI run and its real acceptance jobs through the shared protected delivery adapter; it does not grant workflow mutation. No personal GitHub token remains. The public `/assurance#traceability` check presents disclosure-safe lifecycle evidence; it is not an operator control.
+The controlled Git lifecycle reuses the admin boundary for start and merge/release actions. The browser sends credentials only to the same-origin Worker. The Worker and `git-demo.yml` both act as the `wg-github-app` GitHub App, which is installed on this repository only and holds no Administration, Secrets, Environments or Workflows permission. Each Worker call mints an installation token with only the permissions that call needs through the vendored wg-edge `githubAppToken` (`GITHUB_APP_PRIVATE_KEY`); `git-demo.yml` runs in the `git-demo` environment and mints a job-scoped token from its `APP_ID` and `APP_PRIVATE_KEY`, which GitHub revokes when the job ends. The release job requests Actions read access to verify the canonical exact-head CI run and its real acceptance jobs through the shared protected delivery adapter; it does not grant workflow mutation. No personal GitHub token remains.
 
 Crawler access combines the shared shell's stable `/robots.txt` policy with application request gating for `OAI-SearchBot` and `ChatGPT-User`; robots rules alone are insufficient for user-triggered visits. `GPTBot` remains blocked so search/fetch access is separate from model-training access. No authorization decision relies on a crawler user agent.
 
@@ -59,7 +57,7 @@ Intentional offline state is not a reason to expose debugging details. Gated bro
 
 Do not open a public issue for a suspected vulnerability, active security incident, credential exposure, exploit detail, or sensitive infrastructure concern. Use the repository's [private vulnerability reporting](https://github.com/Wizard-Gang/wizardgang-architecture-demo/security/advisories/new) mechanism.
 
-The public disclosure policy and reporting boundary are available at `https://demo.wizardgang.ai/security`. Machine-readable contact information is available at `https://demo.wizardgang.ai/.well-known/security.txt`.
+This file is the disclosure policy. Machine-readable contact information is available at `https://demo.wizardgang.ai/.well-known/security.txt`.
 
 Include the affected route, component, or release; observed behavior and impact; safe reproduction steps; and supporting evidence that can be shared privately. A report may be rejected as non-security, accepted into a draft GitHub Security Advisory, coordinated through remediation, and later published in sanitized form. Not every report is a vulnerability, security incident, GHSA, or CVE.
 
@@ -69,9 +67,9 @@ The controlled path is **private report → triage → GHSA → fix/release → 
 
 1. **Private report.** Reporter identity, private reproduction steps, attachments, exploit detail, credentials, and sensitive infrastructure information stay in GitHub private vulnerability reporting.
 2. **Triage.** Maintainers validate whether the report is a security vulnerability and determine scope and impact. Triage notes remain private.
-3. **GHSA.** A confirmed vulnerability may be coordinated in a draft GitHub Security Advisory. Draft advisory content is private and is not public assurance evidence.
-4. **Fix and release.** Remediation is completed and a fixed release is published before a public advisory record is added to the repository assurance dataset.
+3. **GHSA.** A confirmed vulnerability may be coordinated in a draft GitHub Security Advisory. Draft advisory content is private.
+4. **Fix and release.** Remediation is completed and a fixed release is published before the advisory is published.
 5. **Eligible CVE.** A CVE is recorded only after an actual identifier has been assigned.
-6. **Public advisory.** After the sanitized GitHub Security Advisory is published, its public identity, severity, summary, fixed release, optional CVE, public evidence, and optional incident linkage may be projected through `GET /api/reporting/security` and `/security`.
+6. **Public advisory.** The sanitized GitHub Security Advisory is published in the repository's [security advisories](https://github.com/Wizard-Gang/wizardgang-architecture-demo/security/advisories).
 
-Published advisories and operational incidents remain separate records. A public advisory may link to an `INC-*` identifier only when that incident already exists in the retained incident register. Private report contents, draft GHSA data, reporter identity, exploit details, private treatment notes, and unreleased vulnerability detail are prohibited from the canonical public advisory dataset.
+Private report contents, draft GHSA data, reporter identity, exploit details, private treatment notes, and unreleased vulnerability detail are never published.

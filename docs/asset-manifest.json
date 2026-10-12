@@ -1,11 +1,10 @@
 {
   "version": 1,
   "assets": {
-    "styles.shell": "/assets/shell-bMbz_FQ0.css",
+    "styles.shell": "/assets/shell-CtzUi_s4.css",
     "styles.demos": "/assets/demos-eXrt04gA.css",
     "scripts.shell": "/assets/shell-browser-C3W1tXrY.js",
     "scripts.admin": "/assets/admin-browser-rVkH4YRt.js",
-    "scripts.assurance": "/assets/assurance-browser-DIHh2-Dl.js",
     "scripts.demos": "/assets/demos-browser-D5dK1iqg.js",
     "scripts.d1": "/assets/d1-browser-67dExRF6.js",
     "scripts.r2": "/assets/r2-browser-CszVCouP.js",

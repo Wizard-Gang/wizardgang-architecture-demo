@@ -194,48 +194,6 @@ describe('public route contract', () => {
     }
   });
 
-  it('renders a focused assurance record without restoring the delivery inventory', async () => {
-    const response = await routeRequest(new Request('https://demo.wizardgang.ai/assurance#ISO27001-A.5.1', { headers: { accept: 'text/html' } }), env());
-    const html = await response.text();
-    expect(response.status).toBe(200);
-    expect(html).toContain('data-assurance-workbench');
-    expect(html).toContain('id="ISO27001-A.5.1"');
-    expect(html).toContain('data-assurance-record="ISO27001-A.5.1"');
-    expect(html).not.toContain('/api/labs/governance-traceability');
-    expect(html).not.toContain('Inspect live traceability');
-    for (const retired of ['source-of-truth', 'versioning', 'branching', 'actions', 'releases', 'environments']) {
-      expect(html).not.toContain(`id="${retired}"`);
-    }
-  });
-
-  it('renders the assurance workbench without restoring retired lab actions or certification wording', async () => {
-    const response = await routeRequest(new Request('https://demo.wizardgang.ai/assurance', { headers: { accept: 'text/html' } }), env());
-    const html = await response.text();
-    expect((html.match(/data-assurance-framework=/g) ?? [])).toHaveLength(3);
-    expect(html).toContain('data-assurance-section');
-    expect(html).toContain('data-assurance-record="ISO27001-A.5.1"');
-    for (const endpoint of ['/api/labs/governance-security-controls', '/api/labs/governance-ai-evaluation', '/api/labs/governance-traceability']) expect(html).not.toContain(endpoint);
-    expect(html).not.toContain('data-assurance-run');
-    expect(html).not.toContain('data-assurance-output');
-    expect(html).not.toContain('No ISO/IEC or WCAG certification is claimed');
-    expect(html).not.toMatch(/>\s*(?:COMPLIANT|CERTIFIED)\s*</i);
-  });
-
-  it('renders framework and section posture without restoring the retired framework registry', async () => {
-    const response = await routeRequest(new Request('https://demo.wizardgang.ai/assurance?framework=wcag-2.2#ISO27001-A.5.1', { headers: { accept: 'text/html' } }), env());
-    const html = await response.text();
-    expect(response.status).toBe(200);
-    expect(html).toContain('data-assurance-section-posture');
-    expect(html).toContain('data-assurance-framework-posture');
-    for (const status of ['pass', 'partial', 'gap', 'not-applicable']) expect(html).toContain(`data-posture-count="${status}"`);
-    expect(html).not.toContain('Browse framework records');
-    expect(html).not.toContain('id="assurance-compliance-framework"');
-    expect(html).not.toContain('<option value="wcag-2.2" selected>');
-    expect(html).not.toContain('<table');
-    expect(html).not.toContain('Compliance records');
-    expect(html).not.toMatch(/>\s*(?:COMPLIANT|CERTIFIED)\s*</i);
-  });
-
   it('keeps source context without repeating global route chrome or interface lists', async () => {
     const response = await routeRequest(new Request('https://demo.wizardgang.ai/api/demos/edge', { headers: { accept: 'text/html' } }), env());
     const html = await response.text();
@@ -254,16 +212,14 @@ describe('public route contract', () => {
     expect(index).not.toContain('<h2 class="eyebrow">Groups</h2>');
     expect(index).toContain('<div class="link-row home-actions"');
     expect(index).toContain('>Explore demos</a>');
-    expect(index).toContain('>View assurance</a>');
     expect(index).toContain('aria-label="Live proof"');
     expect(index).toContain('Current service state');
     expect(index).toContain('Scheduled observations');
     expect(index).not.toContain('data-health');
     expect(index).toContain(`<meta property="og:image" content="https://demo.wizardgang.ai${browserAssetPath('social.card')}"/>`);
     expect(index).toContain('href="/demos"');
-    expect(index).toContain('href="/assurance"');
     expect(index).not.toContain(`href="${retiredOperationsHtmlPathname}"`);
-    expect(index).toContain('href="/security"');
+    expect(index).toContain('href="https://github.com/Wizard-Gang/wizardgang-architecture-demo/security/policy"');
     expect(index).not.toContain('href="/dashboard');
     expect(index).not.toContain('>Map</a>');
     expect(index).not.toContain('>Docs</a>');

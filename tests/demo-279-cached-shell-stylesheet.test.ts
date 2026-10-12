@@ -47,8 +47,6 @@ const accessibilityLabAssetPaths = [
 const publicPaths = [
   routeUrl('interfaces.frontend.index'),
   demosPath,
-  routeUrl('assurance.index'),
-  routeUrl('security.index'),
 ] as const;
 
 describe('DEMO-327 Workers Static Assets stylesheet delivery', () => {

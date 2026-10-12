@@ -29,7 +29,7 @@ if (!fs.existsSync(presentationPath)) failures.push(`missing presentation resour
 else {
   const presentation = JSON.parse(fs.readFileSync(presentationPath, 'utf8'));
   const expectedLocales = [...config.supportedLocales].sort();
-  const allowedNamespaces = new Set(['common', 'nav', 'home', 'platform', 'interfaces', 'operations', 'assurance', 'security', 'errors', 'client', 'reporting', 'summary', 'meta', 'demos']);
+  const allowedNamespaces = new Set(['common', 'nav', 'home', 'platform', 'interfaces', 'operations', 'errors', 'client', 'summary', 'meta', 'demos']);
   for (const [key, translations] of Object.entries(presentation)) {
     const namespace = key.split('.')[0];
     if (!allowedNamespaces.has(namespace)) failures.push(`presentation key has unsupported namespace: ${key}`);

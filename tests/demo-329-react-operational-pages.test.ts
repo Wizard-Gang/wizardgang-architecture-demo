@@ -22,20 +22,17 @@ afterEach(() => {
 describe('DEMO-329 React homepage and operational pages', () => {
   it('keeps data loading in handlers and renders each migrated page from synchronous TSX', () => {
     const frontendRoutes = readFileSync('src/interfaces/route-capabilities/frontend.ts', 'utf8');
-    const assuranceRoutes = readFileSync('src/assurance/route-capabilities/advisories.ts', 'utf8');
     const operationalRoutes = readFileSync('src/routing/operational-routes.ts', 'utf8');
-    for (const path of ['src/ui/home.tsx', 'src/ui/security.tsx', 'src/ui/admin.tsx', 'src/ui/offline.tsx', 'src/ui/not-found.tsx']) {
+    for (const path of ['src/ui/home.tsx', 'src/ui/admin.tsx', 'src/ui/offline.tsx', 'src/ui/not-found.tsx']) {
       const source = readFileSync(path, 'utf8');
       expect(source, path).toContain('reactPageResponse');
       expect(source, path).not.toContain('pageResponse(');
       expect(source, path).not.toContain('localizePresentation');
     }
     expect(frontendRoutes).toContain('renderHome(env, await loadHomePageData(env))');
-    expect(assuranceRoutes).toContain('renderSecurity(env, loadSecurityPageData())');
     expect(operationalRoutes).toContain('renderAdmin(env, demoControl, crawlerControl, notice)');
     expect(operationalRoutes).toContain('renderOffline(env, await getDemoControl(env)');
     expect(readFileSync('src/ui/home.tsx', 'utf8')).toContain('export function renderHome(');
-    expect(readFileSync('src/ui/security.tsx', 'utf8')).toContain('export function renderSecurity(');
   });
 
   it('preserves the protected admin boundary without rendering credentials', async () => {

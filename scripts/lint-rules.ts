@@ -1,6 +1,6 @@
 import { parseSync, Visitor } from 'oxc-parser';
 
-const canonicalPageSegments = ['demos', 'assurance', 'operations', 'security'];
+const canonicalPageSegments = ['demos', 'operations'];
 
 function isCanonicalPageLiteral(value: string): boolean {
   return canonicalPageSegments.some((segment) => {

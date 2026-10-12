@@ -84,7 +84,5 @@ describe('DEMO-455 secret registry normalization', () => {
     const scripts = (JSON.parse(fs.readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> }).scripts;
     expect(scripts['check:platform']).toBe('node platform/conformance/cli.mjs pin && node platform/conformance/cli.mjs wrangler --worker demo');
     expect(acceptanceStages.map(({ script }) => script)).toContain('check:platform');
-    // Its own documentation links into baseline, so the local documentation check leaves the pinned copy alone.
-    expect(fs.readFileSync('scripts/validate-documentation-cleanup.ts', 'utf8')).toContain("!file.startsWith('platform/')");
   });
 });

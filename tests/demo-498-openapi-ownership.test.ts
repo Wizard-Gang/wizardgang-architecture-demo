@@ -9,7 +9,6 @@ const repo = process.cwd();
 const generated = 'contracts/openapi/openapi.json';
 const files = [
   generated,
-  'contracts/assurance/reporting.schema.json',
   'docs/route-manifest.json',
   'contracts/graphql/schema.graphql',
   'contracts/mcp/tools.json',
@@ -84,15 +83,9 @@ describe('DEMO-498 OpenAPI acceptance ownership', () => {
     expect(validate(cwd).stderr).toContain('not registered for route');
   });
 
-  it('retains the canonical reporting schema and server-origin assertions', () => {
+  it('retains the server-origin assertion', () => {
     const cwd = fixture();
-    const reporting = JSON.parse(fs.readFileSync(path.join(cwd, 'contracts/assurance/reporting.schema.json'), 'utf8'));
-    changeOpenApi(cwd, (document) => {
-      document.components.schemas.SyntheticReportingWrapper = { $ref: reporting.$id + '#/$defs/queryResult' };
-    });
-    expect(validate(cwd).stderr).toContain('must not duplicate or wrap the canonical reporting schema');
-
-    changeOpenApi(cwd, (document) => { delete document.components.schemas.SyntheticReportingWrapper; document.servers[0].url = 'https://other.example'; });
+    changeOpenApi(cwd, (document) => { document.servers[0].url = 'https://other.example'; });
     expect(validate(cwd).stderr).toContain('canonical public demo origin');
   });
 });

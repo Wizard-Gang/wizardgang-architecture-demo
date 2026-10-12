@@ -27,10 +27,9 @@ export function OfflinePage({ env, control, requestedPath }: Readonly<{ env: Env
       </section>}
     <section className="panel">
       <h2>Still available</h2>
-      <p className="subtle">Operational health, security reporting, and public source remain reachable during an intentional offline window.</p>
+      <p className="subtle">Operational health and public source remain reachable during an intentional offline window.</p>
       <div className="meta">
         <a href={healthRoute}>View system health</a>
-        <a href={localization.href(routeUrl('security.index'))}>{localization.exact('Security')}</a>
         <a href={repoUrl(env)}>Public source</a>
       </div>
       <details className="operations-inspection"><summary>Developer recovery links</summary><div className="meta"><a href={healthRoute}>Health JSON</a><a href={versionRoute}>Version JSON</a><a href={sourceUrl(env, 'docs/OPERATIONS.md')}>Operations docs ↗</a></div></details>

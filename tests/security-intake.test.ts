@@ -1,8 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { securityTxtResponse, SECURITY_TXT_EXPIRES } from '../src/api/security-policy';
-import { routeRequest } from '../src/router';
-import { routeUrl } from '../src/routing/application-routes';
 import type { Env } from '../src/types';
 import { SqliteD1 } from './helpers/wg-storage';
 
@@ -19,7 +17,7 @@ describe('security.txt', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8');
     expect(body).toContain('Contact: https://github.com/Wizard-Gang/wizardgang-architecture-demo/security/advisories/new');
-    expect(body).toContain('Policy: https://demo.wizardgang.ai/security');
+    expect(body).toContain('Policy: https://github.com/Wizard-Gang/wizardgang-architecture-demo/security/policy');
     expect(body).toContain('Canonical: https://demo.wizardgang.ai/.well-known/security.txt');
     expect(body).toContain(`Expires: ${SECURITY_TXT_EXPIRES}`);
     const expiry = Date.parse(SECURITY_TXT_EXPIRES);
@@ -37,24 +35,7 @@ describe('security.txt', () => {
   });
 });
 
-describe('public concern and security routes', () => {
-  it('separates private security reporting from public issue intake', async () => {
-    const security = await routeRequest(new Request('https://demo.wizardgang.ai/security', { headers: { accept: 'text/html' } }), env);
-    const securityHtml = await security.text();
-    expect(security.status).toBe(200);
-    expect(securityHtml).toContain('security/advisories/new');
-    expect(securityHtml).toContain('/.well-known/security.txt');
-    expect(securityHtml).toContain('id="non-security-feedback"');
-    expect(securityHtml).toContain('issues/new/choose');
-    expect(securityHtml).not.toContain(`${routeUrl('assurance.index')}#concerns`);
-
-    const assurance = await routeRequest(new Request('https://demo.wizardgang.ai/assurance', { headers: { accept: 'text/html' } }), env);
-    const assuranceHtml = await assurance.text();
-    expect(assurance.status).toBe(200);
-    expect(assuranceHtml).toContain('href="/security"');
-    expect(assuranceHtml).not.toContain('issues/new?template=concern.yml');
-  });
-
+describe('public issue intake', () => {
   it('offers no public security issue form', () => {
     const config = readFileSync('.github/ISSUE_TEMPLATE/config.yml', 'utf8');
     expect(config).toContain('blank_issues_enabled: false');

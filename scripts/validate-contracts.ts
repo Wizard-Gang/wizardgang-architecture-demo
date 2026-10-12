@@ -3,7 +3,6 @@ import fs from 'node:fs';
 const failures: string[] = [];
 const HTTP_METHODS = new Set(['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace']);
 const openapi = JSON.parse(fs.readFileSync('contracts/openapi/openapi.json', 'utf8'));
-const reporting = JSON.parse(fs.readFileSync('contracts/assurance/reporting.schema.json', 'utf8'));
 const routeManifest = JSON.parse(fs.readFileSync('docs/route-manifest.json', 'utf8')) as Array<{
   id: string;
   route: string;
@@ -58,31 +57,6 @@ if (!Array.isArray(openapi.servers) || openapi.servers.length !== 1
   fail('OpenAPI server URL must use the canonical public demo origin.');
 }
 if (!openapi.components?.securitySchemes?.BearerToken) fail('BearerToken security scheme is missing');
-if (openapi.components?.['x-assurance-query-responses']) {
-  fail('OpenAPI must not reuse a Responses Object through components.x-assurance-query-responses');
-}
-
-for (const name of ['ReportingContract', 'AssuranceQueryResult', 'AssuranceRegistryContract', 'AssuranceRegistryDiscovery']) {
-  if (openapi.components?.schemas?.[name]) fail(`OpenAPI must not duplicate the canonical reporting contract through ${name}`);
-}
-if (typeof reporting.$id !== 'string' || !reporting.$id) {
-  fail('Canonical reporting schema must declare a nonempty $id.');
-} else if (JSON.stringify(openapi.components?.schemas ?? {}).includes(reporting.$id)) {
-  fail('OpenAPI components must not duplicate or wrap the canonical reporting schema.');
-}
-const reportingRefs = [
-  openapi.paths?.['/api/reporting']?.get?.responses?.['200']?.content?.['application/json']?.schema?.$ref,
-  openapi.paths?.['/api/reporting/{collection}']?.get?.responses?.['200']?.content?.['application/json']?.schema?.$ref,
-  openapi.paths?.['/api/reporting/{collection}/{recordId}']?.get?.responses?.['200']?.content?.['application/json']?.schema?.$ref,
-  openapi.paths?.['/api/reporting/{collection}/{recordId}']?.patch?.responses?.['200']?.content?.['application/json']?.schema?.$ref,
-  openapi.paths?.['/api/reporting/{collection}/{recordId}']?.patch?.requestBody?.content?.['application/json']?.schema?.$ref,
-];
-for (const reference of reportingRefs) {
-  if (typeof reference !== 'string' || !reference.startsWith(`${reporting.$id}#/$defs/`)) {
-    fail(`OpenAPI reporting operation does not reference the canonical reporting schema: ${reference}`);
-  }
-}
-
 let operationCount = 0;
 for (const [path, pathItem] of Object.entries(openapi.paths ?? {})) {
   if (!path.startsWith('/')) fail(`OpenAPI path must be an absolute application path: ${path}`);
@@ -145,4 +119,4 @@ if (failures.length) {
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
-console.log(`Contract validation passed: ${operationCount} OpenAPI operations plus synchronized assurance, GraphQL, MCP, and webhook contracts.`);
+console.log(`Contract validation passed: ${operationCount} OpenAPI operations plus synchronized GraphQL, MCP, and webhook contracts.`);

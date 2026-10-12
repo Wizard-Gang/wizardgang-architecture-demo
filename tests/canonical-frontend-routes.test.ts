@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { assuranceRecordUrls } from '../src/assurance/routes';
 import { routeRequest } from '../src/router';
 import { applicationRouteRegistry, routeUrl } from '../src/routing/application-routes';
 import type { Env } from '../src/types';
@@ -13,7 +12,7 @@ const environment: Env = {
 
 describe('canonical frontend route contract', () => {
   it('publishes task-oriented pages without a query-view route inventory', () => {
-    const canonicalPages = ['demos.index', 'assurance.index'] as const;
+    const canonicalPages = ['demos.index'] as const;
     for (const routeId of canonicalPages) {
       const path = routeUrl(routeId);
       expect(path, routeId).not.toContain('?');
@@ -22,7 +21,6 @@ describe('canonical frontend route contract', () => {
     const retiredIds = [
       'platform.index', 'platform.edge', 'platform.workers', 'platform.durable-objects', 'platform.d1', 'platform.r2',
       'interfaces.index', 'interfaces.rest', 'interfaces.graphql.console', 'interfaces.webhooks.console', 'interfaces.identity.page', 'interfaces.mcp.console', 'interfaces.i18n', 'interfaces.accessibility',
-      'assurance.delivery', 'assurance.governance', 'assurance.evidence', 'assurance.compliance', 'assurance.risks', 'assurance.incidents', 'assurance.concerns',
       'operations.index', 'operations.availability', 'operations.logs', 'operations.usage', 'operations.reports', 'operations.docs',
     ];
     expect(applicationRouteRegistry.declarations.filter((route) => retiredIds.includes(route.id)).map((route) => route.id)).toEqual([]);
@@ -37,9 +35,8 @@ describe('canonical frontend route contract', () => {
     }
   });
 
-  it('uses the ordinary 404 for retired assurance and operations ?view= URLs', async () => {
+  it('uses the ordinary 404 for retired operations ?view= URLs', async () => {
     for (const [pathname, views] of [
-      [routeUrl('assurance.index'), ['overview', 'delivery', 'governance', 'evidence', 'compliance', 'risks', 'incidents', 'concerns', 'unknown']],
       [retiredOperationsHtmlPathname, ['overview', 'availability', 'logs', 'usage', 'reports', 'docs', 'unknown']],
     ] as const) {
       for (const view of views) {
@@ -55,14 +52,6 @@ describe('canonical frontend route contract', () => {
     expect(graphql).toMatchObject({ kind: 'protocol', browserHtml: 'never' });
     expect(applicationRouteRegistry.declarations.some((route) => route.pattern === '/graphql/console')).toBe(false);
     expect(removedHtmlPathnames).toContainEqual({ pathname: '/graphql', outcome: 'protocol' });
-  });
-
-  it('preserves stable assurance record fragments', () => {
-    const assurance = routeUrl('assurance.index');
-    expect(assuranceRecordUrls('evidence', 'EV-001').html).toBe(`${assurance}#EV-001`);
-    expect(assuranceRecordUrls('risks', 'SEC-RISK-001').html).toBe(`${assurance}#SEC-RISK-001`);
-    expect(assuranceRecordUrls('incidents', 'INC-001').html).toBe(`${assurance}#INC-001`);
-    expect(assuranceRecordUrls('advisories', 'ADV-001').html).toBe(`${routeUrl('security.index')}#ADV-001`);
   });
 
   it('has no client-side router dependency or history-based route dispatcher', () => {

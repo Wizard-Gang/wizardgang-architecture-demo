@@ -83,7 +83,6 @@ function reachableSourceModules(): Set<string> {
     ...(fs.existsSync(path.join(srcRoot, 'worker-entry.mjs')) ? [path.join(srcRoot, 'worker-entry.mjs')] : []),
     path.join(srcRoot, 'browser', 'shell.ts'),
     path.join(srcRoot, 'browser', 'admin.ts'),
-    path.join(srcRoot, 'browser', 'assurance.ts'),
     path.join(srcRoot, 'browser', 'demos.ts'),
     path.join(srcRoot, 'browser', 'd1.ts'),
     path.join(srcRoot, 'browser', 'r2.ts'),

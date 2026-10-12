@@ -173,8 +173,8 @@ describe('global localization and accessibility runtime', () => {
   it('uses explicit query, persisted preference, then configured default with clean default URLs', () => {
     const explicit = resolveLocalization(new Request('https://demo.example/operations?lang=ar'));
     expect(explicit.locale).toBe('ar');
-    const complianceRoute = routeUrl('assurance.index');
-    expect(explicit.href(`${complianceRoute}?framework=wcag-2.2`)).toBe(`${complianceRoute}?framework=wcag-2.2&lang=ar`);
+    const demosRoute = routeUrl('demos.index');
+    expect(explicit.href(`${demosRoute}?sample=one`)).toBe(`${demosRoute}?sample=one&lang=ar`);
 
     const persisted = resolveLocalization(new Request('https://demo.example/operations', {
       headers: { cookie: 'other=value; wg-lang=ja' },

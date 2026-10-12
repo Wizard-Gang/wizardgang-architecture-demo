@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { loadSecurityPageData, renderSecurity } from '../src/ui/security';
 import {
   applicationRouteRegistry,
   routeUrl,
@@ -35,10 +34,9 @@ async function publicHome(): Promise<string> {
 }
 
 describe('public frontend shell', () => {
-  it('projects only Demos and Assurance in primary navigation while Source remains direct', async () => {
+  it('projects only Demos in primary navigation while Source remains direct', async () => {
     expect(primaryNavigation().map((route) => [route.page?.label, route.pattern])).toEqual([
       ['Demos', routeUrl('demos.index')],
-      ['Assurance', routeUrl('assurance.index')],
     ]);
 
     const html = await publicHome();
@@ -47,50 +45,35 @@ describe('public frontend shell', () => {
     expect(header).toContain(`<a class="brand" href="${routeUrl('interfaces.frontend.index')}"`);
     expect(anchorDestinations(nav)).toEqual([
       { href: routeUrl('demos.index'), text: 'Demos' },
-      { href: routeUrl('assurance.index'), text: 'Assurance' },
     ]);
     expect(header).toContain('<div class="header-utilities"');
     expect(header).toContain(`href="${repositoryUrl}" aria-label="Source"><span class="utility-label">Source`);
     expect(nav).not.toMatch(/>Architecture<|>Architecture\s*|>Operations<|>Security</);
   });
 
-  it('makes the homepage a two-action launcher with compact operational proof', async () => {
+  it('makes the homepage a demo launcher with compact operational proof', async () => {
     const html = await publicHome();
     const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[0] ?? '';
     expect(main).not.toBe('');
     expect(main).toContain('A live Cloudflare architecture laboratory');
     expect(main).toContain(`href="${routeUrl('demos.index')}">Explore demos</a>`);
-    expect(main).toContain(`href="${routeUrl('assurance.index')}">View assurance</a>`);
     expect(main).not.toContain(`href="${retiredOperationsHtmlPathname}"`);
     expect(main).toContain('aria-label="Live proof"');
     expect(main).toContain('Current service state');
     expect(main).toContain('Scheduled observations');
     expect(main).toContain('v0.test');
     expect(main).toContain('Commit 1234567');
-    expect(main).toContain(`href="${routeUrl('security.index')}">Security boundary</a>`);
     expect(main).not.toContain('live destinations');
     expect(main).not.toContain('id="architecture-map"');
     expect(main).not.toContain('data-parent-route=');
   });
 
-  it('organizes Security around reporting, disclosure, and published advisories', async () => {
-    const html = await renderSecurity(env, loadSecurityPageData()).text();
-    expect(html).toContain('<h2 id="report-vulnerability-heading">Report vulnerability</h2>');
-    expect(html).toContain('<h2 id="disclosure-process-heading">Disclosure process</h2>');
-    expect(html).toContain('<h2 id="published-advisories-heading">Published advisories</h2>');
-    expect(html).toContain(`${repositoryUrl}/security/advisories/new`);
-    expect(html).toContain('>Open a private security report</a>');
-    expect(html).toContain('/.well-known/security.txt');
-    expect(html).toContain('/issues/new/choose');
-    expect(html).not.toContain(routeUrl('assurance.index') + '#concerns');
-  });
-
-  it('keeps Security reachable contextually without promoting it to primary navigation', async () => {
+  it('links the security policy from the footer without promoting it to primary navigation', async () => {
     const html = await publicHome();
-    const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[0] ?? '';
+    const footer = html.match(/<footer class="site-footer">([\s\S]*?)<\/footer>/)?.[0] ?? '';
     const nav = html.match(/<nav class="nav"[^>]*>([\s\S]*?)<\/nav>/)?.[0] ?? '';
-    expect(main).toContain(`href="${routeUrl('security.index')}"`);
-    expect(nav).not.toContain(`href="${routeUrl('security.index')}"`);
+    expect(footer).toContain(`href="${repositoryUrl}/security/policy"`);
+    expect(nav).not.toContain('/security/policy');
   });
 
   it('keeps the minimal public browser inventory after Operations retirement', () => {
@@ -108,8 +91,6 @@ describe('public frontend shell', () => {
     const expected = [
       routeUrl('interfaces.frontend.index'),
       routeUrl('demos.index'),
-      routeUrl('assurance.index'),
-      routeUrl('security.index'),
     ].sort();
     expect(publicIndexableBrowserPaths).toEqual(expected);
     expect([...sitemapPaths()].sort()).toEqual(expected);
@@ -123,7 +104,7 @@ describe('public frontend shell', () => {
     });
   });
 
-  it('preserves representative machine, API, protocol, identity, reporting, and crawler declarations', () => {
+  it('preserves representative machine, API, protocol, identity, and crawler declarations', () => {
     const declarations = new Map(applicationRouteRegistry.declarations.map((route) => [route.id, route]));
     const expected = [
       ['interfaces.openapi.json', '/api/openapi.json', ['GET'], 'api'],
@@ -131,9 +112,6 @@ describe('public frontend shell', () => {
       ['interfaces.mcp.server', '/mcp', ['GET', 'POST', 'DELETE'], 'protocol'],
       ['interfaces.identity.saml.metadata', '/auth/saml/metadata', ['GET'], 'protocol'],
       ['interfaces.webhooks.github', '/webhooks/github', ['POST'], 'protocol'],
-      ['reporting.index', '/api/reporting', ['GET', 'OPTIONS'], 'api'],
-      ['reporting.collection', '/api/reporting/:collection', ['GET', 'OPTIONS'], 'api'],
-      ['reporting.record', '/api/reporting/:collection/:recordId', ['GET', 'PATCH', 'OPTIONS'], 'api'],
       ['operations.health', '/api/operations/health', ['GET'], 'api'],
       ['operations.version', '/api/operations/version', ['GET'], 'api'],
       ['operations.api-logs', '/api/operations/logs', ['GET'], 'api'],

@@ -3,21 +3,12 @@ import path from 'node:path';
 
 const root = process.cwd();
 const openApiPath = path.join(root, 'contracts', 'openapi', 'openapi.json');
-const reportingPath = path.join(root, 'contracts', 'assurance', 'reporting.schema.json');
 
 const openApi = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
-const reporting = JSON.parse(fs.readFileSync(reportingPath, 'utf8'));
-const routeManifest = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'route-manifest.json'), 'utf8'));
-
-function manifestRoute(routeId) {
-  const entry = routeManifest.find((candidate) => candidate.id === routeId);
-  if (!entry) throw new Error(`Route manifest is missing required route ID '${routeId}'.`);
-  return entry.route;
-}
 
 const schemas = openApi.components?.schemas;
 if (!schemas || typeof schemas !== 'object') {
-  throw new Error('OpenAPI components.schemas is required before canonical assurance schemas can be synchronized.');
+  throw new Error('OpenAPI components.schemas is required before generated paths can be synchronized.');
 }
 
 const jsonObjectResponse = (description, schema = { type: 'object' }) => ({
@@ -27,98 +18,12 @@ const jsonObjectResponse = (description, schema = { type: 'object' }) => ({
   },
 });
 
-const reportingDefinition = (name) => ({ $ref: `${reporting.$id}#/$defs/${name}` });
-
 const errorResponses = {
   '400': jsonObjectResponse('Invalid request.'),
   '401': jsonObjectResponse('Authentication required.'),
   '403': jsonObjectResponse('Insufficient permission.'),
   '404': jsonObjectResponse('Resource not found.'),
 };
-
-const collectionParameter = {
-  name: 'collection',
-  in: 'path',
-  required: true,
-  schema: { type: 'string', minLength: 1 },
-};
-const recordParameter = {
-  name: 'recordId',
-  in: 'path',
-  required: true,
-  schema: { type: 'string', minLength: 1 },
-};
-const reportingQueryParameters = [
-  { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100 } },
-  { name: 'cursor', in: 'query', schema: { type: 'string', minLength: 1 } },
-  { name: 'export', in: 'query', schema: { type: 'string', enum: ['1'] } },
-  { name: 'repository', in: 'query', schema: { type: 'string' } },
-  { name: 'status', in: 'query', schema: { type: 'string' }, description: 'Collection-specific structured reporting filter when declared.' },
-  { name: 'lifecycle', in: 'query', schema: { type: 'string' }, description: 'Collection-specific structured reporting filter when declared.' },
-  { name: 'framework', in: 'query', schema: { type: 'string' }, description: 'Collection-specific structured reporting filter when declared.' },
-  { name: 'level', in: 'query', schema: { type: 'string' }, description: 'Collection-specific structured reporting filter when declared.' },
-  { name: 'residual', in: 'query', schema: { type: 'string' }, description: 'Collection-specific structured reporting filter when declared.' },
-];
-
-function reportingPaths() {
-  return {
-    '/api/reporting': {
-      get: {
-        summary: 'Discover canonical reporting collections',
-        'x-route-id': 'reporting.index',
-        responses: {
-          '200': jsonObjectResponse('Disclosure-safe reporting collection inventory.', reportingDefinition('collectionIndexResult')),
-          ...errorResponses,
-        },
-      },
-    },
-    '/api/reporting/{collection}': {
-      get: {
-        summary: 'Query a canonical reporting collection',
-        'x-route-id': 'reporting.collection',
-        parameters: [collectionParameter, ...reportingQueryParameters],
-        responses: {
-          '200': jsonObjectResponse('Canonical reporting query result.', reportingDefinition('queryResult')),
-          ...errorResponses,
-        },
-      },
-    },
-    '/api/reporting/{collection}/{recordId}': {
-      get: {
-        summary: 'Read a canonical reporting record',
-        'x-route-id': 'reporting.record',
-        parameters: [collectionParameter, recordParameter, ...reportingQueryParameters.filter((parameter) => parameter.name !== 'export')],
-        responses: {
-          '200': jsonObjectResponse('Canonical single-record reporting result.', reportingDefinition('queryResult')),
-          ...errorResponses,
-        },
-      },
-      patch: {
-        summary: 'Update a writable provider-backed reporting record',
-        'x-route-id': 'reporting.record',
-        security: [{ BearerToken: [] }],
-        parameters: [collectionParameter, recordParameter],
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: reportingDefinition('updateRequest'),
-            },
-          },
-        },
-        responses: {
-          '200': jsonObjectResponse('Updated canonical reporting record.', reportingDefinition('queryResult')),
-          '400': jsonObjectResponse('Invalid update payload or revision.'),
-          '401': jsonObjectResponse('Authentication required.'),
-          '403': jsonObjectResponse('Insufficient reporting permission.'),
-          '404': jsonObjectResponse('Reporting collection or record not found.'),
-          '405': jsonObjectResponse('The reporting source is read-only.'),
-          '409': jsonObjectResponse('Revision conflict.'),
-        },
-      },
-    },
-  };
-}
 
 function operationsPaths() {
   return {
@@ -159,14 +64,8 @@ function operationsPaths() {
 
 function canonicalize(document) {
   const retained = {};
-  const assurancePageRoot = manifestRoute('assurance.index');
   for (const [currentPath, pathItem] of Object.entries(document.paths ?? {})) {
-    if (
-      currentPath.startsWith(assurancePageRoot)
-      || currentPath.startsWith('/api/reporting')
-      || currentPath.startsWith('/api/operations/')
-      || currentPath === '/api/openapi.json'
-    ) continue;
+    if (currentPath.startsWith('/api/operations/') || currentPath === '/api/openapi.json') continue;
     retained[currentPath] = pathItem;
   }
 
@@ -176,7 +75,6 @@ function canonicalize(document) {
   document.servers = [{ ...firstServer, url: 'https://demo.wizardgang.ai' }];
   document.paths = {
     ...retained,
-    ...reportingPaths(),
     ...operationsPaths(),
     '/api/openapi.json': {
       get: {
@@ -188,14 +86,6 @@ function canonicalize(document) {
       },
     },
   };
-  for (const name of ['ReportingContract', 'AssuranceQueryResult', 'AssuranceRegistryContract', 'AssuranceRegistryDiscovery']) {
-    delete document.components.schemas[name];
-  }
-  for (const name of Object.keys(document.components.responses ?? {})) {
-    if (name.startsWith('Assurance')) delete document.components.responses[name];
-  }
-  delete document.components.headers?.ETag;
-  delete document.components.headers?.AssuranceSchemaVersion;
   return document;
 }
 

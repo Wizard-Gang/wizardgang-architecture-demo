@@ -71,8 +71,6 @@ function Availability({ proof }: Readonly<{ proof: AvailabilityProof }>) {
 export function HomePage({ data }: Readonly<{ data: HomePageData }>) {
   const localization = useRequestLocalization();
   const demos = localization.href(routeUrl('demos.index'));
-  const assurance = localization.href(routeUrl('assurance.index'));
-  const security = localization.href(routeUrl('security.index'));
   return <>
     <section className="page-header home-header">
       <h1>{localization.exact('Architecture')} <span>{localization.exact('you can inspect.')}</span></h1>
@@ -81,7 +79,6 @@ export function HomePage({ data }: Readonly<{ data: HomePageData }>) {
       </div>
       <div className="link-row home-actions" aria-label="Primary actions">
         <a className="button-primary" href={demos}>Explore demos</a>
-        <a href={assurance}>View assurance</a>
       </div>
     </section>
     <section className="architecture-strip home-proof-strip" aria-label="Live proof">
@@ -89,7 +86,6 @@ export function HomePage({ data }: Readonly<{ data: HomePageData }>) {
       <Availability proof={data.availability} />
       <article><strong><a href={data.version.href}>{data.version.label}</a></strong><span>{data.version.detail}</span></article>
     </section>
-    <p className="subtle">Sensitive security reports and published advisories stay on the <a href={security}>Security boundary</a>.</p>
   </>;
 }
 
@@ -97,6 +93,6 @@ export function renderHome(env: Env, data: HomePageData): Response {
   return reactPageResponse(env, 'Architecture', <HomePage data={data} />, {
     routeId: 'interfaces.frontend.index',
     canonicalPath: routeUrl('interfaces.frontend.index'),
-    description: 'A live Cloudflare architecture laboratory with executable demonstrations and inspectable assurance evidence.',
+    description: 'A live Cloudflare architecture laboratory with executable demonstrations you can verify against public source.',
   });
 }

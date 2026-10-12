@@ -7,8 +7,8 @@ const versionProofSource = readFileSync('src/ui/version-proof.ts', 'utf8');
 const stylesSource = readFileSync('src/styles/shell.css', 'utf8');
 
 describe('DEMO-277 site footer contract', () => {
-  it('keeps Security reachable through the canonical registered route', () => {
-    expect(documentSource).toContain("<a href={localization.href(routeUrl('security.index'))}");
+  it('links the repository security policy', () => {
+    expect(documentSource).toContain('<a href={`${repositoryUrl}/security/policy`}>');
   });
 
   it('renders version and commit proof through the shared versionProof projection', () => {

@@ -20,9 +20,7 @@ describe('derived frontend navigation', () => {
     const html = await (await route.handler(new Request('https://demo.wizardgang.ai/demos'), { env }, {})).text();
     const primary = html.match(/<nav class="nav"[^>]*>([\s\S]*?)<\/nav>/)?.[0] ?? '';
     expect(primary).not.toBe('');
-    for (const label of ['Demos', 'Assurance']) {
-      expect(primary).toContain(`>${label}</a>`);
-    }
+    expect(primary).toContain('>Demos</a>');
     for (const label of ['Architecture', 'Platform', 'Interfaces', 'Operations', 'Security']) {
       expect(primary).not.toContain(`>${label}</a>`);
     }
@@ -37,17 +35,5 @@ describe('derived frontend navigation', () => {
     expect(html).toContain(`<a href="${route.pattern}" aria-current="page">Demos</a>`);
     expect(html).not.toContain('name="view"');
     expect(html).not.toContain(`${route.pattern}?view=`);
-  });
-
-  it('marks Assurance as the current task on a focused assurance record', async () => {
-    const route = applicationRouteRegistry.declarations.find((candidate) => candidate.id === 'assurance.index');
-    if (!route) throw new Error('Missing assurance.index route');
-    const html = await (await route.handler(new Request('https://demo.wizardgang.ai/assurance#ISO27001-A.5.1'), { env }, {})).text();
-    expect(currentPageCount(html)).toBe(1);
-    expect(html).toContain(`<a href="${route.pattern}" aria-current="page">Assurance</a>`);
-    expect(html).toContain('id="ISO27001-A.5.1"');
-    expect(html).toContain('href="#ISO27001-A.5.1"');
-    expect(html).not.toContain('data-view-current');
-    expect(html).not.toContain('name="view"');
   });
 });
