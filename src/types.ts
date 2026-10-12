@@ -70,8 +70,6 @@ export interface Env {
   SAML_IDP_CERT?: string;
   SAML_IDP_ISSUER?: string;
   SAML_SSO_URL?: string;
-  GITHUB_REPORTING_BINDINGS?: string;
-  GITHUB_REPORTING_MAX_PAGES?: string;
   DEPLOYED_VERSION?: string;
   DEPLOYED_SHA?: string;
   DEPLOYMENT_ENVIRONMENT?: string;

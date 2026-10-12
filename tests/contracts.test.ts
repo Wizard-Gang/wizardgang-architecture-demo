@@ -1,7 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { routeRequest } from '../src/router';
-import { applicationRouteRegistry, routeUrl } from '../src/routing/application-routes';
+import { applicationRouteRegistry } from '../src/routing/application-routes';
 import type { Env } from '../src/types';
 import { retiredApiReferencePrefixes } from './fixtures/removed-api-pathnames';
 import { SqliteD1 } from './helpers/wg-storage';
@@ -60,24 +60,9 @@ describe('executable interface contracts', () => {
     }
   });
 
-  it('references the canonical reporting schema without embedding a weaker copy', () => {
-    const openapi = readOpenApi();
-    const reporting = JSON.parse(readFileSync('contracts/assurance/reporting.schema.json', 'utf8')) as { $id: string };
-    for (const duplicate of ['ReportingContract', 'AssuranceRegistryContract', 'AssuranceQueryResult']) {
-      expect(openapi.components.schemas).not.toHaveProperty(duplicate);
-    }
-    const reference = (openapi.paths['/api/reporting/{collection}'].get.responses?.['200'] as { content?: { 'application/json'?: { schema?: { $ref?: string } } } })
-      .content?.['application/json']?.schema?.$ref;
-    expect(reference).toBe(`${reporting.$id}#/$defs/queryResult`);
-    expect(existsSync('contracts/openapi/swagger.json')).toBe(false);
-  });
-
-  it('documents only the canonical reporting and operations API families', () => {
+  it('documents the operations API family', () => {
     const openapi = readOpenApi();
     for (const path of [
-      '/api/reporting',
-      '/api/reporting/{collection}',
-      '/api/reporting/{collection}/{recordId}',
       '/api/operations/health',
       '/api/operations/version',
       '/api/operations/logs',
@@ -85,16 +70,7 @@ describe('executable interface contracts', () => {
       '/api/openapi.json',
     ]) expect(openapi.paths[path]).toBeDefined();
 
-    expect(openapi.paths['/api/reporting/{collection}'].get).toBeDefined();
-    expect(openapi.paths['/api/reporting/{collection}/{recordId}'].get).toBeDefined();
-    expect(openapi.paths['/api/reporting/{collection}/{recordId}'].patch).toBeDefined();
-    const reportingParameters = openapi.paths['/api/reporting/{collection}'].get?.parameters?.map((parameter) => parameter.name) ?? [];
-    expect(reportingParameters).toContain('residual');
-    expect(reportingParameters).not.toContain('residualRating');
-    expect(reportingParameters).not.toContain('schemaVersion');
-
     for (const path of Object.keys(openapi.paths)) {
-      expect(path.startsWith(routeUrl('assurance.index'))).toBe(false);
       expect(path.startsWith(`${retiredApiReferencePrefixes[1]}/operations`)).toBe(false);
       expect(path).not.toBe(retiredApiReferencePrefixes[2]);
       expect(path).not.toBe(retiredApiReferencePrefixes[3]);
@@ -102,19 +78,12 @@ describe('executable interface contracts', () => {
     }
   });
 
-  it('serves the current OpenAPI and reporting contracts through the router', async () => {
+  it('serves the current OpenAPI contract through the router', async () => {
     const openapi = await routeRequest(new Request('https://demo.wizardgang.ai/api/openapi.json'), env);
     expect(openapi.status).toBe(200);
     expect(openapi.headers.get('content-type')).toContain('application/json');
     const document = await openapi.json() as { openapi: string; paths: Record<string, unknown> };
     expect(document.openapi).toBe('3.1.0');
-    expect(document.paths).toHaveProperty('/api/reporting/{collection}');
     expect(document.paths).toHaveProperty('/api/operations/health');
-
-    const reporting = await routeRequest(new Request('https://demo.wizardgang.ai/api/reporting/risks?limit=1'), env);
-    expect(reporting.status).toBe(200);
-    const body = await reporting.json() as { contract: string; records: Array<{ id: string }> };
-    expect(body.contract).toBe('contracts/assurance/reporting.schema.json');
-    expect(body.records).toHaveLength(1);
   });
 });

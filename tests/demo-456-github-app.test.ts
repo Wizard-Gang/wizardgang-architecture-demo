@@ -5,7 +5,7 @@ import { parseJsonc } from '../platform/conformance/jsonc.mjs';
 
 const RETIRED = ['GITHUB_DEMO_TOKEN', 'GITHUB_READ_TOKEN', 'GITHUB_REPORTING_WRITE_TOKEN', 'GIT_DEMO_PR_TOKEN'];
 // Everything that configures, runs or documents the demo; tests and the plan may name retired credentials.
-const SURFACES = ['.github', '.dev.vars.example', 'SECURITY.md', 'README.md', 'assurance', 'config', 'docs', 'scripts', 'src', 'wrangler.jsonc'];
+const SURFACES = ['.github', '.dev.vars.example', 'SECURITY.md', 'README.md', 'config', 'docs', 'scripts', 'src', 'wrangler.jsonc'];
 
 function workflowJob(workflow: string, job: string): string {
   const start = workflow.indexOf(`\n  ${job}:\n`);

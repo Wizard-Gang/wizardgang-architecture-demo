@@ -23,23 +23,16 @@ export function validateScaffold(root = process.cwd()) {
     'src/routing/navigation.ts',
     'src/routing/artifacts.ts',
     'src/routing/operational-routes.ts',
-    'src/routing/assurance-routes.ts',
     'src/routing/platform-laboratory-routes.ts',
     'src/routing/interface-identity-routes.ts',
     'src/platform/route-capability.ts',
     'src/interfaces/route-capability.ts',
     'src/interfaces/route-capabilities/index.ts',
-    'src/assurance/model.ts',
-    'src/assurance/route-contract.ts',
-    'src/assurance/service.ts',
-    'src/assurance/publication.ts',
-    'src/assurance/presentation.ts',
     'src/lib/demo-control.ts',
     'src/lib/crawler-control.ts',
     'src/lib/logs.ts',
     'src/ui/admin.tsx',
     'src/ui/offline.tsx',
-    'src/ui/security.tsx',
     'tests/route-registry.test.ts',
     'tests/application-route-registry.test.ts',
     'tests/route-artifacts.test.ts',
@@ -81,15 +74,12 @@ export function validateScaffold(root = process.cwd()) {
   for (const removedToken of [
     'API_PREFIXES',
     'routeOperationalRequest',
-    'routeAssuranceRequest',
     'routePlatformLaboratoryRequest',
     'routeInterfaceIdentityRequest',
     'interfaceIdentityWantsHtml',
     'isInterfaceIdentityApiLike',
     'demosByRoute',
     'LEGACY_OFFLINE_AVAILABLE_PATHS',
-    'ASSURANCE_API_HANDLERS',
-    'ASSURANCE_HTML_HANDLERS',
   ]) {
     if (router.includes(removedToken)) failures.push(`router still contains removed dispatch logic: ${removedToken}`);
   }
@@ -100,7 +90,6 @@ export function validateScaffold(root = process.cwd()) {
   const applicationRoutes = read('src/routing/application-routes.ts');
   for (const token of [
     'operationalRouteRegistry',
-    'assuranceDeclarativeRouteRegistry',
     'interfaceIdentityRouteRegistry',
     'platformLaboratoryRouteRegistry',
     'createApplicationRouteRegistry',
@@ -118,10 +107,6 @@ export function validateScaffold(root = process.cwd()) {
   }
 
   if (exists('src/demos/registry.ts')) failures.push('retired demo query-view registry must not remain');
-
-  const assurancePresentationModule = read('src/assurance/presentation.ts');
-  if (assurancePresentationModule.includes('export *')) failures.push('src/assurance/presentation.ts must not remain an export-only barrel');
-  if (exists('src/api/assurance-v1.ts')) failures.push('removed v1 assurance serializer must not remain in the current contract');
 
   const adminUi = read('src/ui/admin.tsx');
   if (!adminUi.includes('data-offline-message-preview')) failures.push('admin UI missing the public offline-message preview');

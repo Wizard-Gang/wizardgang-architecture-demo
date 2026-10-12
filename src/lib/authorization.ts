@@ -2,7 +2,7 @@ import type { Env } from '../types';
 import { json } from './http';
 import { identitySandboxNamespace, readDemoAccessToken, readIdentitySession, type IdentitySession } from './identity-session';
 
-export type Permission = 'demo:read' | 'demo:write' | 'reporting:private' | 'reporting:write';
+export type Permission = 'demo:read' | 'demo:write';
 
 export interface Principal {
   subject: string;
@@ -21,7 +21,6 @@ interface AuthorizationOptions {
 export async function principalFromIdentitySession(env: Env, session: IdentitySession): Promise<Principal> {
   const subject = `${session.identity.provider}:${session.identity.subject}`;
   const permissions: Permission[] = ['demo:read', 'demo:write'];
-  if (session.identity.role === 'operator') permissions.push('reporting:private', 'reporting:write');
   return {
     subject,
     authentication: session.identity.protocol,

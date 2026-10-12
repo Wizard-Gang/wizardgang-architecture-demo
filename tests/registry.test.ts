@@ -21,15 +21,11 @@ const applicationRoutes = applicationRouteRegistry.declarations as readonly Appl
 describe('architecture demo registry', () => {
   it('derives visitor navigation and architecture cards from page declarations', () => {
     const primary = primaryNavigation();
-    expect(primary.map((route) => route.page?.label)).toEqual([
-      'Demos', 'Assurance',
-    ]);
+    expect(primary.map((route) => route.page?.label)).toEqual(['Demos']);
     expect(primary.every((route) => route.page?.navigation === 'primary')).toBe(true);
     expect(primary.every((route) => route.page?.parent === 'interfaces.frontend.index')).toBe(true);
     expect(primary.some((route) => route.id === 'interfaces.frontend.index')).toBe(false);
-    expect(architectureMapEntries().map((route) => route.id)).toEqual([
-      'demos.index', 'assurance.index',
-    ]);
+    expect(architectureMapEntries().map((route) => route.id)).toEqual(['demos.index']);
   });
 
   it('keeps the retired operations page out of the registered routes', () => {
@@ -56,19 +52,6 @@ describe('architecture demo registry', () => {
     expect(applicationRoutes.some((route) => route.id === 'operations.page')).toBe(false);
     expect(applicationRoutes.some((route) => route.pattern.startsWith('/dashboard'))).toBe(false);
     expect(sitemapPaths()).not.toContain(retiredOperationsHtmlPathname);
-  });
-
-  it('keeps consolidated assurance and separate security as canonical registered entries', () => {
-    const assurance = applicationRoutes.find((route) => route.pattern === routeUrl('assurance.index'));
-    expect(assurance?.page).toMatchObject({ label: 'Assurance', architectureMap: true });
-    expect(assurance?.source.module).toBe('src/demos/assurance-workbench.tsx');
-    const security = applicationRoutes.find((route) => route.pattern === routeUrl('security.index'));
-    expect(security?.page).toMatchObject({ label: 'Security', navigation: 'none', architectureMap: false });
-    expect(security?.source.module).toBe('src/ui/security.tsx');
-    for (const retired of ['/git', '/governance', '/evidence', '/compliance', '/governance/concerns', '/governance/risks', '/governance/incidents']) {
-      expect(applicationRoutes.some((route) => route.pattern === retired), retired).toBe(false);
-    }
-    expect(applicationRoutes.some((route) => route.pattern === '/dashboard/compliance')).toBe(false);
   });
 
   it('keeps derived page metadata synchronized with the machine route manifest', () => {
@@ -131,16 +114,12 @@ describe('intentional offline route policies', () => {
     const browserPolicy = (pattern: string) => applicationRoutes.find((route) => route.pattern === pattern)?.browserHtml;
     for (const pattern of [
       '/api/labs/edge',
-      '/api/reporting',
-      '/api/reporting/:collection',
-      '/api/reporting/:collection/:recordId',
       '/api/operations/logs',
       '/mcp',
     ]) expect(browserPolicy(pattern), pattern).toBe('never');
     expect(browserPolicy('/graphql')).toBe('never');
     expect(browserPolicy('/mcp/server')).toBeUndefined();
     expect(browserPolicy(routeUrl('demos.index'))).toBe('page');
-    expect(browserPolicy(routeUrl('assurance.index'))).toBe('page');
     expect(browserPolicy(retiredOperationsHtmlPathname)).toBeUndefined();
     expect(browserPolicy('/edge')).toBeUndefined();
     expect(applicationRoutes.some((route) => route.pattern === `${retiredApiReferencePrefixes[0]}/things`)).toBe(false);

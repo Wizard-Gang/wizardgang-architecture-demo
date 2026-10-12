@@ -2,10 +2,8 @@ import { describe, expect, it } from 'vitest';
 import auditConfig from '../config/site-audit-states.json';
 import routeManifest from '../docs/route-manifest.json';
 import { AVAILABILITY_RETENTION_DAYS } from '../src/api/operations';
-import { listPublishedAssuranceRecords } from '../src/assurance/publication';
 import { demonstrations } from '../src/demos/demos-page';
 import { runScheduledOperations } from '../src/index';
-import { collectCloudflareUsage } from '../src/lib/cloudflare-usage';
 import { recordApplicationLog } from '../src/lib/logs';
 import { routeRequest } from '../src/router';
 import { browserAssetName } from '../src/ui/asset-map';
@@ -106,19 +104,15 @@ describe('DEMO-260 MVP acceptance contract', () => {
     const pages = applicationRouteRegistry.declarations
       .filter((route) => route.kind === 'page' && route.methods.includes('GET'));
     expect(pages.map((route) => route.id).sort()).toEqual([
-      'assurance.index',
       'demos.index',
       'interfaces.frontend.index',
       'operations.admin',
       'operations.offline',
-      'security.index',
     ]);
     expect(pages.filter((route) => route.visibility === 'public').map((route) => route.id).sort()).toEqual([
-      'assurance.index',
       'demos.index',
       'interfaces.frontend.index',
       'operations.offline',
-      'security.index',
     ]);
     expect(pages.find((route) => route.id === 'operations.admin')?.visibility).toBe('private');
     expect(applicationRouteRegistry.declarations.some((route) => route.id === 'operations.index')).toBe(false);
@@ -135,13 +129,11 @@ describe('DEMO-260 MVP acceptance contract', () => {
       expect(response.headers.get('location'), suffix).toBeNull();
     }
 
-    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index', 'assurance.index']);
-    expect(architectureMapEntries().map((route) => route.id)).toEqual(['demos.index', 'assurance.index']);
+    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index']);
+    expect(architectureMapEntries().map((route) => route.id)).toEqual(['demos.index']);
     expect([...sitemapPaths()].sort()).toEqual([
       routeUrl('interfaces.frontend.index'),
       routeUrl('demos.index'),
-      routeUrl('assurance.index'),
-      routeUrl('security.index'),
     ].sort());
     expect(sitemapPaths()).not.toContain(retiredOperationsHtmlPathname);
   });
@@ -153,14 +145,11 @@ describe('DEMO-260 MVP acceptance contract', () => {
     const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[0] ?? '';
 
     expect(header).toContain(`href="${routeUrl('demos.index')}"`);
-    expect(header).toContain(`href="${routeUrl('assurance.index')}"`);
     expect(header).toContain(`href="${repositoryUrl}" aria-label="Source"><span class="utility-label">Source`);
-    expect(header).not.toContain(`href="${routeUrl('security.index')}"`);
     expect(header).not.toContain(`href="${retiredOperationsHtmlPathname}"`);
 
     for (const required of [
       'Explore demos',
-      'View assurance',
       'aria-label="Live proof"',
       'Current service state',
       '99.000%',
@@ -168,7 +157,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
       'v0.21.0-test',
       'Commit abcdef0',
     ]) expect(main).toContain(required);
-    expect(main).toContain(`href="${routeUrl('security.index')}">Security boundary</a>`);
     expect(main).not.toContain(`href="${retiredOperationsHtmlPathname}"`);
     expect(main).not.toContain('<table');
     for (const forbidden of [
@@ -256,59 +244,19 @@ describe('DEMO-260 MVP acceptance contract', () => {
     }
   });
 
-  it('keeps assurance focused on framework records and evidence without management inventories', async () => {
-    const { response, html } = await page('assurance.index');
-    expect(response.status).toBe(200);
-    expect((html.match(/data-assurance-framework=/g) ?? [])).toHaveLength(3);
-    expect(html).toContain('data-assurance-section');
-    expect(html).toContain('data-assurance-record-grid');
-    expect(html).toContain('data-assurance-detail');
-    expect(html).toContain('data-assurance-record="ISO27001-A.5.1"');
-    for (const label of ['Assessment', 'What is missing', 'Assessed', 'Documentation', 'Evidence']) expect(html).toContain(label);
-    expect(html).not.toContain('<table');
-    for (const forbidden of [
-      'Browse risk records',
-      'Browse incident and exercise records',
-      'Browse governance records',
-      'Report a non-sensitive concern',
-      'Risk register',
-      'Supplier register',
-      'Competence inventory',
-      'Awareness inventory',
-      'Configuration inventory',
-      'Registry browser',
-      'Raw reporting browser',
-      'data-assurance-collection=',
-      'pagination',
-    ]) expect(html).not.toContain(forbidden);
-
-    expect(listPublishedAssuranceRecords('risks').length).toBeGreaterThan(0);
-    expect(listPublishedAssuranceRecords('evidence').length).toBeGreaterThan(0);
-    expect(applicationRouteRegistry.declarations.some((route) => route.id === 'reporting.collection')).toBe(true);
-    expect(applicationRouteRegistry.declarations.some((route) => route.id === 'reporting.record')).toBe(true);
-  });
-
-  it('keeps Source, Security, private reporting, and advisory disclosure reachable', async () => {
+  it('keeps Source and private vulnerability reporting reachable', async () => {
     const home = await page('interfaces.frontend.index');
     expect(home.html).toContain(`href="${repositoryUrl}" aria-label="Source"><span class="utility-label">Source`);
-    expect(primaryNavigation().map((route) => route.id)).not.toContain('security.index');
-
-    const security = await page('security.index');
-    expect(security.response.status).toBe(200);
-    expect(security.html).toContain('Report vulnerability');
-    expect(security.html).toContain('Open a private security report');
-    expect(security.html).toContain('Published advisories');
-    expect(security.html).toContain(`${repositoryUrl}/security/advisories/new`);
+    expect(home.html).toContain(`href="${repositoryUrl}/security/policy"`);
 
     const securityTxt = await request(routeUrl('operations.security-txt'));
     expect(securityTxt.status).toBe(200);
     const policy = await securityTxt.text();
     expect(policy).toContain(`Contact: ${repositoryUrl}/security/advisories/new`);
-    expect(policy).toContain(`Policy: https://demo.wizardgang.ai${routeUrl('security.index')}`);
-    expect(listPublishedAssuranceRecords('advisories')).toBeDefined();
+    expect(policy).toContain(`Policy: ${repositoryUrl}/security/policy`);
   });
 
-  it('preserves operational machine contracts, collection, retention, usage, and redaction', async () => {
+  it('preserves operational machine contracts, collection, retention, and redaction', async () => {
     const routeIds = new Set(applicationRouteRegistry.declarations.map((route) => route.id));
     for (const id of [
       'operations.health',
@@ -319,9 +267,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
       'operations.sitemap',
       'operations.security-txt',
       'operations.assets',
-      'reporting.index',
-      'reporting.collection',
-      'reporting.record',
     ]) expect(routeIds.has(id), id).toBe(true);
 
     const health = await request(routeUrl('operations.health'), environment(), {
@@ -367,10 +312,6 @@ describe('DEMO-260 MVP acceptance contract', () => {
     expect(AVAILABILITY_RETENTION_DAYS).toBe(365);
     expect([...database.records('health').keys()]).toEqual(['2026-09-15T00:00:00.000Z']);
     expect(database.records('availability').get('2026-09-15')?.body).toEqual({ verified: 1, operational: 1, intentional: 0 });
-
-    const usage = await collectCloudflareUsage(environment(), false);
-    expect(usage.status).toBe('unavailable');
-    expect(Object.values(usage.products).every((product) => product.availability === 'unavailable')).toBe(true);
 
     const logEnv = environment();
     const logDb = logEnv.WG_DB as SqliteD1;
@@ -442,11 +383,9 @@ describe('DEMO-260 MVP acceptance contract', () => {
       .sort();
 
     expect(publicPageIds).toEqual([
-      'assurance.index',
       'demos.index',
       'interfaces.frontend.index',
       'operations.offline',
-      'security.index',
     ]);
     expect(manifestPublicPageIds).toEqual(publicPageIds);
 
@@ -464,15 +403,11 @@ describe('DEMO-260 MVP acceptance contract', () => {
     const pages = await Promise.all([
       page('interfaces.frontend.index'),
       page('demos.index'),
-      page('assurance.index'),
     ]);
     const html = pages.map((entry) => entry.html).join('\n');
     for (const forbidden of [
       'Operations dashboard',
       'Registry browser',
-      'Raw reporting browser',
-      'data-assurance-collection=',
-      'data-reporting-browser',
       'Browse risk records',
       'Browse incident and exercise records',
       'Browse governance records',

@@ -14,7 +14,7 @@ import {
   waitForUrl,
 } from './lib/browser-audit.ts';
 import { parseJsonc } from '../platform/conformance/jsonc.mjs';
-import { assuranceReviewState, waitForAssuranceRecordPane, waitForBrowserState, requireCategoryFocus, settledGeometry, requireFirstViewport } from './lib/browser-readiness.ts';
+import { waitForBrowserState, requireCategoryFocus, settledGeometry } from './lib/browser-readiness.ts';
 import { runCleanLocalMigrations } from './validate-migrations.ts';
 
 type Route = { id: string; route: string; kind: string; visibility: string; methods: string[] };
@@ -36,8 +36,7 @@ const localPersistenceArgs = ['--persist-to', process.env.WG_LOCAL_D1_PERSIST_TO
 const axeTags = ['wcag2a', 'wcag2aa', 'wcag2aaa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 const targetSelector = 'button,select,input:not([type="hidden"]),textarea,summary,[role="button"],[role="tab"]';
 const demosPath = manifest.find((route) => route.id === 'demos.index')?.route;
-const assurancePath = manifest.find((route) => route.id === 'assurance.index')?.route;
-if (!demosPath || !assurancePath) throw new Error('Site browser audit could not resolve demos or assurance routes.');
+if (!demosPath) throw new Error('Site browser audit could not resolve the demos route.');
 const workbenchDemos = {
   d1: ['Data', 'D1'], r2: ['Data', 'R2'], rest: ['APIs', 'REST / OpenAPI'], graphql: ['APIs', 'GraphQL'],
   webhooks: ['Integrations', 'Webhooks'], oauth: ['Identity', 'OAuth 2.0'], sso: ['Identity', 'SSO'], saml: ['Identity', 'SAML'], mcp: ['AI', 'MCP'],
@@ -181,7 +180,7 @@ async function runFocusAndTrap(cdp: CdpClient, label: string, findings: Finding[
       const points=offscreen?[]:[[.5,.5],[.15,.15],[.85,.15],[.15,.85],[.85,.85]].map(([px,py])=>[left+(right-left)*px,top+(bottom-top)*py]);
       const hits=points.map(([x,y])=>document.elementFromPoint(x,y));
       const exposed=hits.some((hit)=>!!hit&&(hit===el||el.contains(hit)));
-      const id=el.id||el.getAttribute('href')||el.getAttribute('data-assurance-framework')||el.tagName;
+      const id=el.id||el.getAttribute('href')||el.tagName;
       const order=[...document.querySelectorAll('*')].indexOf(el);
       return {id,order,visible,nestedFrame:el instanceof HTMLIFrameElement,obscured:offscreen||!exposed,offscreen,rect:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},hits:hits.map((hit)=>hit?.id||hit?.getAttribute?.('href')||hit?.tagName||null)};
     })()`);
@@ -200,7 +199,7 @@ async function runFocusAndTrap(cdp: CdpClient, label: string, findings: Finding[
   if (before.order === after.order && unique.size > 1 && !stayedAtNestedFrameBoundary) recordFinding(findings, 'reverse keyboard traversal', label, { before:before.id, after:after.id, order:after.order }, false);
 }
 
-async function contentSnapshot(cdp: CdpClient, label: string, locale: string, expectedAssuranceHeading: string | null = null) {
+async function contentSnapshot(cdp: CdpClient, label: string, locale: string) {
   const snapshot = await evaluate(cdp, `(()=>{
     const headings=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map((h)=>({level:Number(h.tagName.slice(1)),text:(h.textContent||'').trim().replace(/\\s+/g,' ').slice(0,120)}));
     const links=[...document.querySelectorAll('a[href]')].map((a)=>({name:(a.getAttribute('aria-label')||a.textContent||'').trim().replace(/\\s+/g,' ').slice(0,160),href:a.getAttribute('href')}));
@@ -214,13 +213,8 @@ async function contentSnapshot(cdp: CdpClient, label: string, locale: string, ex
     return {headings,linkCount:links.length,vague,ambiguous,explicitLang,abbreviations,englishWords:words.length,avgSentenceWords:Number((words.length/sentences).toFixed(1))};
   })()`);
   console.log(`DEMO289 content-review ${label} ${locale}: ${JSON.stringify(snapshot)}`);
-  if (expectedAssuranceHeading && !snapshot.headings.some((heading) => heading.text === expectedAssuranceHeading)) {
-    const state = assuranceReviewState(label, origin, assurancePath);
-    throw new Error(`DEMO-289 content review heading inventory is missing the selected assurance record heading "${expectedAssuranceHeading}": page=${state?.page ?? label} state=${state?.state ?? '(unknown)'} locale=${locale}.`);
-  }
   if (snapshot.ambiguous.length) {
-    const state = assuranceReviewState(label, origin, assurancePath);
-    throw new Error(`DEMO-289 content review found repeated link accessible names with different destinations: page=${state?.page ?? label} state=${state?.state ?? '(default)'} locale=${locale} ambiguous=${JSON.stringify(snapshot.ambiguous)}.`);
+    throw new Error(`DEMO-289 content review found repeated link accessible names with different destinations: page=${label} locale=${locale} ambiguous=${JSON.stringify(snapshot.ambiguous)}.`);
   }
   return snapshot;
 }
@@ -241,13 +235,7 @@ async function runMergedDemo289Checks(cdp: CdpClient, pathname: string, locale: 
   if (coverage.has(key)) return;
   coverage.add(key);
 
-  const assurancePane = await waitForAssuranceRecordPane(cdp, pathname, locale, {
-    origin,
-    assurancePath,
-    evaluatePage: evaluate,
-    sleep,
-  });
-  await contentSnapshot(cdp, pathname, locale, assurancePane?.headingText ?? null);
+  await contentSnapshot(cdp, pathname, locale);
   await runFocusAndTrap(cdp, `${pathname} ${locale}`, findings);
   await runTextSpacing(cdp, `${pathname} ${locale}`, findings);
   for (const [zoom, width] of [[200, 640], [400, 320]]) {
@@ -269,7 +257,7 @@ async function runMergedDemo289Checks(cdp: CdpClient, pathname: string, locale: 
 
 function inspectionExpression(expectedLocale: string, checkTargetSize: boolean = false) {
   const targetSizeExpression = checkTargetSize
-    ? `[...document.querySelectorAll(${JSON.stringify(targetSelector)})].flatMap((el)=>{const s=getComputedStyle(el);const r=el.getBoundingClientRect();if(s.display==='none'||s.visibility==='hidden'||r.width===0||r.height===0)return [];return [{name:el.id||el.getAttribute('data-assurance-framework')||el.getAttribute('role')||el.tagName,width:r.width,height:r.height}]})`
+    ? `[...document.querySelectorAll(${JSON.stringify(targetSelector)})].flatMap((el)=>{const s=getComputedStyle(el);const r=el.getBoundingClientRect();if(s.display==='none'||s.visibility==='hidden'||r.width===0||r.height===0)return [];return [{name:el.id||el.getAttribute('role')||el.tagName,width:r.width,height:r.height}]})`
     : '[]';
   return `(async()=>{
     ${axeSource}
@@ -372,7 +360,6 @@ async function waitForCurrentPageReady(cdp: CdpClient, pathname: string, locale:
     const requestedId = decodeURIComponent(url.hash.slice(1));
     await waitForWorkbenchReady(cdp, workbenchDemos[requestedId] ? requestedId : 'd1', label);
   }
-  await waitForAssuranceRecordPane(cdp, pathname, locale, { origin, assurancePath, evaluatePage: evaluate, sleep });
 }
 
 async function inspectPath(cdp: CdpClient, pathname: string, locale: string, label: string, options?: { checkTargetSize?: boolean }) {
@@ -1311,64 +1298,6 @@ async function retainedInspectorAudit(cdp: CdpClient) {
   }
 }
 
-async function assertAssurancePane(cdp: CdpClient, expectedId: string, label: string, focused: boolean) {
-  await waitForAssuranceRecordPane(cdp, `${assurancePath}#${encodeURIComponent(expectedId)}`, 'current document', { origin, assurancePath, evaluatePage: evaluate, sleep });
-  const state = await settledGeometry(() => evaluate(cdp, `(()=>{
-    const detail=document.querySelector('[data-assurance-detail]');
-    const heading=detail?.querySelector('[data-assurance-detail-heading]');
-    const current=document.querySelector('[data-assurance-record-link][aria-current="true"]');
-    const box=heading?.getBoundingClientRect();
-    return {hash:location.hash,record:detail?.querySelector('[data-assurance-record]')?.getAttribute('data-assurance-record'),current:current?.getAttribute('data-assurance-record-link'),headingTop:box?.top,headingBottom:box?.bottom,height:innerHeight,focus:document.activeElement===heading,bodyFocus:document.activeElement===document.body,listMounted:Boolean(document.querySelector('[data-assurance-record-grid]')?.isConnected),overflow:document.documentElement.scrollWidth>innerWidth+1};
-  })()`), label);
-  const problems=[];
-  if(state.hash!==`#${expectedId}`)problems.push(`fragment=${state.hash}`);
-  if(state.record!==expectedId||state.current!==expectedId)problems.push(`record/list=${state.record}/${state.current}`);
-  requireFirstViewport(state.headingTop, state.headingBottom, state.height, label);
-  if(focused&&!state.focus)problems.push('heading did not receive focus');
-  if(state.bodyFocus)problems.push('focus fell to body');
-  if(!state.listMounted)problems.push('record index unmounted');
-  if(state.overflow)problems.push('horizontal overflow');
-  if(problems.length)throw new Error(`${label}: ${problems.join('; ')}`);
-}
-
-async function assuranceRecordFirstAudit(cdp: CdpClient) {
-  for(const width of [375,768,1440]){
-    await cdp.call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
-    for(const locale of ['en','ar']){
-      const label=`assurance ${width}px ${locale}`;
-      await navigate(cdp,`${origin}/assurance?lang=${locale}`);
-      const defaultId=await evaluate(cdp,`document.querySelector('[data-assurance-detail] [data-assurance-record]')?.getAttribute('data-assurance-record')`);
-      await waitForAssuranceRecordPane(cdp, assurancePath, locale, { origin, assurancePath, evaluatePage: evaluate, sleep });
-      const first=await settledGeometry(() => evaluate(cdp,`(()=>{const r=document.querySelector('[data-assurance-detail-heading]')?.getBoundingClientRect();return {top:r?.top,bottom:r?.bottom,height:innerHeight}})()`), label);
-      requireFirstViewport(first.top, first.bottom, first.height, `${label} default`);
-      const records=await evaluate(cdp,`JSON.parse(document.querySelector('[data-assurance-browser]').dataset.config).records`);
-      for(const framework of ['iso-27001','iso-42001','wcag-2.2']){
-        const candidates=records.filter((record)=>record.framework===framework);
-        const deep=candidates.find((record)=>record.id==='ISO27001-A.5.19')??candidates[0];
-        const alternate=candidates.find((record)=>record.section===deep.section&&record.id!==deep.id)??candidates.find((record)=>record.id!==deep.id);
-        if(!deep||!alternate)throw new Error(`${label}: missing ${framework} audit records`);
-        await navigate(cdp,`${origin}/assurance?lang=${locale}#${encodeURIComponent(deep.id)}`);
-        await assertAssurancePane(cdp,deep.id,`${label} ${framework} deep link`,true);
-        await inspectCurrentPage(cdp,locale,`${label} ${framework} deep link`);
-        const sameSection=alternate.section===deep.section;
-        await evaluate(cdp,`(()=>{const link=document.querySelector('[data-assurance-record-link=${JSON.stringify(alternate.id)}]');if(!link)return false;window.__assuranceAuditLink=link;link.focus();return true})()`);
-        await dispatchKey(cdp,'Enter','Enter');
-        await assertAssurancePane(cdp,alternate.id,`${label} ${framework} keyboard selection`,true);
-        if(sameSection&&!await evaluate(cdp,`window.__assuranceAuditLink?.isConnected`))throw new Error(`${label} ${framework}: keyboard selection replaced its mounted link`);
-      }
-      if(width===375){
-        await cdp.call('Emulation.setScriptExecutionDisabled',{value:true});
-        try{
-          await navigate(cdp,`${origin}/assurance?lang=${locale}`);
-          const fallback=await evaluate(cdp,`(()=>{const h=document.querySelector('[data-assurance-detail-heading]')?.getBoundingClientRect();return {heading:h?.bottom,viewport:innerHeight,links:document.querySelectorAll('[data-assurance-record-link]').length,source:Boolean(document.querySelector('.assurance-record-tools a')),noscript:Boolean(document.querySelector('.assurance-noscript'))}})()`);
-          if(!(fallback.heading<=fallback.viewport&&fallback.links>0&&fallback.source&&fallback.noscript))throw new Error(`${label}: no-JavaScript pane/index unavailable ${JSON.stringify(fallback)}`);
-        }finally{await cdp.call('Emulation.setScriptExecutionDisabled',{value:false});}
-      }
-      if(defaultId==='')throw new Error(`${label}: missing default record`);
-    }
-  }
-}
-
 async function keyboardSmoke(cdp: CdpClient, pathname: string) {
   await navigate(cdp, `${origin}${localizedPath(pathname, 'en')}`);
   await waitForCurrentPageReady(cdp, pathname, 'en', `${pathname} keyboard readiness`);
@@ -1468,17 +1397,6 @@ async function browserFailureAudit(cdp: CdpClient) {
   try {
     await mustFail('missing workbench mount', () => assertWorkbenchState(cdp, 'd1', 'negative mount', '#d1', 'en', 150), 'workbench mount timed out');
   } finally { await evaluate(cdp, `document.querySelector('[data-demo-workbench]').dataset.demoMounted='true';true`); }
-  await cdp.call('Emulation.setDeviceMetricsOverride', { width: 375, height: 900, deviceScaleFactor: 1, mobile: true });
-  await navigate(cdp, `${origin}/assurance?lang=ar#ISO27001-A.5.19`);
-  await assertAssurancePane(cdp, 'ISO27001-A.5.19', 'negative layout fixture ready', true);
-  await cdp.call('DOM.enable');
-  await cdp.call('CSS.enable');
-  const { frameTree } = await cdp.call('Page.getFrameTree');
-  const { styleSheetId } = await cdp.call('CSS.createStyleSheet', { frameId: frameTree.frame.id });
-  try {
-    await cdp.call('CSS.setStyleSheetText', { styleSheetId, text: '[data-assurance-detail-heading]{transform:translateY(2000px)!important}' });
-    await mustFail('375px heading outside viewport', () => assertAssurancePane(cdp, 'ISO27001-A.5.19', 'negative layout', true), 'heading outside first viewport');
-  } finally { await cdp.call('CSS.setStyleSheetText', { styleSheetId, text: '' }); }
   await cdp.call('Emulation.setDeviceMetricsOverride', { width: 1280, height: 1000, deviceScaleFactor: 1, mobile: false });
 }
 
@@ -1564,8 +1482,7 @@ async function runAudit() {
     if (process.argv.includes('--focused')) {
       for (let repetition = 1; repetition <= 3; repetition += 1) {
         await workbenchInteractionAudit(cdp);
-        await assuranceRecordFirstAudit(cdp);
-        console.log(`Focused keyboard/assurance repetition ${repetition}/3 passed`);
+        console.log(`Focused keyboard repetition ${repetition}/3 passed`);
       }
       return;
     }
@@ -1630,8 +1547,6 @@ async function runAudit() {
     await retainedInspectorAudit(cdp);
     await sharedResetAudit(cdp, 375);
     await liveWebhookReflowAudit(cdp);
-    await assuranceRecordFirstAudit(cdp);
-    axeRuns += 18;
 
     for (const pathname of auditConfig.narrowViewportPaths) {
       const isWorkbench = new URL(pathname, origin).pathname === manifest.find((route) => route.id === 'demos.index')?.route;

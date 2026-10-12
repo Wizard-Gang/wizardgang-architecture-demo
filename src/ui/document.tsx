@@ -167,7 +167,7 @@ function SiteFooter({ env, repositoryUrl, routeId }: Readonly<{ env: Env; reposi
     : undefined;
   return <footer className="site-footer">
     <span className="site-footer-links">
-      <a href={localization.href(routeUrl('security.index'))}>{localization.t('nav.security.index', 'Security')}</a> ·{' '}
+      <a href={`${repositoryUrl}/security/policy`}>{localization.t('shell.security_policy', 'Security')}</a> ·{' '}
       <a href={`${repositoryUrl}/issues/new?template=bug.yml`}>{localization.t('shell.report_issue', 'Report an issue')}</a>
       {routeSourceModule ? <> · <a href={sourceUrl(env, routeSourceModule)}>{localization.t('shell.route_source', 'Route source')}<span className="sr-only">: {routeSourceModule}</span></a></> : null}
     </span>

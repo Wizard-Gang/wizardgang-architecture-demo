@@ -1,5 +1,0 @@
-{
-  "schemaVersion": 1,
-  "qualification": "Fixture proving that an explicitly empty published-advisory projection remains valid without making canonical emptiness an invariant.",
-  "records": []
-}

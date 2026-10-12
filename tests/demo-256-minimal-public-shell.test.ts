@@ -23,23 +23,20 @@ async function homeHtml(): Promise<string> {
 }
 
 describe('DEMO-256 minimal public shell', () => {
-  it('limits primary navigation to Demos and Assurance while keeping Source direct', async () => {
-    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index', 'assurance.index']);
+  it('limits primary navigation to Demos while keeping Source direct', async () => {
+    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index']);
     const html = await homeHtml();
     const header = html.match(/<header class="site-header">([\s\S]*?)<\/header>/)?.[0] ?? '';
     const nav = header.match(/<nav class="nav"[^>]*>([\s\S]*?)<\/nav>/)?.[0] ?? '';
     expect(nav).toContain(`href="${routeUrl('demos.index')}"`);
-    expect(nav).toContain(`href="${routeUrl('assurance.index')}"`);
     expect(nav).not.toContain('href="/operations"');
-    expect(nav).not.toContain(`href="${routeUrl('security.index')}"`);
     expect(header).toContain(`href="${repositoryUrl}" aria-label="Source"><span class="utility-label">Source`);
   });
 
-  it('uses one primary CTA, one secondary CTA, and a compact live proof strip', async () => {
+  it('uses one primary CTA and a compact live proof strip', async () => {
     const html = await homeHtml();
     const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[0] ?? '';
     expect(main).toContain(`class="button-primary" href="${routeUrl('demos.index')}">Explore demos</a>`);
-    expect(main).toContain(`href="${routeUrl('assurance.index')}">View assurance</a>`);
     expect(main).toContain('aria-label="Live proof"');
     expect(main).toContain('Current service state');
     expect(main).toContain('99.000%');
@@ -49,16 +46,9 @@ describe('DEMO-256 minimal public shell', () => {
     expect(main).not.toContain('href="/operations"');
   });
 
-  it('keeps Security discoverable while operations stays out of visitor-facing projections', async () => {
-    const html = await homeHtml();
-    expect(html).toContain(`href="${routeUrl('security.index')}">Security boundary</a>`);
-    expect(primaryNavigation().map((route) => route.id)).not.toContain('security.index');
+  it('keeps operations out of visitor-facing projections', async () => {
     expect(primaryNavigation().map((route) => route.id)).not.toContain('operations.index');
-    expect(architectureMapEntries().map((route) => route.id)).toEqual(['demos.index', 'assurance.index']);
-
-    const security = applicationRouteRegistry.declarations.find((route) => route.id === 'security.index');
-    const operations = applicationRouteRegistry.declarations.find((route) => route.id === 'operations.index');
-    expect(security?.pattern).toBe(routeUrl('security.index'));
-    expect(operations).toBeUndefined();
+    expect(architectureMapEntries().map((route) => route.id)).toEqual(['demos.index']);
+    expect(applicationRouteRegistry.declarations.find((route) => route.id === 'operations.index')).toBeUndefined();
   });
 });

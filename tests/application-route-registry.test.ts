@@ -66,26 +66,15 @@ function noDatabaseEnv(): Env {
 
 describe('complete declarative application routing', () => {
   it('derives visitor navigation and architecture projection from page declarations', () => {
-    expect(primaryNavigation().map((route) => route.id)).toEqual([
-      'demos.index',
-      'assurance.index',
-    ]);
-    expect(primaryNavigation().map((route) => route.page?.label)).toEqual([
-      'Demos', 'Assurance',
-    ]);
+    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index']);
+    expect(primaryNavigation().map((route) => route.page?.label)).toEqual(['Demos']);
     expect(primaryNavigation().some((route) => route.id === 'interfaces.frontend.index')).toBe(false);
-    expect(architectureMapEntries().map((route) => route.id)).toEqual([
-      'demos.index',
-      'assurance.index',
-    ]);
+    expect(architectureMapEntries().map((route) => route.id)).toEqual(['demos.index']);
     expect(primaryNavigation().every((route) => route.visibility === 'public')).toBe(true);
   });
 
   it('generates sitemap entries from public indexable registered pages', async () => {
-    const sitemapRouteIds = [
-      'interfaces.frontend.index', 'demos.index',
-      'assurance.index', 'security.index',
-    ];
+    const sitemapRouteIds = ['interfaces.frontend.index', 'demos.index'];
     expect([...sitemapPaths()].sort()).toEqual(sitemapRouteIds.map((routeId) => routeUrl(routeId)).sort());
     const response = sitemapResponse(new Request('https://demo.wizardgang.ai/sitemap.xml'));
     const xml = await response.text();

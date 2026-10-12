@@ -13,7 +13,6 @@ import {
 } from '../src/i18n/runtime';
 import { routeRequest } from '../src/router';
 import { demonstrations } from '../src/demos/demos-page';
-import { listPublishedAssuranceRecords } from '../src/assurance/publication';
 import { routeUrl } from '../src/routing/application-routes';
 import {
   applicationRouteRegistry,
@@ -100,7 +99,7 @@ function assertStructuralBaseline(html: string, locale: SupportedLocale, label: 
   }
 }
 
-describe('DEMO-238 site-wide accessibility assurance', () => {
+describe('DEMO-238 site-wide accessibility checks', () => {
   it('inherits every canonical public page and requires explicit fixtures for parameterized surfaces', () => {
     const inventory = publicPages.map((route) => ({
       id: route.id,
@@ -174,17 +173,15 @@ describe('DEMO-238 site-wide accessibility assurance', () => {
   });
 });
 
-describe('DEMO-238 site-wide localization assurance', () => {
-  it('rejects uncatalogued exact() English in demos, assurance, and released fragments', async () => {
+describe('DEMO-238 site-wide localization checks', () => {
+  it('rejects uncatalogued exact() English in demos and released fragments', async () => {
     const failures = new Set<string>();
     const stop = observeExactFallbacks((english, locale) => failures.add(`${locale}: ${english}`));
     try {
       for (const locale of supportedLocales.filter((value) => value !== defaultLocale)) {
         const paths = [
           routeUrl('demos.index'),
-          routeUrl('assurance.index'),
           ...demonstrations.map((demo) => routeUrl('demos.presentation', { demo: demo.id })),
-          ...listPublishedAssuranceRecords('compliance').map((record) => routeUrl('assurance.presentation', { record: record.id })),
         ];
         for (const path of paths) {
           const url = new URL(path, 'https://demo.wizardgang.ai');

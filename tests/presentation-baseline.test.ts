@@ -33,17 +33,10 @@ const SECURITY_HEADERS = [
 ] as const;
 const PRESENTATION_SECURITY_LOCALES = ['en', 'ar'] as const;
 const COMPACT_TEXT_LOCALES = ['es', 'fr', 'de', 'ja'] as const;
-const ASSURANCE_RECORDS = ['ISO27001-A.5.19', 'ISO42001-A.9.4', 'WCAG-2.4.7'] as const;
 
 const EXPECTED_ENGLISH_SURFACE_IDS = [
-  'page:assurance.index',
-  'page:security.index',
   'page:interfaces.frontend.index',
   'page:demos.index',
-  'audit:assurance-security-record',
-  'audit:assurance-evidence-record',
-  'audit:assurance-accessibility-record',
-  'audit:assurance-rtl-record',
   'audit:accessibility-lab',
   'audit:openapi-console',
   'audit:homepage-availability-proof',
@@ -64,20 +57,11 @@ const EXPECTED_ENGLISH_SURFACE_IDS = [
   'demo:durable-objects',
   'demo:accessibility',
   'demo:i18n',
-  'assurance:ISO27001-A.5.19',
-  'assurance:ISO42001-A.9.4',
-  'assurance:WCAG-2.4.7',
 ] as const;
 
 const ENGLISH_DOCUMENT_CONTRACT = {
-  'page:assurance.index': ['assurance.index', 'Assurance · WizardGang Architecture Demo', 'Assurance', 'https://demo.wizardgang.ai/assurance'],
-  'page:security.index': ['security.index', 'Security · WizardGang Architecture Demo', 'Security', 'https://demo.wizardgang.ai/security'],
   'page:interfaces.frontend.index': ['interfaces.frontend.index', 'Architecture · WizardGang Architecture Demo', 'Architecture you can inspect.', 'https://demo.wizardgang.ai/'],
   'page:demos.index': ['demos.index', 'Architecture Demos · WizardGang Architecture Demo', 'Architecture Demos', 'https://demo.wizardgang.ai/demos'],
-  'audit:assurance-security-record': ['assurance.index', 'Assurance · WizardGang Architecture Demo', 'Assurance', 'https://demo.wizardgang.ai/assurance'],
-  'audit:assurance-evidence-record': ['assurance.index', 'Assurance · WizardGang Architecture Demo', 'Assurance', 'https://demo.wizardgang.ai/assurance'],
-  'audit:assurance-accessibility-record': ['assurance.index', 'Assurance · WizardGang Architecture Demo', 'Assurance', 'https://demo.wizardgang.ai/assurance'],
-  'audit:assurance-rtl-record': ['assurance.index', 'Assurance · WizardGang Architecture Demo', 'Assurance', 'https://demo.wizardgang.ai/assurance'],
   'audit:accessibility-lab': ['demos.index', 'Architecture Demos · WizardGang Architecture Demo', 'Architecture Demos', 'https://demo.wizardgang.ai/demos'],
   'audit:openapi-console': ['demos.index', 'Architecture Demos · WizardGang Architecture Demo', 'Architecture Demos', 'https://demo.wizardgang.ai/demos'],
   'audit:homepage-availability-proof': ['interfaces.frontend.index', 'Architecture · WizardGang Architecture Demo', 'Architecture you can inspect.', 'https://demo.wizardgang.ai/'],
@@ -101,20 +85,11 @@ const ENGLISH_FRAGMENT_CONTRACT = {
   'demo:durable-objects': ['data-demo-section', 'durable-objects', 'Durable Objects'],
   'demo:accessibility': ['data-demo-section', 'accessibility', 'Accessibility is behavior.'],
   'demo:i18n': ['data-demo-section', 'i18n', 'Internationalization in the interface'],
-  'assurance:ISO27001-A.5.19': ['data-assurance-record', 'ISO27001-A.5.19', 'A.5.19 · Supplier security governance'],
-  'assurance:ISO42001-A.9.4': ['data-assurance-record', 'ISO42001-A.9.4', 'A.9.4 · Prevent unintended AI use and authority'],
-  'assurance:WCAG-2.4.7': ['data-assurance-record', 'WCAG-2.4.7', '2.4.7 · Focus Visible'],
 } as const;
 
 const EXPECTED_ARABIC_SURFACE_IDS = [
-  "page:assurance.index",
-  "page:security.index",
   "page:interfaces.frontend.index",
   "page:demos.index",
-  "audit:assurance-security-record",
-  "audit:assurance-evidence-record",
-  "audit:assurance-accessibility-record",
-  "audit:assurance-rtl-record",
   "audit:accessibility-lab",
   "audit:openapi-console",
   "audit:homepage-availability-proof",
@@ -135,20 +110,11 @@ const EXPECTED_ARABIC_SURFACE_IDS = [
   "demo:durable-objects",
   "demo:accessibility",
   "demo:i18n",
-  "assurance:ISO27001-A.5.19",
-  "assurance:ISO42001-A.9.4",
-  "assurance:WCAG-2.4.7",
 ] as const;
 
 const ARABIC_DOCUMENT_CONTRACT = {
-  "page:assurance.index": ["assurance.index", "الضمان · عرض بنية WizardGang", "الضمان", "https://demo.wizardgang.ai/assurance"],
-  "page:security.index": ["security.index", "الأمان · عرض بنية WizardGang", "الأمان", "https://demo.wizardgang.ai/security"],
   "page:interfaces.frontend.index": ["interfaces.frontend.index", "البنية · عرض بنية WizardGang", "البنية يمكنك فحصها.", "https://demo.wizardgang.ai/"],
   "page:demos.index": ["demos.index", "العروض التوضيحية للهندسة المعمارية · عرض بنية WizardGang", "العروض التوضيحية للهندسة المعمارية", "https://demo.wizardgang.ai/demos"],
-  "audit:assurance-security-record": ["assurance.index", "الضمان · عرض بنية WizardGang", "الضمان", "https://demo.wizardgang.ai/assurance"],
-  "audit:assurance-evidence-record": ["assurance.index", "الضمان · عرض بنية WizardGang", "الضمان", "https://demo.wizardgang.ai/assurance"],
-  "audit:assurance-accessibility-record": ["assurance.index", "الضمان · عرض بنية WizardGang", "الضمان", "https://demo.wizardgang.ai/assurance"],
-  "audit:assurance-rtl-record": ["assurance.index", "الضمان · عرض بنية WizardGang", "الضمان", "https://demo.wizardgang.ai/assurance"],
   "audit:accessibility-lab": ["demos.index", "العروض التوضيحية للهندسة المعمارية · عرض بنية WizardGang", "العروض التوضيحية للهندسة المعمارية", "https://demo.wizardgang.ai/demos"],
   "audit:openapi-console": ["demos.index", "العروض التوضيحية للهندسة المعمارية · عرض بنية WizardGang", "العروض التوضيحية للهندسة المعمارية", "https://demo.wizardgang.ai/demos"],
   "audit:homepage-availability-proof": ["interfaces.frontend.index", "البنية · عرض بنية WizardGang", "البنية يمكنك فحصها.", "https://demo.wizardgang.ai/"],
@@ -172,9 +138,6 @@ const ARABIC_FRAGMENT_CONTRACT = {
   "demo:durable-objects": ["data-demo-section", "durable-objects", "Durable Objects"],
   "demo:accessibility": ["data-demo-section", "accessibility", "إمكانية الوصول سلوك."],
   "demo:i18n": ["data-demo-section", "i18n", "التدويل في الواجهة"],
-  "assurance:ISO27001-A.5.19": ["data-assurance-record", "ISO27001-A.5.19", "A.5.19 · Supplier security governance"],
-  "assurance:ISO42001-A.9.4": ["data-assurance-record", "ISO42001-A.9.4", "A.9.4 · Prevent unintended AI use and authority"],
-  "assurance:WCAG-2.4.7": ["data-assurance-record", "WCAG-2.4.7", "2.4.7 · Focus Visible"],
 } as const;
 
 
@@ -185,25 +148,14 @@ const COMPACT_TEXT_CONTRACT = {
       "skip": "Saltar al contenido principal",
       "navigation": "Navegación principal",
       "demos": "Demostraciones",
-      "assurance": "Aseguramiento",
       "source": "Fuente",
       "theme": "Tema",
       "language": "Idioma",
       "apply": "Aplicar"
     },
-    "assuranceTabs": [
-      "Documentación",
-      "Evidencia"
-    ],
     "markers": {
-      "page:assurance.index": "Aseguramiento",
-      "page:security.index": "Seguridad",
       "page:interfaces.frontend.index": "Arquitectura que puedes inspeccionar.",
       "page:demos.index": "Demostraciones de arquitectura",
-      "audit:assurance-security-record": "Aseguramiento",
-      "audit:assurance-evidence-record": "Aseguramiento",
-      "audit:assurance-accessibility-record": "Aseguramiento",
-      "audit:assurance-rtl-record": "Aseguramiento",
       "audit:accessibility-lab": "Demostraciones de arquitectura",
       "audit:openapi-console": "Demostraciones de arquitectura",
       "audit:homepage-availability-proof": "Arquitectura que puedes inspeccionar.",
@@ -224,9 +176,6 @@ const COMPACT_TEXT_CONTRACT = {
       "demo:durable-objects": "Durable Objects",
       "demo:accessibility": "La accesibilidad es comportamiento.",
       "demo:i18n": "Internacionalización en la interfaz",
-      "assurance:ISO27001-A.5.19": "A.5.19 · Supplier security governance",
-      "assurance:ISO42001-A.9.4": "A.9.4 · Prevent unintended AI use and authority",
-      "assurance:WCAG-2.4.7": "2.4.7 · Focus Visible"
     }
   },
   "fr": {
@@ -235,25 +184,14 @@ const COMPACT_TEXT_CONTRACT = {
       "skip": "Aller au contenu principal",
       "navigation": "Navigation principale",
       "demos": "Démonstrations",
-      "assurance": "Assurance",
       "source": "Source",
       "theme": "Thème",
       "language": "Langue",
       "apply": "Appliquer"
     },
-    "assuranceTabs": [
-      "Documentation",
-      "Preuves"
-    ],
     "markers": {
-      "page:assurance.index": "Assurance",
-      "page:security.index": "Sécurité",
       "page:interfaces.frontend.index": "Architecture que vous pouvez inspecter.",
       "page:demos.index": "Démonstrations d'architecture",
-      "audit:assurance-security-record": "Assurance",
-      "audit:assurance-evidence-record": "Assurance",
-      "audit:assurance-accessibility-record": "Assurance",
-      "audit:assurance-rtl-record": "Assurance",
       "audit:accessibility-lab": "Démonstrations d'architecture",
       "audit:openapi-console": "Démonstrations d'architecture",
       "audit:homepage-availability-proof": "Architecture que vous pouvez inspecter.",
@@ -274,9 +212,6 @@ const COMPACT_TEXT_CONTRACT = {
       "demo:durable-objects": "Durable Objects",
       "demo:accessibility": "L’accessibilité est un comportement.",
       "demo:i18n": "Internationalisation de l’interface",
-      "assurance:ISO27001-A.5.19": "A.5.19 · Supplier security governance",
-      "assurance:ISO42001-A.9.4": "A.9.4 · Prevent unintended AI use and authority",
-      "assurance:WCAG-2.4.7": "2.4.7 · Focus Visible"
     }
   },
   "de": {
@@ -285,25 +220,14 @@ const COMPACT_TEXT_CONTRACT = {
       "skip": "Zum Hauptinhalt springen",
       "navigation": "Hauptnavigation",
       "demos": "Demos",
-      "assurance": "Assurance",
       "source": "Quellcode",
       "theme": "Design",
       "language": "Sprache",
       "apply": "Anwenden"
     },
-    "assuranceTabs": [
-      "Dokumentation",
-      "Nachweise"
-    ],
     "markers": {
-      "page:assurance.index": "Assurance",
-      "page:security.index": "Sicherheit",
       "page:interfaces.frontend.index": "Architektur zum Nachvollziehen.",
       "page:demos.index": "Architekturdemos",
-      "audit:assurance-security-record": "Assurance",
-      "audit:assurance-evidence-record": "Assurance",
-      "audit:assurance-accessibility-record": "Assurance",
-      "audit:assurance-rtl-record": "Assurance",
       "audit:accessibility-lab": "Architekturdemos",
       "audit:openapi-console": "Architekturdemos",
       "audit:homepage-availability-proof": "Architektur zum Nachvollziehen.",
@@ -324,9 +248,6 @@ const COMPACT_TEXT_CONTRACT = {
       "demo:durable-objects": "Durable Objects",
       "demo:accessibility": "Barrierefreiheit ist Verhalten.",
       "demo:i18n": "Internationalisierung der Oberfläche",
-      "assurance:ISO27001-A.5.19": "A.5.19 · Supplier security governance",
-      "assurance:ISO42001-A.9.4": "A.9.4 · Prevent unintended AI use and authority",
-      "assurance:WCAG-2.4.7": "2.4.7 · Focus Visible"
     }
   },
   "ja": {
@@ -335,25 +256,14 @@ const COMPACT_TEXT_CONTRACT = {
       "skip": "メインコンテンツへ移動",
       "navigation": "メインナビゲーション",
       "demos": "デモ",
-      "assurance": "保証",
       "source": "ソース",
       "theme": "テーマ",
       "language": "言語",
       "apply": "適用"
     },
-    "assuranceTabs": [
-      "ドキュメント",
-      "エビデンス"
-    ],
     "markers": {
-      "page:assurance.index": "保証",
-      "page:security.index": "セキュリティ",
       "page:interfaces.frontend.index": "アーキテクチャ を検証できます。",
       "page:demos.index": "アーキテクチャのデモ",
-      "audit:assurance-security-record": "保証",
-      "audit:assurance-evidence-record": "保証",
-      "audit:assurance-accessibility-record": "保証",
-      "audit:assurance-rtl-record": "保証",
       "audit:accessibility-lab": "アーキテクチャのデモ",
       "audit:openapi-console": "アーキテクチャのデモ",
       "audit:homepage-availability-proof": "アーキテクチャ を検証できます。",
@@ -374,23 +284,13 @@ const COMPACT_TEXT_CONTRACT = {
       "demo:durable-objects": "Durable Objects",
       "demo:accessibility": "アクセシビリティは動作です。",
       "demo:i18n": "インターフェースの国際化",
-      "assurance:ISO27001-A.5.19": "A.5.19 · Supplier security governance",
-      "assurance:ISO42001-A.9.4": "A.9.4 · Prevent unintended AI use and authority",
-      "assurance:WCAG-2.4.7": "2.4.7 · Focus Visible"
     }
   }
 } as const;
 
 const COMPACT_TEXT_FALLBACK_MARKERS = {
-  "page:security.index": [
-    "Security sections",
-    "Canonical assurance service",
-    "Publication policy"
-  ],
   "page:interfaces.frontend.index": [
-    "Explore demos",
-    "View assurance",
-    "Security boundary"
+    "Explore demos"
   ],
   "page:operations.admin": [
     "Demo Admin",
@@ -430,18 +330,6 @@ const COMPACT_TEXT_FALLBACK_MARKERS = {
   "demo:durable-objects": [
     "Durable Objects"
   ],
-  "assurance:ISO27001-A.5.19": [
-    "A.5.19 · Supplier security governance",
-    "Security boundary and secret handling"
-  ],
-  "assurance:ISO42001-A.9.4": [
-    "A.9.4 · Prevent unintended AI use and authority",
-    "MCP boundary implementation"
-  ],
-  "assurance:WCAG-2.4.7": [
-    "2.4.7 · Focus Visible",
-    "Accessibility verification protocol"
-  ]
 } as const;
 
 const NOINDEX_ARABIC_SURFACES = new Set([
@@ -533,11 +421,6 @@ function surfaces(): Surface[] {
     ...demonstrations.map((demo) => ({
       id: `demo:${demo.id}`,
       path: routeUrl('demos.presentation', { demo: demo.id }),
-      expectedStatus: 200,
-    })),
-    ...ASSURANCE_RECORDS.map((record) => ({
-      id: `assurance:${record}`,
-      path: routeUrl('assurance.presentation', { record }, { rev: TEST_SHA }),
       expectedStatus: 200,
     })),
   ];
@@ -871,9 +754,7 @@ describe('DEMO-325 presentation acceptance baseline', () => {
           const fragmentContract = ENGLISH_FRAGMENT_CONTRACT[surface.id as keyof typeof ENGLISH_FRAGMENT_CONTRACT];
           expect(fragmentContract, surface.id + ' compact contract').toBeDefined();
           const [attribute, value, marker] = fragmentContract!;
-          expect(response.headers.get('content-language'), surface.id).toBe(
-            surface.id.startsWith('assurance:') ? 'en' : null,
-          );
+          expect(response.headers.get('content-language'), surface.id).toBeNull();
           expect(document.querySelector('[' + attribute + '="' + value + '"]'), surface.id).not.toBeNull();
           expect(normalizeWhitespace(document.body.textContent), surface.id).toContain(marker);
           expect(document.title, surface.id).toBe('');
@@ -939,20 +820,13 @@ describe('DEMO-325 presentation acceptance baseline', () => {
           const fragmentContract = ARABIC_FRAGMENT_CONTRACT[surface.id as keyof typeof ARABIC_FRAGMENT_CONTRACT];
           expect(fragmentContract, surface.id + ' compact contract').toBeDefined();
           const [attribute, value, marker] = fragmentContract!;
-          expect(response.headers.get('content-language'), surface.id).toBe(
-            surface.id.startsWith('assurance:') ? 'ar' : null,
-          );
+          expect(response.headers.get('content-language'), surface.id).toBeNull();
           expect(document.querySelector('[' + attribute + '="' + value + '"]'), surface.id).not.toBeNull();
           expect(normalizeWhitespace(document.body.textContent), surface.id).toContain(marker);
           expect(normalizeWhitespace(document.body.textContent), surface.id).toMatch(/[\u0600-\u06ff]/);
           expect(document.title, surface.id).toBe('');
           expect(document.querySelector('link[rel="canonical"]'), surface.id).toBeNull();
 
-          if (surface.id.startsWith('assurance:')) {
-            const buttonNames = [...document.querySelectorAll('button')].map((button) => accessibleName(button, document));
-            expect(buttonNames, surface.id).toContain('التوثيق');
-            expect(buttonNames, surface.id).toContain('الأدلة');
-          }
           if (surface.id === 'demo:i18n') {
             expect(document.querySelector('input[type="hidden"][name="lang"][value="ar"]'), surface.id).not.toBeNull();
           }
@@ -1015,22 +889,15 @@ describe('DEMO-325 presentation acceptance baseline', () => {
 
             const linkNames = [...document.querySelectorAll('a[href]')].map((link) => accessibleName(link, document));
             expect(linkNames, `${surface.id} ${locale} demos nav`).toContain(contract.shell.demos);
-            expect(linkNames, `${surface.id} ${locale} assurance nav`).toContain(contract.shell.assurance);
             expect(linkNames, `${surface.id} ${locale} source nav`).toContain(contract.shell.source);
             if (routeId) expect(document.body.getAttribute('data-route-id'), surface.id).toBe(routeId);
-          } else if (surface.id.startsWith('demo:')) {
+          } else {
             const demoId = surface.id.slice('demo:'.length);
             expect(response.headers.get('content-language'), surface.id).toBeNull();
             expect(document.querySelector(`[data-demo-section="${demoId}"]`), surface.id).not.toBeNull();
             if (surface.id === 'demo:i18n') {
               expect(document.querySelector(`input[type="hidden"][name="lang"][value="${locale}"]`), surface.id).not.toBeNull();
             }
-          } else {
-            const recordId = surface.id.slice('assurance:'.length);
-            expect(response.headers.get('content-language'), surface.id).toBe(locale);
-            expect(document.querySelector(`[data-assurance-record="${recordId}"]`), surface.id).not.toBeNull();
-            const buttonNames = [...document.querySelectorAll('button')].map((button) => accessibleName(button, document));
-            for (const tab of contract.assuranceTabs) expect(buttonNames, `${surface.id} ${locale}`).toContain(tab);
           }
 
           const fallbackMarkers = (COMPACT_TEXT_FALLBACK_MARKERS as Readonly<Record<string, readonly string[]>>)[surface.id] ?? [];

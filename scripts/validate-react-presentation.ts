@@ -11,7 +11,6 @@ const HTML_PRODUCERS = new Map([
   ['src/ui/graphiql-document.tsx', 'renderToStaticMarkup('],
   ['src/ui/document.tsx', 'renderToStaticMarkup('],
   ['src/ui/accessibility-lab.tsx', 'renderToStaticMarkup('],
-  ['src/demos/assurance-workbench.tsx', 'renderToStaticMarkup('],
   ['src/demos/demo-presentations.ts', 'renderToStaticMarkup('],
 ]);
 const AUDITED_RAW_HTML_COMPONENT = 'src/ui/audited-raw-html.tsx';

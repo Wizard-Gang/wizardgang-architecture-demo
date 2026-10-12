@@ -1,5 +1,5 @@
 name: Other concern
-description: Report an accessibility, AI/MCP, governance, documentation, or other non-sensitive concern.
+description: Report an accessibility, AI/MCP, documentation, or other non-sensitive concern.
 title: "[Concern]: "
 labels: [concern]
 body:
@@ -14,7 +14,6 @@ body:
       options:
         - Accessibility
         - AI/MCP behavior or impact
-        - Governance or assurance evidence
         - Documentation
         - Privacy or data handling without sensitive details
         - Other
@@ -23,8 +22,8 @@ body:
   - type: input
     id: route
     attributes:
-      label: Related route, evidence record, or component
-      placeholder: /accessibility, EVD-SRC-001, or docs/ASSURANCE.md
+      label: Related route or component
+      placeholder: /demos#accessibility or src/api/mcp.ts
   - type: textarea
     id: concern
     attributes:

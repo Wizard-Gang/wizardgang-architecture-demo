@@ -136,22 +136,6 @@ jobs:
           echo "tag_commit=$tag_commit" >> "$GITHUB_OUTPUT"
           echo "tag_date=$tag_date" >> "$GITHUB_OUTPUT"
           echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
-      - name: Generate release-bound assurance registry snapshot
-        run: |
-          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          mkdir -p artifacts/assurance
-          npm run snapshot:assurance -- \
-            --tag "$GITHUB_REF_NAME" \
-            --commit "${{ steps.release.outputs.tag_commit }}" \
-            --generated-at "$generated_at" \
-            --output "artifacts/assurance/registry-$GITHUB_REF_NAME.json"
-      - name: Retain assurance registry snapshot
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: assurance-registry-${{ github.ref_name }}
-          path: artifacts/assurance/registry-${{ github.ref_name }}.json
-          if-no-files-found: error
-          retention-days: 90
       - name: Publish GitHub Release from tag and GitHub history
         env:
           GH_TOKEN: ${{ github.token }}
@@ -160,13 +144,11 @@ jobs:
           PREVIOUS_TAG: ${{ steps.release.outputs.previous_tag }}
         shell: bash
         run: |
-          snapshot="artifacts/assurance/registry-$GITHUB_REF_NAME.json"
           previous_display="${PREVIOUS_TAG:-none}"
           release_context="$(printf '## Release identity\n\n- Annotated tag: `%s`\n- Commit: `%s`\n- Annotated tag date (UTC): `%s`\n- Previous release tag: `%s`\n\nRelease changes are generated from GitHub history. The GitHub Release and annotated tag are the historical release authority.\n' "$GITHUB_REF_NAME" "$TAG_COMMIT" "$TAG_DATE" "$previous_display")"
 
           release_args=(
             "$GITHUB_REF_NAME"
-            "$snapshot#Assurance registry snapshot for $GITHUB_REF_NAME"
             --title "WizardGang Architecture Demo $GITHUB_REF_NAME"
             --notes "$release_context"
             --generate-notes
@@ -178,9 +160,6 @@ jobs:
 
           published_tag="$(gh release view "$GITHUB_REF_NAME" --json isDraft,tagName,publishedAt --jq 'if .isDraft == false and .publishedAt != null then .tagName else "" end' 2>/dev/null || true)"
           if [[ "$published_tag" == "$GITHUB_REF_NAME" ]]; then
-            if ! gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets[].name' | grep -qx "registry-$GITHUB_REF_NAME.json"; then
-              gh release upload "$GITHUB_REF_NAME" "$snapshot#Assurance registry snapshot for $GITHUB_REF_NAME"
-            fi
             echo "Published $GITHUB_REF_NAME already exists; retained its release identity."
           else
             if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then

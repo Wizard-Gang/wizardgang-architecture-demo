@@ -8,7 +8,7 @@ export function securityTxtResponse(request: Request, env: Env): Response {
   if (request.method !== 'GET' && request.method !== 'HEAD') return methodNotAllowed(['GET', 'HEAD']);
   const body = [
     `Contact: ${repoUrl(env)}/security/advisories/new`,
-    'Policy: https://demo.wizardgang.ai/security',
+    `Policy: ${repoUrl(env)}/security/policy`,
     'Canonical: https://demo.wizardgang.ai/.well-known/security.txt',
     'Preferred-Languages: en',
     `Expires: ${SECURITY_TXT_EXPIRES}`,

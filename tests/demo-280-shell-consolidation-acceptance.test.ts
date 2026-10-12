@@ -162,7 +162,7 @@ describe('DEMO-280 shell consolidation acceptance', () => {
     expect(documentSource).toContain('<SiteHeader repositoryUrl={repositoryUrl} currentRouteId={content.routeId} />');
     expect(documentSource).toContain('<main className="site-main" id="main">{content.body}</main>');
     expect(documentSource).not.toContain('LegacyBody');
-    const securityHref = routeUrl('security.index');
+    const securityHref = 'https://github.com/Wizard-Gang/wizardgang-architecture-demo/security/policy';
 
     for (const route of publicPages) {
       const response = await route.handler(
@@ -191,7 +191,7 @@ describe('DEMO-280 shell consolidation acceptance', () => {
     }
   });
 
-  it('derives exactly Demos and Assurance from primary route declarations without an allowlist', () => {
+  it('derives exactly Demos from primary route declarations without an allowlist', () => {
     const root = applicationRouteRegistry.declarations.find((route) => route.kind === 'page' && route.page && !route.page.parent);
     if (!root) throw new Error('Missing root page declaration.');
 
@@ -207,13 +207,12 @@ describe('DEMO-280 shell consolidation acceptance', () => {
 
     const projected = primaryNavigation();
     expect(projected.map((route) => route.id)).toEqual(declaredPrimary.map((route) => route.id));
-    expect(projected.map((route) => route.page?.label)).toEqual(['Demos', 'Assurance']);
+    expect(projected.map((route) => route.page?.label)).toEqual(['Demos']);
 
     const start = navigationSource.indexOf('export function primaryNavigation');
     const end = navigationSource.indexOf('/** Project only', start);
     const primaryProjectionSource = navigationSource.slice(start, end === -1 ? undefined : end);
     expect(primaryProjectionSource).not.toContain('demos.index');
-    expect(primaryProjectionSource).not.toContain('assurance.index');
     expect(primaryProjectionSource).not.toContain('MVP_PRODUCT_ROUTE_IDS');
   });
 

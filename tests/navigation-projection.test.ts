@@ -64,7 +64,7 @@ describe('navigation projection', () => {
         expect(registeredPageUrls.has(href), `${route.id}: ${href}`).toBe(true);
       }
     }
-    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index', 'assurance.index']);
+    expect(primaryNavigation().map((route) => route.id)).toEqual(['demos.index']);
     expect(primaryNavigation().every((route) => !routeUrl(route.id).includes('?'))).toBe(true);
   });
 
@@ -78,29 +78,17 @@ describe('navigation projection', () => {
     }
   });
 
-  it('keeps the assurance workbench inside the assurance page', async () => {
-    const route = applicationRouteRegistry.declarations.find((candidate) => candidate.id === 'assurance.index');
-    if (!route) throw new Error('Missing assurance.index route');
-    const html = await (await route.handler(new Request('https://demo.wizardgang.ai/assurance'), { env }, {})).text();
-    expect(html).toContain('aria-label="Frameworks"');
-    expect(html).toContain(`href="${routeUrl('security.index')}"`);
-    for (const framework of ['iso-27001', 'iso-42001', 'wcag-2.2']) expect(html).toContain(`data-assurance-framework="${framework}"`);
-    expect(html).toContain('id="ISO27001-A.5.1"');
-    expect(html).toContain('href="#ISO27001-A.5.1"');
-  });
-
   it('keeps the homepage focused on architecture product destinations while support surfaces stay contextual', async () => {
     const entries = architectureMapEntries();
     const html = await publicHome();
     const hrefs = new Set([...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]));
-    expect(entries.map((route) => route.id)).toEqual(['demos.index', 'assurance.index']);
+    expect(entries.map((route) => route.id)).toEqual(['demos.index']);
     for (const route of entries) {
       expect(route.page?.parent, route.id).toBeTruthy();
       expect(hrefs.has(routeUrl(route.id)), route.id).toBe(true);
       expect(route.page?.summary.trim(), route.id).not.toBe('');
     }
     expect(hrefs.has(retiredOperationsHtmlPathname)).toBe(false);
-    expect(hrefs.has(routeUrl('security.index'))).toBe(true);
     expect(html).not.toContain('data-parent-route=');
     expect(html).not.toContain(`${entries.length} live destinations`);
   });

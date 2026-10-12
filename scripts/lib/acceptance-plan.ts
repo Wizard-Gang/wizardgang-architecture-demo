@@ -29,7 +29,6 @@ export function npmRunName(command) {
 
 // One ordered credential-free plan for local, tagged and grouped CI acceptance.
 export const acceptanceStages = Object.freeze([
-  { script: 'validate:typescript-execution', group: 'source' },
   { script: 'validate:typescript-source-boundary', group: 'source' },
   { script: 'check:platform', group: 'source' },
   { script: 'test:plan-queue', group: 'source' },
@@ -51,8 +50,6 @@ export const acceptanceStages = Object.freeze([
   { script: 'validate:contracts', group: 'source' },
   { script: 'validate:locales', group: 'source' },
   { script: 'validate:security', group: 'source' },
-  { script: 'validate:governance', group: 'source' },
-  { script: 'validate:assurance', group: 'source' },
 ]);
 
 export function acceptanceCommands({ group = 'all', npmExecutable = 'npm', checkEnvironment } = {}) {

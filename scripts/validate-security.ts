@@ -14,16 +14,6 @@ for (const file of tracked) {
   if (text.includes(retiredBroadCredential)) failures.push(`${file}: retired broad operator credential name is not allowed`);
 }
 
-const broadCredentialBoundary = 'no broad operator bearer credential is accepted by the application';
-for (const file of [
-  'assurance/governance/access-classes.json',
-  'docs/governance/SECURITY-GOVERNANCE.md',
-  'contracts/openapi/openapi.json',
-]) {
-  const text = fs.readFileSync(file, 'utf8').toLowerCase();
-  if (!text.includes(broadCredentialBoundary)) failures.push(`${file}: missing the current broad-credential negative invariant`);
-}
-
 const history = scanPublicHistory(process.cwd());
 failures.push(...history.findings);
 

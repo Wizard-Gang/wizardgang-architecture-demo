@@ -4,7 +4,7 @@
 
 Goal: a clean restart. Delete the assurance, evidence and documentation system, APIs that overlap or have no caller, and the operational machinery around them. Compliance will be rebuilt later from zero.
 
-- DEMO-512 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
+- DEMO-513 through DEMO-519 run in order. Each is one controlled delivery: one branch, one PR, one squash commit. Start the next task only on the owner's instruction.
 - Delete, don't consolidate. Add no tombstone tests, "removed route" fixtures, aliases, redirects, compatibility shims, replacement docs or new validators. A removed route returns the ordinary 404 and needs no test proving it.
 - Delete a test when its subject is deleted. Edit a shared test only to drop cases for removed things.
 - Regenerate the route manifest, asset manifest and OpenAPI document with their generators; never hand-edit them.
@@ -13,32 +13,11 @@ Goal: a clean restart. Delete the assurance, evidence and documentation system, 
 
 ## Open tasks
 
-### DEMO-512 — [CHORE] Remove the assurance, reporting and security-page system
-
-- Dependency: DEMO-511
-- Why: The ISO/IEC 27001, ISO/IEC 42001 and WCAG 2.2 records, the evidence/reporting API and their validators are upkeep with no product value. Compliance restarts from zero later.
-- Scope: Routes `/assurance`, `/api/assurance/{record}`, `/api/reporting`, `/api/reporting/{collection}`, `/api/reporting/{collection}/{recordId}` and `/security`, plus every file, script, npm script, acceptance stage, workflow step and test that exists only for them.
-- Non-goals: Keep `/.well-known/security.txt` and root `SECURITY.md`. Leave the rest of `docs/` for DEMO-513. Keep automated accessibility testing (axe site audit and the accessibility tests); only the WCAG records go.
-- Acceptance: The six routes return 404. `assurance/`, `contracts/assurance/`, `src/assurance/` and `src/reporting/` are gone. `git grep -iE "assurance|/api/reporting"` finds nothing outside `platform/` and `docs/`. `npm run check` has no governance, assurance or TypeScript-execution stage; `validate:security` keeps only its tracked-file and public-history secret scan. No workflow runs an assurance step.
-- Validation: Regenerate the route manifest and OpenAPI; run the focused router, route-registry, navigation, sitemap and i18n tests; final exact-head CI.
-- Authorities: src/routing/application-routes.ts; src/router.ts; src/routing/navigation.ts; scripts/lib/acceptance-plan.ts; package.json; .github/workflows/release.yml; contracts/openapi/openapi.json.
-
-#### Work
-
-- [ ] Delete data and schemas: `assurance/` (32 files) and `contracts/assurance/` (19 schemas).
-- [ ] Delete runtime code: `src/assurance/`, `src/reporting/`, `src/api/reporting.ts`, `src/api/reporting-response.ts`, `src/api/assurance-contract.ts`, `src/routing/assurance-routes.ts`, `src/routing/reporting-routes.ts`, `src/demos/assurance-workbench.tsx`, `src/ui/security.tsx` and `src/lib/cloudflare-usage.ts` (reporting is its only consumer). Unwire them from routing, navigation, sitemap, offline/recovery copy, i18n strings and `assurance-*` stylesheet classes.
-- [ ] Delete scripts: all `scripts/validate-assurance*.ts`, `validate-iso27001-compliance.ts`, `validate-iso42001-compliance.ts`, `validate-wcag-compliance.ts`, `validate-advisories.ts`, `validate-governance-metadata.ts`, `validate-documentation-cleanup.ts`, `validate-typescript-execution.ts` (its probe imports assurance code), `generate-assurance-runtime-binding.ts`, `generate-assurance-snapshot.ts`, `scripts/lib/assurance-*.ts` and `scripts/lib/validate-normalized-iso.ts`. In `scripts/validate-security.ts`, remove only the broad-credential assertions that read `assurance/` and `docs/` files; keep the secret scan. Also delete `scripts/lib/markdown-headings.ts` if nothing else imports it.
-- [ ] Remove npm scripts `validate:assurance`, `monitor:assurance`, `snapshot:assurance`, `validate:wcag`, `validate:governance`, `validate:typescript-execution` and `generate:assurance-runtime-binding`, and their acceptance stages. Drop assurance inputs from `validate-generated-artifacts.ts`, `validate-contracts.ts`, `validate-react-presentation.ts`, `validate-repository-baseline.ts`, `site-browser-audit.ts` and `vite.config.ts`.
-- [ ] Delete `.github/workflows/assurance-monitor.yml` and the assurance snapshot steps in `release.yml`.
-- [ ] Remove the `/api/reporting*` paths and reporting schemas from OpenAPI with `npm run generate:openapi`, then regenerate the route manifest.
-- [ ] Delete the 55 test files that cover only this system: `tests/assurance-*`, `tests/reporting-*`, `advisory-validation`, `risk-rating`, `governance-records`, `security`, `incidents-page`, `concerns-page` and `github-reporting-native`, plus `demo-258`, `demo-290`, `demo-313`, `demo-330`, `demo-426`, `demo-482` and `demo-507`. Drop assurance, reporting and `/security` cases from the shared route, navigation, presentation, i18n and accessibility tests.
-- [ ] Remove the "Governance or assurance evidence" option from `.github/ISSUE_TEMPLATE/concern.yml`.
-
 ### DEMO-513 — [DOCS] Delete docs/ and keep only root Markdown
 
 - Dependency: DEMO-512
 - Why: The `docs/` tree restates what code, scripts and workflows already enforce, and it has to be kept in sync with them by hand.
-- Scope: Everything under `docs/`; the `docs` link on every route declaration; README, SECURITY.md, AGENTS.md and issue-template references.
+- Scope: Everything under `docs/`; the `docs` link on every route declaration; README, SECURITY.md and AGENTS.md references.
 - Non-goals: Add no replacement docs, wiki or docs site. Leave `CONTRIBUTING.md` unchanged, because `scripts/check-portfolio-contract.ts` hash-locks it as the shared portfolio contract.
 - Acceptance: `docs/` does not exist and `git grep "docs/"` finds nothing outside `platform/`. The build, browser audit and contract validation read the relocated manifests. README is a short orientation covering what this is, the public routes, local setup, commands and a delivery pointer.
 - Validation: `npm run generate:assets` and `npm run generate:routes` write the new paths with no drift; run the focused route-artifact, generated-artifact and react-presentation tests; final exact-head CI.
@@ -50,10 +29,10 @@ Goal: a clean restart. Delete the assurance, evidence and documentation system, 
 - [ ] Remove the `docs` field from route declarations, the route-manifest serializer and every route-capability module.
 - [ ] Remove docs source links from demo pages (for example `src/demos/accessibility-presentation.tsx`).
 - [ ] Delete the remaining files under `docs/`: the 12 Markdown files, `governance/`, `history/CHANGE-MAP.csv` (nothing reads it) and `accessibility-manual-verification.json`.
-- [ ] Rewrite `README.md` to under 60 lines. Remove the ISO/IEC and WCAG "aligned — uncertified" claims, the Assurance section and the Start-here list.
+- [ ] Rewrite `README.md` to under 60 lines and remove the Start-here list.
 - [ ] Trim `SECURITY.md` to private reporting through GitHub and the disclosure steps.
 - [ ] In `AGENTS.md`, point the change-management, release-management and provider-settings authority references at the scripts and workflows that implement them. Keep every sentence `scripts/check-portfolio-contract.ts` requires.
-- [ ] Remove the `docs/ASSURANCE.md` placeholder from `concern.yml`. Delete or edit the tests that read `docs/`.
+- [ ] Delete or edit the tests that read `docs/`.
 
 ### DEMO-514 — [API] Remove redundant and uncalled APIs
 

@@ -34,7 +34,6 @@ describe('DEMO-312 repository release-history retirement', () => {
     expect(workflow).toContain('--generate-notes');
     expect(workflow).toContain('--notes-start-tag "$PREVIOUS_TAG"');
     expect(workflow).toContain('--verify-tag');
-    expect(workflow).toContain('Assurance registry snapshot for $GITHUB_REF_NAME');
     expect(workflow).not.toContain('docs/releases');
   });
 

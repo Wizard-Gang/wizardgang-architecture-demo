@@ -26,10 +26,6 @@ MICROSOFT_OAUTH_CLIENT_SECRET=replace-me
 # GITHUB_APP_INSTALLATION_ID=replace-me
 # SAML_IDP_CERT=replace-me-with-the-entra-signing-certificate
 
-# Optional protected GitHub reporting. Public repositories use the anonymous GitHub API by default.
-# GITHUB_REPORTING_BINDINGS=[{"repository":"Wizard-Gang/wizardgang-architecture-demo","sources":["github.issues","github.workflow-runs"],"issueLabels":["corrective-action"]}]
-# GITHUB_REPORTING_MAX_PAGES=20
-
 # Optional SAML IdP values; without them the issuer and SSO URL default from MICROSOFT_TENANT_ID.
 # SAML_IDP_ISSUER=https://sts.windows.net/replace-me/
 # SAML_SSO_URL=https://login.microsoftonline.com/replace-me/saml2

@@ -1,4 +1,3 @@
-import { expandedNpmRunSequence } from './lib/acceptance-plan.ts';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,7 +8,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageJson: ToolchainManifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const pinnedNodeVersion = fs.readFileSync(path.join(root, '.node-version'), 'utf8').trim();
 const packageManager = packageJson.packageManager || '';
-export const TYPESCRIPT_EXECUTION_SCRIPT = 'node scripts/validate-typescript-execution.ts --self-check';
 
 interface ToolchainManifest {
   packageManager?: string;
@@ -29,7 +27,6 @@ interface ToolchainResult {
   failures: string[];
   pinnedNodeVersion: string;
   pinnedNpmVersion: string;
-  typescriptExecutionScript: string;
 }
 
 function exactVersion(version: string | undefined, label: string): string {
@@ -81,19 +78,11 @@ export function validateToolchainContract({
   if (manifest.type !== 'module') {
     failures.push(`package type (${manifest.type || 'unset'}); expected module for native TypeScript ESM execution`);
   }
-  if (manifest.scripts?.['validate:typescript-execution'] !== TYPESCRIPT_EXECUTION_SCRIPT) {
-    failures.push(`validate:typescript-execution must be exactly "${TYPESCRIPT_EXECUTION_SCRIPT}"`);
-  }
-  const checkCommands = expandedNpmRunSequence(manifest.scripts, 'check').map((name) => `npm run ${name}`);
-  if (!checkCommands.includes('npm run validate:typescript-execution')) {
-    failures.push('check must include npm run validate:typescript-execution');
-  }
 
   return {
     failures,
     pinnedNodeVersion: exactNode,
     pinnedNpmVersion: exactNpm,
-    typescriptExecutionScript: TYPESCRIPT_EXECUTION_SCRIPT,
   };
 }
 
@@ -110,7 +99,6 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 
   console.log(`Pinned toolchain: Node ${result.pinnedNodeVersion}, npm ${result.pinnedNpmVersion}.`);
   console.log(`Current toolchain: Node ${actualNodeVersion}, npm ${actualNpmVersion}.`);
-  console.log(`TypeScript execution: ${result.typescriptExecutionScript}.`);
 
   if (result.failures.length) {
     for (const failure of result.failures) console.error(`Toolchain mismatch: ${failure}.`);

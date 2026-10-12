@@ -95,14 +95,14 @@ describe('DEMO-236 sitewide localization acceptance', () => {
       expect(context.number(1234567.89)).toBe(new Intl.NumberFormat(locale).format(1234567.89));
       expect(context.currency(1234.56, 'USD')).toBe(new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(1234.56));
       expect(context.dateTime(date, { dateStyle: 'full', timeZone: 'UTC' })).toBe(new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeZone: 'UTC' }).format(date));
-      expect(context.list(['edge', 'data', 'assurance'])).toBe(new Intl.ListFormat(locale).format(['edge', 'data', 'assurance']));
+      expect(context.list(['edge', 'data', 'identity'])).toBe(new Intl.ListFormat(locale).format(['edge', 'data', 'identity']));
       expect(context.exact('Request failed')).toBe(presentationCatalog['client.request_failed'][locale]);
       expect(context.browserMessages()['client.request_failed']).toBe(presentationCatalog['client.request_failed'][locale]);
 
-      const assuranceRoute = routeUrl('assurance.index');
-      const getForm = context.getForm(`${assuranceRoute}?framework=wcag-2.2#records`);
-      expect(getForm.action).toBe(`${assuranceRoute}#records`);
-      expect(getForm.fields).toContainEqual({ name: 'framework', value: 'wcag-2.2' });
+      const demosRoute = routeUrl('demos.index');
+      const getForm = context.getForm(`${demosRoute}?sample=one#records`);
+      expect(getForm.action).toBe(`${demosRoute}#records`);
+      expect(getForm.fields).toContainEqual({ name: 'sample', value: 'one' });
       if (locale === defaultLocale) expect(getForm.fields).not.toContainEqual({ name: 'lang', value: locale });
       else expect(getForm.fields).toContainEqual({ name: 'lang', value: locale });
 

@@ -40,14 +40,8 @@ const definitions = [
   {
     id: 'openapi',
     command: ['npm', ['run', 'generate:openapi']],
-    inputs: ['contracts/assurance/reporting.schema.json', 'docs/route-manifest.json', 'contracts/openapi/openapi.json'],
+    inputs: ['contracts/openapi/openapi.json'],
     outputs: ['contracts/openapi/openapi.json'],
-  },
-  {
-    id: 'assurance-runtime-binding',
-    command: ['npm', ['run', 'generate:assurance-runtime-binding']],
-    inputs: listFiles('assurance'),
-    outputs: ['src/assurance/generated/registry-bindings.ts', 'src/assurance/generated/lifecycle-baseline-membership.json'],
   },
 ];
 
