@@ -4,10 +4,10 @@ Live, executable architecture demonstrations on Cloudflare Workers, served at `h
 
 ## Public routes
 
-- `/` — orientation and live proof: service state, availability and the running version.
+- `/` — orientation and live proof: current service state and the running version.
 - `/demos` — the demonstrations: D1 and R2; REST/OpenAPI and GraphQL; signed webhooks and the live Git delivery feed; OAuth 2.0, SSO and SAML; MCP; Edge, Workers and Durable Objects; accessibility and internationalization.
 
-`/admin` is the protected operator page and `/offline` the recovery page. Machine contracts live under `/api/*`, `/auth/*`, `/graphql`, `/mcp` and `/webhooks/*`. Routes are declared once under `src/routing/`; navigation, sitemap, canonical links and the generated [`src/generated/route-manifest.json`](src/generated/route-manifest.json) are projections of those declarations.
+`/admin/api/*` holds the operator-authenticated live Git delivery actions. Machine contracts live under `/api/*`, `/auth/*`, `/graphql`, `/mcp` and `/webhooks/*`. Routes are declared once under `src/routing/`; navigation, sitemap, canonical links and the generated [`src/generated/route-manifest.json`](src/generated/route-manifest.json) are projections of those declarations.
 
 ## Invariants
 

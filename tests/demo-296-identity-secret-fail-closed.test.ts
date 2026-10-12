@@ -4,10 +4,10 @@ import { createIdentitySession, type IdentitySession } from '../src/lib/identity
 import { identityRouteCapability } from '../src/interfaces/route-capabilities/identity';
 import { routeRequest } from '../src/router';
 import type { Env } from '../src/types';
-import { demoDatabase, type SqliteD1 } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
 function captureDb() {
-  const db = demoDatabase({ crawler: 'enabled' });
+  const db = new SqliteD1();
   return {
     db,
     state: {

@@ -26,9 +26,8 @@ export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'policy', policy: 'visitor-session' },
       visibility: 'public',
       sameOrigin: { mode: 'required', methods: ['POST'] },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Synthetic webhook laboratory action',
         description: 'Same-origin browser action that signs and exercises the production webhook validation path.',
@@ -49,9 +48,8 @@ export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'policy', policy: 'visitor-session' },
       visibility: 'public',
       sameOrigin: { mode: 'not-required' },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Synthetic webhook event laboratory API',
         description: 'Returns sanitized verified delivery evidence scoped to the current visitor session.',
@@ -72,9 +70,8 @@ export const webhookLaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'policy', policy: 'visitor-session' },
       visibility: 'public',
       sameOrigin: { mode: 'required', methods: ['POST'] },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Synthetic webhook reset laboratory API',
         description: 'Same-origin reset of synthetic webhook evidence for the current visitor session.',

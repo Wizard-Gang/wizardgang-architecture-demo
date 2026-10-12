@@ -16,7 +16,6 @@ const DAY = 24 * HOUR;
 
 /** Records collections. One place names them, so a typo cannot fork a collection. */
 export const COLLECTIONS = {
-  control: 'control',
   demoSessions: 'demo-sessions',
   labUsers: 'lab-users',
   labTasks: 'lab-tasks',
@@ -26,8 +25,6 @@ export const COLLECTIONS = {
   samlAssertions: 'saml-assertions',
   r2Objects: 'r2-objects',
   webhookDeliveries: 'webhook-deliveries',
-  health: 'health',
-  availability: 'availability',
 } as const;
 
 /** Event kinds. */
@@ -41,10 +38,6 @@ export const TTL_SECONDS = {
   sandbox: DAY,
   auditEvent: 30 * DAY,
   githubDelivery: 30 * DAY,
-  /** Raw five-minute observations are kept only until their day's availability record is final. */
-  healthObservation: 2 * DAY,
-  /** One availability record per UTC day; the home page sums the retained days. */
-  availabilityDay: 365 * DAY,
 } as const;
 
 function edgeEnv(env: Partial<Pick<Env, 'WG_DB' | 'WG_R2'>>): EdgeEnv {

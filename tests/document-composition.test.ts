@@ -5,10 +5,10 @@ import { applicationRouteRegistry, routeUrl } from '../src/routing/application-r
 import { primaryNavigation } from '../src/routing/navigation';
 import { renderReactPage, type ReactPageContent } from '../src/ui/page';
 import type { Env } from '../src/types';
-import { demoDatabase } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
 const env: Env = {
-  WG_DB: demoDatabase(),
+  WG_DB: new SqliteD1(),
   WG_SESSION_KEY: 'test-composition-cursor-secret-that-is-long-enough',
   GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
   GITHUB_BRANCH: 'main',

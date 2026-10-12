@@ -1,6 +1,5 @@
 {
   "app.title": "WizardGang Architecture Demo",
-  "offline.title": "Demo temporarily offline",
   "demo.title": "Internationalization in the interface",
   "demo.summary": "Switch locale instantly to inspect translated content, locale-aware formats, pluralization, and right-to-left layout.",
   "source": "View page source",

@@ -29,18 +29,18 @@ describe('DEMO-459 shared shell boundary', () => {
     const local = createLocalDemoWorker({ ...release, version: '0.0.0-dev' });
     const response = await local.fetch(new Request('http://127.0.0.1:8787/version.json'), env(), {} as never);
     expect(await response.json()).toMatchObject({ app: 'demo', version: '0.0.0-dev' });
-    const denied = await local.fetch(new Request('http://127.0.0.1:8787/admin'), env(), {} as never);
+    const denied = await local.fetch(new Request('http://127.0.0.1:8787/admin/api/labs/git-delivery'), env(), {} as never);
     expect(denied.status).toBe(401);
     const foreign = await local.fetch(new Request('http://foreign.example/version.json'), env(), {} as never);
     expect(foreign.status).toBe(421);
     const authorization = `Basic ${btoa('ops:test-ops-token')}`;
-    const post = (origin: string) => new Request('http://127.0.0.1:8787/admin', {
-      method: 'POST', headers: { authorization, origin, 'content-type': 'application/x-www-form-urlencoded' },
-      body: 'action=invalid',
+    const post = (origin: string) => new Request('http://127.0.0.1:8787/admin/api/labs/git-delivery', {
+      method: 'POST', headers: { authorization, origin, 'content-type': 'application/json' },
+      body: JSON.stringify({ bump: 'invalid' }),
     });
     const accepted = await local.fetch(post('http://127.0.0.1:8787'), env(), {} as never);
-    expect(accepted.status).toBe(303);
-    expect(accepted.headers.get('location')).toContain('http://127.0.0.1:8787/admin');
+    expect(accepted.status).toBe(400);
+    expect(await accepted.json()).toMatchObject({ error: 'invalid_version_bump' });
     expect((await local.fetch(post('http://127.0.0.1:9999'), env(), {} as never)).status).toBe(403);
     expect((await local.fetch(post('https://foreign.example'), env(), {} as never)).status).toBe(403);
     const created = await local.fetch(new Request('http://127.0.0.1:8787/api/labs/d1-users', {
@@ -57,15 +57,17 @@ describe('DEMO-459 shared shell boundary', () => {
     expect(await response.json()).toMatchObject({ app: 'demo', version: '0.31.0', commit: release.commit });
   });
 
-  it('uses WG_OPS_TOKEN at the shell and passes only the authenticated decision to /admin', async () => {
+  it('uses WG_OPS_TOKEN at the shell and passes only the authenticated decision to /admin routes', async () => {
     const worker = createDemoWorker(release);
     const environment = env();
-    const denied = await worker.fetch(new Request('https://demo.wizardgang.ai/admin'), environment, {} as never);
+    const url = 'https://demo.wizardgang.ai/admin/api/labs/git-delivery?preflight=invalid';
+    const denied = await worker.fetch(new Request(url), environment, {} as never);
     expect(denied.status).toBe(401);
 
     const authorization = `Basic ${btoa('ops:test-ops-token')}`;
-    const accepted = await worker.fetch(new Request('https://demo.wizardgang.ai/admin', { headers: { authorization } }), environment, {} as never);
-    expect(accepted.status).toBe(200);
+    const accepted = await worker.fetch(new Request(url, { headers: { authorization } }), environment, {} as never);
+    expect(accepted.status).toBe(400);
+    expect(await accepted.json()).toMatchObject({ error: 'invalid_version_bump' });
     expect(environment.WG_DB.dump()).not.toContain('test-ops-token');
   });
 

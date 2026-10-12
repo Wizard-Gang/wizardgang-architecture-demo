@@ -23,9 +23,8 @@ export const edgeLaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'not-required' },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Edge inspection laboratory API',
         description: 'Returns the allowlisted Cloudflare request context without client identifiers.',

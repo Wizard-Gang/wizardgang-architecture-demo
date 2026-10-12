@@ -5,64 +5,37 @@ import { removedHtmlPathnames, retiredOperationsHtmlPathname } from './fixtures/
 
 const expectedPolicies = [
   {
-    id: 'operations.admin', pattern: '/admin', methods: ['GET', 'POST'], kind: 'page', visibility: 'private',
-    authentication: { mode: 'required', provider: 'wg-ops' }, authorization: { mode: 'policy', policy: 'admin' },
-    sameOrigin: { mode: 'required', methods: ['POST'] }, offline: { mode: 'available' }, cache: { mode: 'no-store' },
-    crawler: { crawling: 'allow', indexing: 'deny' },
-  },
-  {
     id: 'operations.admin-git-delivery', pattern: '/admin/api/labs/git-delivery', methods: ['GET', 'POST'], kind: 'api', visibility: 'private',
     authentication: { mode: 'required', provider: 'wg-ops' }, authorization: { mode: 'policy', policy: 'admin + release controls' },
-    sameOrigin: { mode: 'required', methods: ['POST'] }, offline: { mode: 'gated' }, cache: { mode: 'no-store' },
+    sameOrigin: { mode: 'required', methods: ['POST'] }, cache: { mode: 'no-store' },
     crawler: { crawling: 'deny', indexing: 'deny' },
   },
   {
     id: 'operations.admin-git-release', pattern: '/admin/api/labs/git-release', methods: ['POST'], kind: 'api', visibility: 'private',
     authentication: { mode: 'required', provider: 'wg-ops' }, authorization: { mode: 'policy', policy: 'admin + release-ready controls' },
-    sameOrigin: { mode: 'required', methods: ['POST'] }, offline: { mode: 'gated' }, cache: { mode: 'no-store' },
+    sameOrigin: { mode: 'required', methods: ['POST'] }, cache: { mode: 'no-store' },
     crawler: { crawling: 'deny', indexing: 'deny' },
   },
   {
-    id: 'operations.offline', pattern: '/offline', methods: ['GET'], kind: 'page', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'no-store' }, crawler: { crawling: 'controlled', indexing: 'deny' },
-  },
-  {
     id: 'operations.health', pattern: '/api/operations/health', methods: ['GET'], kind: 'api', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'no-store' }, crawler: { crawling: 'controlled', indexing: 'deny' },
+    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' }, cache: { mode: 'no-store' }, crawler: { crawling: 'allow', indexing: 'deny' },
   },
   {
     id: 'operations.version', pattern: '/api/operations/version', methods: ['GET'], kind: 'api', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'no-store' }, crawler: { crawling: 'controlled', indexing: 'deny' },
-  },
-  {
-    id: 'operations.robots', pattern: '/robots.txt', methods: ['GET', 'HEAD'], kind: 'protocol', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'no-store' }, crawler: { crawling: 'allow', indexing: 'deny' },
+    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' }, cache: { mode: 'no-store' }, crawler: { crawling: 'allow', indexing: 'deny' },
   },
   {
     id: 'operations.security-txt', pattern: '/.well-known/security.txt', methods: ['GET', 'HEAD'], kind: 'protocol', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'public', maxAgeSeconds: 3600 }, crawler: { crawling: 'allow', indexing: 'deny' },
+    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' }, cache: { mode: 'public', maxAgeSeconds: 3600 }, crawler: { crawling: 'allow', indexing: 'deny' },
   },
   {
     id: 'operations.assets', pattern: '/assets/:asset', methods: ['GET', 'HEAD'], kind: 'asset', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'public', maxAgeSeconds: 31_536_000, immutable: true }, crawler: { crawling: 'controlled', indexing: 'deny' },
+    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' }, cache: { mode: 'public', maxAgeSeconds: 31_536_000, immutable: true }, crawler: { crawling: 'allow', indexing: 'deny' },
   },
   {
     id: 'operations.sitemap', pattern: '/sitemap.xml', methods: ['GET'], kind: 'protocol', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'gated' }, cache: { mode: 'public', maxAgeSeconds: 3600 }, crawler: { crawling: 'controlled', indexing: 'deny' },
+    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' }, cache: { mode: 'public', maxAgeSeconds: 3600 }, crawler: { crawling: 'allow', indexing: 'deny' },
   },
-  ...[
-  ].map(([id, pattern, methods]) => ({
-    id, pattern, methods, kind: 'api', visibility: 'public',
-    authentication: { mode: 'anonymous' }, authorization: { mode: 'none' }, sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'available' }, cache: { mode: 'no-store' }, crawler: { crawling: 'controlled', indexing: 'deny' },
-  })),
 ];
 
 const retiredOperationsPaths = removedHtmlPathnames
@@ -80,7 +53,6 @@ describe('global operational route policies', () => {
       authentication: route.authentication,
       authorization: route.authorization,
       sameOrigin: route.sameOrigin,
-      offline: route.offline,
       cache: route.cache,
       crawler: route.crawler,
     }))).toEqual(expectedPolicies);
@@ -107,10 +79,9 @@ describe('global operational route policies', () => {
     expect(matchRoute(operationalRouteRegistry, 'GET', '/api/operations/not-a-route')).toEqual({ status: 'not-found', statusCode: 404 });
   });
 
-  it('keeps hidden admin/offline pages but no indexable public operations page', () => {
+  it('registers no operational page', () => {
     expect(operationalRouteRegistry.declarations.find((route) => route.id === 'operations.index')).toBeUndefined();
-    expect(operationalRouteRegistry.declarations.find((route) => route.id === 'operations.admin')?.offline).toEqual({ mode: 'available' });
-    expect(operationalRouteRegistry.declarations.find((route) => route.id === 'operations.offline')?.offline).toEqual({ mode: 'available' });
+    expect(operationalRouteRegistry.declarations.filter((route) => route.kind === 'page')).toEqual([]);
     expect(operationalRouteRegistry.declarations.filter((route) => route.kind === 'page' && route.visibility === 'public' && route.crawler.indexing === 'allow')).toEqual([]);
   });
 

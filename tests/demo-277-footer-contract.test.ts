@@ -15,7 +15,7 @@ describe('DEMO-277 site footer contract', () => {
     expect(documentSource).toContain("import { versionProof } from './version-proof';");
     expect(homeSource).toContain("import { versionProof } from './version-proof';");
     expect(documentSource).toContain('const version = versionProof(env);');
-    expect(homeSource).toContain('return { state, availability, version: versionProof(env) };');
+    expect(homeSource).toContain('return { state, version: versionProof(env) };');
     expect(documentSource).not.toContain('DEPLOYED_VERSION');
     expect(documentSource).not.toContain('DEPLOYED_SHA');
     expect(homeSource).not.toContain('DEPLOYED_VERSION');

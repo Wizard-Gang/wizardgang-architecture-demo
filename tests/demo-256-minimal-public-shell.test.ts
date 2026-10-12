@@ -39,8 +39,6 @@ describe('DEMO-256 minimal public shell', () => {
     expect(main).toContain(`class="button-primary" href="${routeUrl('demos.index')}">Explore demos</a>`);
     expect(main).toContain('aria-label="Live proof"');
     expect(main).toContain('Current service state');
-    expect(main).toContain('99.000%');
-    expect(main).toContain('100 measured intervals · planned offline excluded');
     expect(main).toContain('v0.21.0-test');
     expect(main).toContain('Commit abcdef0');
     expect(main).not.toContain('href="/operations"');

@@ -25,10 +25,6 @@ export function validateScaffold(root = process.cwd()) {
     'src/platform/route-capability.ts',
     'src/interfaces/route-capability.ts',
     'src/interfaces/route-capabilities/index.ts',
-    'src/lib/demo-control.ts',
-    'src/lib/crawler-control.ts',
-    'src/ui/admin.tsx',
-    'src/ui/offline.tsx',
     'tests/route-registry.test.ts',
     'tests/application-route-registry.test.ts',
     'tests/route-artifacts.test.ts',
@@ -63,7 +59,7 @@ export function validateScaffold(root = process.cwd()) {
   }
 
   const router = read('src/router.ts');
-  for (const token of ['applicationRouteRegistry', 'matchRoute', 'normalizeRoutePath', 'safeError', 'getDemoControl', 'route.handler']) {
+  for (const token of ['applicationRouteRegistry', 'matchRoute', 'normalizeRoutePath', 'safeError', 'route.handler']) {
     if (!router.includes(token)) failures.push(`router missing final declarative invariant: ${token}`);
   }
   for (const removedToken of [
@@ -103,14 +99,6 @@ export function validateScaffold(root = process.cwd()) {
 
   if (exists('src/demos/registry.ts')) failures.push('retired demo query-view registry must not remain');
 
-  const adminUi = read('src/ui/admin.tsx');
-  if (!adminUi.includes('data-offline-message-preview')) failures.push('admin UI missing the public offline-message preview');
-  const offlineUi = read('src/ui/offline.tsx');
-  if (!offlineUi.includes("localization.t('offline.title', 'Demo temporarily offline')")) failures.push('offline UI missing required planned-maintenance recovery message');
-  const crawlerControl = read('src/lib/crawler-control.ts');
-  for (const token of ['OAI-SearchBot', 'ChatGPT-User', 'GPTBot', 'chatgpt_crawl_access_changed']) {
-    if (!crawlerControl.includes(token)) failures.push(`crawler control invariant missing: ${token}`);
-  }
 
   function walk(directory: string): void {
     for (const item of fs.readdirSync(directory, { withFileTypes: true })) {

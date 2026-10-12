@@ -36,9 +36,8 @@ function syntheticRoute(
     authorization: { mode: 'none' },
     visibility: 'public',
     sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'gated' },
     cache: { mode: 'no-store' },
-    crawler: { crawling: 'controlled', indexing: 'deny' },
+    crawler: { crawling: 'allow', indexing: 'deny' },
     documentation: {
       title: id,
       description: `Synthetic route ${id}`,
@@ -112,7 +111,7 @@ describe('complete declarative application routing', () => {
         architectureMap: true,
       },
     );
-    extraPage.crawler = { crawling: 'controlled', indexing: 'allow' };
+    extraPage.crawler = { crawling: 'allow', indexing: 'allow' };
     const registry = createApplicationRouteRegistry([
       defineRouteModule('synthetic.page', [extraPage]),
     ]);
@@ -191,7 +190,7 @@ describe('complete declarative application routing', () => {
     ])).toThrow('Ambiguous route patterns');
   });
 
-  it('keeps removed aliases and unknown paths on the normal 404 even while offline state is unavailable', async () => {
+  it('keeps removed aliases and unknown paths on the normal 404 without consulting storage', async () => {
     for (const path of [
       '/api', '/webhooks', '/identity', '/mcp/server', '/i18n', '/accessibility', retiredOperationsHtmlPathname,
       '/not-registered', '/legacy/compliance',

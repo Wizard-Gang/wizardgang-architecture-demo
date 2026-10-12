@@ -13,10 +13,10 @@ import { routeUrl } from '../src/routing/application-routes';
 import { matchRoute } from '../src/routing/registry';
 import { routeRequest } from '../src/router';
 import type { Env } from '../src/types';
-import { demoDatabase } from './helpers/wg-storage';
+import { SqliteD1 } from './helpers/wg-storage';
 
 const onlineEnv = {
-  WG_DB: demoDatabase({ crawler: 'enabled' }),
+  WG_DB: new SqliteD1(),
   GITHUB_REPO_URL: 'https://github.com/Wizard-Gang/wizardgang-architecture-demo',
   GITHUB_BRANCH: 'main',
 } as unknown as Env;
@@ -57,7 +57,6 @@ describe('interface and identity declarative routing', () => {
       expect(route.methods.length, route.id).toBeGreaterThan(0);
       expect(route.authentication, route.id).toBeDefined();
       expect(route.authorization, route.id).toBeDefined();
-      expect(route.offline, route.id).toEqual({ mode: 'gated' });
       expect(route.cache, route.id).toBeDefined();
       expect(route.source.module, route.id).toMatch(/^src\//);
       expect(route.source.tests, route.id).toContain('tests/interface-identity-routing.test.ts');

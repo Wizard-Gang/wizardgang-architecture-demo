@@ -8,9 +8,12 @@ function env(): Env {
 }
 
 describe('operations machine behavior', () => {
-  it('runs scheduled health independently', async () => {
+  it('only sweeps expired rows on the schedule', async () => {
     const environment = env();
+    const db = environment.WG_DB as SqliteD1;
+    db.putRecord('demo-records', 'session/expired', { key: 'expired' }, { owner: 'session', expiresAt: Date.parse('2026-09-01T00:00:00.000Z') });
     await runScheduledOperations(environment, Date.parse('2026-09-02T12:05:00.000Z'));
-    expect((environment.WG_DB as SqliteD1).records('health').size).toBe(1);
+    expect(db.records('demo-records').size).toBe(0);
+    expect(db.records('health').size).toBe(0);
   });
 });

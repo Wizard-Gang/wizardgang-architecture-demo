@@ -2,14 +2,8 @@ import type { Env } from './types';
 import { renderNotFound } from './ui/not-found';
 import type { AdminIdentity } from './lib/admin-auth';
 import { requireAdmin, requireSameOrigin } from './lib/admin-auth';
-import { getDemoControl } from './lib/demo-control';
 import { identityReadiness, readIdentitySession } from './lib/identity-session';
 import { json, methodNotAllowed, safeError } from './lib/http';
-import {
-  crawlerBlockedResponse,
-  getCrawlerControl,
-  identifyOpenAIAgent,
-} from './lib/crawler-control';
 import {
   bindLocalization,
   localeNormalizationRedirect,
@@ -73,44 +67,38 @@ function withLocalizationHeaders(
   });
 }
 
-async function crawlerPolicyFailure(
-  request: Request,
-  env: Env,
-  route: ApplicationRouteDeclaration,
-): Promise<Response | null> {
-  if (route.crawler.crawling === 'allow') return null;
-  const agent = identifyOpenAIAgent(request.headers.get('user-agent'));
-  if (!agent) return null;
-  if (route.crawler.crawling === 'deny' || agent === 'GPTBot') return crawlerBlockedResponse(agent);
-  if ((await getCrawlerControl(env)).state === 'disabled') return crawlerBlockedResponse(agent);
+type OpenAIAgent = 'OAI-SearchBot' | 'ChatGPT-User' | 'GPTBot';
+
+function identifyOpenAIAgent(userAgent: string | null): OpenAIAgent | null {
+  if (!userAgent) return null;
+  if (/OAI-SearchBot/i.test(userAgent)) return 'OAI-SearchBot';
+  if (/ChatGPT-User/i.test(userAgent)) return 'ChatGPT-User';
+  if (/GPTBot/i.test(userAgent)) return 'GPTBot';
   return null;
+}
+
+// Matches the shell's static robots.txt: GPTBot (model training) is refused everywhere, and OpenAI search and
+// user-triggered fetches are refused only on routes that deny crawling.
+function crawlerPolicyFailure(request: Request, route: ApplicationRouteDeclaration): Response | null {
+  const agent = identifyOpenAIAgent(request.headers.get('user-agent'));
+  if (!agent || (agent !== 'GPTBot' && route.crawler.crawling === 'allow')) return null;
+  return json({
+    status: 'blocked',
+    agent,
+    reason: agent === 'GPTBot' ? 'model_training_disabled' : 'route_crawling_denied',
+  }, {
+    status: 403,
+    headers: {
+      'cache-control': 'no-store',
+      vary: 'User-Agent',
+      'x-robots-tag': 'noindex, nofollow',
+    },
+  });
 }
 
 function acceptsHtml(request: Request): boolean {
   const accept = request.headers.get('accept') || '';
   return accept.includes('text/html') || accept === '';
-}
-
-function offlineResponse(
-  request: Request,
-  route: ApplicationRouteDeclaration,
-  message: string,
-  localization: LocalizationContext,
-): Response {
-  if (request.method === 'GET' && route.browserHtml !== 'never' && acceptsHtml(request)) {
-    const url = new URL(request.url);
-    const target = new URL('/offline', url.origin);
-    target.searchParams.set('from', url.pathname);
-    const localizedTarget = localization.href(`${target.pathname}${target.search}`);
-    return Response.redirect(new URL(localizedTarget, url.origin).toString(), 302);
-  }
-  return json({ status: 'offline', message }, {
-    status: 503,
-    headers: {
-      'cache-control': 'no-store',
-      'retry-after': '60',
-    },
-  });
 }
 
 async function authenticateRoute(
@@ -181,16 +169,8 @@ async function routeRequestUnsafe(
     }
   }
 
-  const crawlerFailure = await crawlerPolicyFailure(request, env, route);
+  const crawlerFailure = crawlerPolicyFailure(request, route);
   if (crawlerFailure) return crawlerFailure;
-
-  if (route.offline.mode === 'gated') {
-    const control = await getDemoControl(env);
-    if (control.state === 'offline') {
-      const response = offlineResponse(request, route, control.publicMessage, localization);
-      return localizedHtml ? withLocalizationHeaders(response, localization, persistPreference) : response;
-    }
-  }
 
   if (match.status === 'method-not-allowed') return methodNotAllowed([...match.allowedMethods]);
 

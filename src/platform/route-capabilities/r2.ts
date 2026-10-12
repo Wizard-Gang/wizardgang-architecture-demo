@@ -30,9 +30,8 @@ export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'required', methods: ['POST'] },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'R2 files laboratory API',
         description: 'Lists or uploads visitor-scoped files whose bytes live in R2 and metadata lives in D1.',
@@ -63,9 +62,8 @@ export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'required', methods: ['DELETE'] },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'R2 file item laboratory API',
         description: 'Streams a visible R2 object or deletes one owned by the visitor sandbox.',
@@ -90,9 +88,8 @@ export const r2LaboratoryCapability = definePlatformLaboratoryCapability({
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'required', methods: ['POST'] },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'R2 files reset laboratory API',
         description: 'Deletes visitor-owned R2 objects and their D1 metadata rows.',

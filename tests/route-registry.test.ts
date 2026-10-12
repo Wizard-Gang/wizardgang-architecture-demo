@@ -24,7 +24,6 @@ function route(
     authorization: { mode: 'none' },
     visibility: 'public',
     sameOrigin: { mode: 'not-required' },
-    offline: { mode: 'gated' },
     cache: { mode: 'no-store' },
     crawler: { crawling: 'allow', indexing: 'allow' },
     documentation: {

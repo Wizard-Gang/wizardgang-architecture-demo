@@ -129,9 +129,6 @@ p { margin: 0 0 1rem; }
 .reference-links { display: flex; flex-wrap: wrap; gap: .55rem 1rem; margin-top: .35rem; padding: .8rem 1rem; border: 1px solid var(--line); background: var(--panel); }
 .reference-links a { color: var(--muted); font-size: .85rem; }
 .reference-links a:hover { color: var(--paper); }
-.offline-message-preview { display: grid; gap: .35rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--line); background: var(--panel-2); }
-.offline-message-preview span { color: var(--muted); font-size: .75rem; text-transform: uppercase; }
-.offline-message-preview p { margin: 0; }
 .section-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin: clamp(4.5rem, 8vw, 7rem) 0 1.3rem; padding-top: 1.3rem; border-top: 1px solid var(--line); }
 .section-head h2,.section-head .surface-view-heading { margin: 0; }
 .section-head > span { color: var(--muted); font: 800 .68rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
@@ -154,8 +151,6 @@ a.card:hover h3 { color: var(--acid); }
 
 .badge { display: inline-flex; align-items: center; align-self: flex-start; padding: .3rem .5rem; border: 1px solid var(--line); color: var(--muted); font: 700 .64rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
 .badge-ok { border-color: var(--acid); color: var(--acid); }
-.badge-down { border-color: #ff9d9d; color: #ff9d9d; }
-:root[data-theme="light"] .badge-down { border-color: #a11; color: #a11; }
 
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem 1.1rem; margin: 0 0 1.6rem; }
 .meta a { font: 800 .72rem/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; text-decoration-thickness: 2px; }
@@ -168,9 +163,6 @@ a.card:hover h3 { color: var(--acid); }
 .panel ul, .panel ol { margin: 0 0 1rem; padding-left: 1.1rem; }
 .panel li { margin-bottom: .4rem; color: var(--muted); }
 .panel li strong { color: var(--paper); }
-.admin-state-details { margin-bottom: 1.4rem; }
-.admin-message-input { width: 100%; }
-.admin-state-actions { margin-top: 1.2rem; }
 
 .button, button { display: inline-flex; align-items: center; min-height: 46px; padding: .6rem 1rem; border: 1px solid var(--line); border-radius: 0; background: var(--panel-2); color: var(--paper); cursor: pointer; font: 850 .88rem/1 inherit; font-family: inherit; text-decoration: none; transition: transform .16s, border-color .16s; }
 .button:hover, button:hover { transform: translateY(-2px); border-color: var(--muted); }

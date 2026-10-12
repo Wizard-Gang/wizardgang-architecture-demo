@@ -23,9 +23,8 @@ export const accessibilityLaboratoryCapability = definePlatformLaboratoryCapabil
       authorization: { mode: 'none' },
       visibility: 'public',
       sameOrigin: { mode: 'not-required' },
-      offline: { mode: 'gated' },
       cache: { mode: 'no-store' },
-      crawler: { crawling: 'controlled', indexing: 'deny' },
+      crawler: { crawling: 'allow', indexing: 'deny' },
       documentation: {
         title: 'Accessibility teaching laboratory API',
         description: 'Renders the bounded accessible or intentionally broken teaching frame used by the accessibility interface view.',
